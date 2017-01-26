@@ -85,12 +85,27 @@ def table1_from_fields(fields):
             "8L": (fields["NCL"] + fields["CL"]) * fields["8L%"] / 100,
             "8S": (fields["NCS"] + fields["CS"]) * fields["8S%"] / 100,
             "(4L/4S + 8L/8S)/2": ((fields["NCL"] + fields["CL"]) * fields["4L%"] / ((fields["NCS"] + fields["CS"]) * fields["4S%"]) +
-             (fields["NCL"] + fields["CL"]) * fields["8L%"] / ((fields["NCS"] + fields["CS"]) * fields["8S%"])) / 2}
+             (fields["NCL"] + fields["CL"]) * fields["8L%"] / ((fields["NCS"] + fields["CS"]) * fields["8S%"])) / 2
+            }
 
     return round_dict(data)
 
-graph_info = [(["OI"], [("NCCP", 1), ("CCP", 1)]), (["4L/4S", "(4L/4S + 8L/8S)/2"], [("4L", 1), ("4S", -1), ("8L", 1), ("8S", -1)]), (["Price"], [])]
+def table2_from_fields(fields):
+    data = {"4L%": fields["4L%"],
+            "4S%": fields["4S%"],
+            "8L%": fields["8L%"],
+            "8S%": fields["8S%"],
+            "4L%/4S%": fields["4L%"] / fields["4S%"],
+            "L%/S%": (fields["4L%"] / fields["4S%"] + fields["8L%"] / fields["8S%"]) / 2
+            }
+
+    return round_dict(data)
+
+graph1_info = [(["OI"], [("NCCP", 1), ("CCP", 1)]), (["4L%/4S%", "L%/S%"], [("4L%", 1), ("4S%", -1), ("8L%", 1), ("8S%", -1)]), (["Price"], [])]
 table1_labels = ["Date", "OI", "NCL", "NCS", "NCCP", "NCB", "CL", "CS", "CCP", "CB", "4L%", "8L%", "8S%", "4L%/4S%", "L%/S%", "4L", "4S", "4L/4S", "8L", "8S", "(4L/4S + 8L/8S)/2", "Price"]
+
+graph2_info = []
+table2_labels = ["Date", "4L%", "8L%", "8S%", "4L%/4S%", "L%/S%", "Price"]
 
 class Grabber:
     def __init__(self):
