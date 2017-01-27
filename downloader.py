@@ -4,9 +4,13 @@ import datetime as dt
 import os
 import parser
 from requests import Session
+import utils
 
 platformsFile = "platforms"
+datesFile = "dates"
 pricesFile = "prices/pair_ids"
+patternsFile = "patterns"
+monetaryFile = "monetary"
 
 def read_url(url):
     req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -167,6 +171,45 @@ def get_prices(dates, url):
 
     return result, name, url, new
 
+def get_net_monetary(cosd, coed):
+    if cosd:
+        cosd = (parser.parse_isoformat_date(cosd) + dt.timedelta(1)).isoformat()
+
+    session = Session()
+
+    response = session.get(
+        url='https://fred.stlouisfed.org/graph/fredgraph.csv',
+        params={
+            'cosd': cosd,
+            'coed': coed,
+            'id': "BOGMBASEW",
+        },
+        headers={
+            'Host': "fred.stlouisfed.org",
+            'User-Agent': 'Mozilla/5.0'
+        }
+    )
+
+    if not response.text:
+        return ""
+    else:
+        return response.text[response.text.find("\n") + 1:]
+
+
+def get_monetary(requestedDates):
+    file = open(monetaryFile, "r")
+    data = [line.split(",") for line in file.read().splitlines()]
+    file.close()
+
+    dates = [parser.parse_isoformat_date(date) for date, _ in data]
+    values = [int(value) for _, value in data]
+
+    result = []
+    for date in requestedDates:
+        result.append(values[utils.takeClosest(dates, date)])
+
+    return result
+
 #даты при закачке смотреть отдельно для каждой платформы
 def update():
     if not os.path.exists("data"):
@@ -177,7 +220,19 @@ def update():
     if not os.path.exists("prices"):
         os.makedirs("prices")
 
-    dates_file = open("dates", "a+")
+    monetary_file = open(monetaryFile, "a+")
+    monetary_file.seek(0)
+
+    content = monetary_file.read()
+    if content:
+        last_date = content.splitlines()[-1].split(",")[0]
+    else:
+        last_date = ""
+    monetary_file.write(get_net_monetary(last_date, dt.date.today().isoformat()))
+
+    monetary_file.close()
+
+    dates_file = open(datesFile, "a+")
     dates_file.seek(0)
 
     last_net_date = get_last_date()
@@ -186,7 +241,7 @@ def update():
     if written_dates and parser.parse_isoformat_date(written_dates[-1]) == last_net_date:
         return
 
-    platforms_file = open("platforms", "w")
+    platforms_file = open(platformsFile, "w")
     net_platforms = get_platforms()
     for code, name in net_platforms:
         if not os.path.exists(code):

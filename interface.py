@@ -60,6 +60,10 @@ class Window(QtGui.QWidget):
         self.main_layout.insertLayout(0, self.lists_layout)
         self.main_layout.insertLayout(1, self.bottom_buttons_layout)
 
+        self.tables = []
+        self.wins = []
+        self.graph_dialogs = []
+
         self.showMaximized()
 
     def submit_active(self):
@@ -125,3 +129,21 @@ class Window(QtGui.QWidget):
 
         self.table = tables.draw_table(data, parser.table1_labels, title)
         self.win = graphs.draw_graph([(data, parser.graph1_info)], title)
+
+class GraphDialog(QtGui.QWidget):
+    def __init__(self, table_labels, window):
+        QtGui.QWidget.__init__(self)
+
+        self.main_layout = QtGui.QVBoxLayout(self)
+        self.upper_layout = QtGui.QHBoxLayout(self)
+        self.labels_layout = QtGui.QVBoxLayout(self)
+        self.buttons_layout = QtGui.QHBoxLayout(self)
+
+        self.main_layout.insertLayout(0, self.upper_layout)
+        self.main_layout.insertLayout(1, self.buttons_layout)
+
+        self.pattern_list = QtGui.QListWidget(self)
+
+
+        self.upper_layout.insertLayout(0, self.labels_layout)
+        self.upper_layout.addWidget()

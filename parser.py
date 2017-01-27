@@ -148,4 +148,10 @@ class Grabber:
 
         return result
 
+    def get_patterns(self, table_name):
+        if not os.path.isfile(downloader.pricesFile):
+            return []
+
+        file = open(downloader.patternsFile, "r")
+
 
