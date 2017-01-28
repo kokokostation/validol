@@ -35,7 +35,7 @@ class ItemData():
     def __init__(self, symbol, brush):
         self.opts = {'symbol': symbol, 'brush': brush, 'pen': None, 'size': 20}
 
-class BatyaGraph(pg.GraphicsWindow):
+class Graph(pg.GraphicsWindow):
     def __init__(self, data, pattern):
         pg.GraphicsWindow.__init__(self)
 
@@ -45,32 +45,47 @@ class BatyaGraph(pg.GraphicsWindow):
         self.draw_graph(data, pattern)
 
     def fix(self, label, toDo):
-        plotItem, plot = self.widgets[self.pattern.index(label)]
-        if toDo == True:
-            plotItem.addItem(plot)
-        else:
-            plotItem.removeItem(plot)
+        plotItem, plots = self.widgets[self.pattern.index(label)]
 
-    def draw_axis(self, label, legend, plotItem, xs, data, color, lines, bars, mbars):
+        for plot in plots:
+            if toDo == True:
+                plotItem.addItem(plot)
+            else:
+                plotItem.removeItem(plot)
+
+    def draw_axis(self, label, legend, plotItem, data, color, lines, bars, mbars):
         legend.addItem(ItemData(None, None), label)
 
+        #code duplication
         for key in lines:
-            plot = pg.PlotDataItem(xs, [d[key] for d in data], pen={'color': colors[color], 'width': 2})
-            self.widgets.append((plotItem, plot))
-            plotItem.addItem(plot)
-            legend.addItem(plot, key)
+            plots = []
+
+            for chain in utils.split([i if key in data[i] else None for i in range(len(data))], None):
+                if chain:
+                    plots.append(pg.PlotDataItem(chain, [data[i][key] for i in chain], pen={'color': colors[color], 'width': 2}))
+                    plotItem.addItem(plots[-1])
+
+            self.widgets.append((plotItem, plots))
+            if plots:
+                legend.addItem(plots[0], key)
             color += 1
+
         if bars or mbars:
             bar_width = 0.9 / max(len(bars), len(mbars))
-
+            #sequence of bars
             for bs, sign in [(bars, 1), (mbars, -1)]:
                 for i in range(len(bs)):
                     key = bs[i]
-                    barGraph = pg.BarGraphItem(x=xs + bar_width * i, height=[sign * d[key] for d in data], width=bar_width, brush=pg.mkBrush(colors[color] + (130,)), pen=pg.mkPen('k'))
-                    self.widgets.append((plotItem, barGraph))
-                    plotItem.addItem(barGraph)
-                    legend.addItem(ItemData('s', colors[color] + (200,)), key)
+                    barGraphs = []
 
+                    for chain in utils.split([i if key in data[i] else None for i in range(len(data))], None):
+                        if chain:
+                            barGraphs.append(pg.BarGraphItem(x=[c + bar_width * i for c in chain], height=[sign * data[i][key] for i in chain],
+                                                             width=bar_width, brush=pg.mkBrush(colors[color] + (130,)), pen=pg.mkPen('k')))
+                            plotItem.addItem(barGraphs[-1])
+
+                    self.widgets.append((plotItem, barGraphs))
+                    legend.addItem(ItemData('s', colors[color] + (200,)), key)
                     color += 1
 
         return color
@@ -81,7 +96,6 @@ class BatyaGraph(pg.GraphicsWindow):
         twins = []
         legends = []
 
-        xs = np.arange(len(data))
         str_dates = [d["Date"].strftime("%d/%m/%Y") for d in data]
 
         for left, right in pattern:
@@ -92,7 +106,7 @@ class BatyaGraph(pg.GraphicsWindow):
             legends.append(pg.LegendItem(offset=(50, 20)))
             legends[-1].setParentItem(plots[-1])
 
-            color = self.draw_axis("left", legends[-1], plots[-1], xs, data, color, *left)
+            color = self.draw_axis("left", legends[-1], plots[-1], data, color, *left)
 
             twins.append(pg.ViewBox())
             if right:
@@ -112,11 +126,14 @@ class BatyaGraph(pg.GraphicsWindow):
                 updateViews()
                 plots[-1].vb.sigResized.connect(updateViews)
 
-                self.draw_axis("right", legends[-1], twins[-1], xs, data, color, *right)
+                self.draw_axis("right", legends[-1], twins[-1], data, color, *right)
 
         for i in range(len(plots)):
             for j in range(i + 1, len(plots)):
                 plots[i].setXLink(plots[j])
+
+        if plots:
+            plots[0].setXRange(0, len(str_dates))
 
         vLines = []
         hLines = []
@@ -147,7 +164,7 @@ class CheckedGraph(QtGui.QWidget):
 
         self.setWindowTitle(title)
         self.pattern = pattern
-        self.graph = BatyaGraph(data, pattern)
+        self.graph = Graph(data, pattern)
 
         self.mainLayout = QtGui.QHBoxLayout(self)
 

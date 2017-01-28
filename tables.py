@@ -1,11 +1,12 @@
 import numpy as np
 import pyqtgraph as pg
+import itertools
 
-def draw_table(data, keys, title):
+def draw_table(data, keys, key_types, title):
     table = pg.TableWidget()
     table.setWindowTitle(title)
 
-    data = np.array([tuple([d[key] for key in keys]) for d in data], dtype=[(key, type(data[0][key])) for key in keys])
+    data = np.array([tuple([d[key] if key in d else None for key in keys]) for d in data], dtype=list(zip(keys, key_types)))
 
     table.setData(data)
 

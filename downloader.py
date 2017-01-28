@@ -155,20 +155,12 @@ def get_prices(dates, url):
     for date in dates:
         if date in date_price:
             result.append(date_price[date])
-        elif not result:
-            result.append(-1)
         else:
-            result.append(result[-1])
-
-        for i in range(len(result)):
-            if result[i] != -1:
-                for j in range(i - 1, -1, -1):
-                    result[j] = result[j + 1]
-                break
+            result.append(None)
 
     return result, name, url, new
 
-def get_net_monetary(cosd, coed):
+def get_net_mbase(cosd, coed):
     if cosd:
         cosd = (parser.parse_isoformat_date(cosd) + dt.timedelta(1)).isoformat()
 
@@ -192,7 +184,7 @@ def get_net_monetary(cosd, coed):
     else:
         return response.text[response.text.find("\n") + 1:]
 
-def get_monetary(requestedDates):
+def get_mbase(requestedDates):
     file = open(monetaryFile, "r")
     data = [line.split(",") for line in file.read().splitlines()]
     file.close()
@@ -202,7 +194,11 @@ def get_monetary(requestedDates):
 
     result = []
     for date in requestedDates:
-        result.append(values[utils.takeClosest(dates, date)])
+        closest = utils.takeClosest(dates, date)
+        if abs(dates[closest].toordinal() - date.toordinal()) <= 7:
+            result.append(values[closest])
+        else:
+            result.append(None)
 
     return result
 
@@ -230,7 +226,7 @@ def update():
         last_date = content.splitlines()[-1].split(",")[0]
     else:
         last_date = ""
-    monetary_file.write(get_net_monetary(last_date, dt.date.today().isoformat()))
+    monetary_file.write(get_net_mbase(last_date, dt.date.today().isoformat()))
 
     monetary_file.close()
 

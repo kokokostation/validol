@@ -4,6 +4,8 @@ import tables
 import graphs
 import utils
 import downloader
+from bisect import bisect_left
+import datetime as dt
 
 class Window(QtGui.QWidget):
     def __init__(self, app):
@@ -13,7 +15,7 @@ class Window(QtGui.QWidget):
 
         self.app = app
 
-        self.setWindowTitle("BatyaGraphs")
+        self.setWindowTitle("COTs")
 
         self.platforms = QtGui.QListWidget()
         self.platforms.itemClicked.connect(self.platform_chosen)
@@ -41,6 +43,7 @@ class Window(QtGui.QWidget):
         self.draw_table1.clicked.connect(self.table1)
 
         self.draw_table2 = QtGui.QPushButton('Draw table 2')
+        self.draw_table2.clicked.connect(self.table2)
 
         self.updateButton = QtGui.QPushButton('Update')
         self.updateButton.clicked.connect(self.on_update)
@@ -71,12 +74,14 @@ class Window(QtGui.QWidget):
         self.main_layout.insertLayout(1, self.bottom_buttons_layout)
 
         self.tables = []
-        self.wins = []
-        self.graph_dialogs = []
+        self.graphs = []
 
         self.showMaximized()
 
     def submit_active(self):
+        if len(self.chosen_actives) == 4:
+            return
+
         self.chosen_actives.append((self.platforms.currentItem().toolTip(), self.platforms.currentItem().text(), self.actives.currentItem().text()))
 
         self.actives_layout_widgets.append((QtGui.QLineEdit(), QtGui.QLineEdit(), QtGui.QPushButton('Submit cached'), QtGui.QPushButton('Clear')))
@@ -126,22 +131,73 @@ class Window(QtGui.QWidget):
         for i in range(len(self.actives_layout_lines) - 1, -1, -1):
             self.removeLine(i)
 
-    def table1(self):
-        url_widget = self.actives_layout_widgets[0][1]
-        chosen_platform, chosen_platform_name, chosen_active = self.chosen_actives[0]
-        data, name, url, new = self.grabber.get_table1(chosen_platform, chosen_active, url_widget.text())
+    def add_price(self, new, url, name):
         if new:
             wi = QtGui.QListWidgetItem(name)
             wi.setToolTip(url)
             self.cached_prices.addItem(wi)
 
-        title = chosen_platform_name + "/" + chosen_active + "; Price: " + name
+    def table1(self):
+        table = "table 1"
+        url_widget = self.actives_layout_widgets[0][1]
+        chosen_platform, chosen_platform_name, chosen_active = self.chosen_actives[0]
+        data, name, url, new = self.grabber.consolidate(chosen_platform, chosen_active, url_widget.text())
+        self.add_price(new, url, name)
 
-        self.table = tables.draw_table(data, parser.table1_labels, title)
-        self.win = GraphDialog("table1", parser.table1_labels[1:], data, title, self.grabber)
+        title = parser.title(chosen_platform_name, chosen_active, name)
+
+        self.tables.append(tables.draw_table(data, parser.table1_labels, parser.table1_key_types, title))
+        self.graphs.append(GraphDialog(table, parser.table1_labels[1:], data, title, self.grabber))
+
+    def table2(self):
+        actives = "ABCD"
+        table = "table 2"
+        denotions = []
+        info = []
+        titles = []
+        for i in range(len(self.chosen_actives)):
+            url = self.actives_layout_widgets[i][1].text()
+            chosen_platform, chosen_platform_name, chosen_active = self.chosen_actives[i]
+            info.append(self.grabber.consolidate(chosen_platform, chosen_active, url))
+            data, name, url, new = info[-1]
+            titles.append(parser.title(chosen_platform_name, chosen_active, name))
+            title = actives[i] + ": " + titles[-1]
+            denotions.append(title)
+            self.tables.append(tables.draw_table(data, parser.table2_labels, parser.table2_key_types, title))
+            self.add_price(new, url, name)
+
+        labels = []
+        primary_labels = parser.table2_labels[1:]
+        primary_labels.extend(["ALN", "ASN"])
+        allDates = sorted(list(set([d["Date"] for data, _, _, _ in info for d in data])))
+        allData = [{"Date": date} for date in allDates]
+        for i in range(len(info)):
+            for label in parser.table2_labels[1:]:
+                labels.append(label + " " + actives[i])
+            for data in info[i][0]:
+                j = bisect_left(allDates, data["Date"])
+                for label in primary_labels:
+                    if label in data:
+                        allData[j][label + " " + actives[i]] = data[label]
+
+        ratios = [(0, 1), (2, 0), (3, 0)]
+        tempLabels = []
+        for a, b in ratios:
+            if max(a, b) < len(info):
+                labelA, labelB = "Quot " + actives[a], "Quot " + actives[b]
+                labels.append(labelA + "/" + labelB)
+                tempLabels.append((labelA, labelB))
+
+        for data in allData:
+            for labelA, labelB in tempLabels:
+                if labelA in data and labelB in data and data[labelB] != 0:
+                    data[labelA + "/" + labelB] = data[labelA] / data[labelB]
+
+        self.tables.append(tables.draw_table(allData, ["Date"] + labels[-len(tempLabels):], [dt.date] + ([float] * len(tempLabels)), "Quots ratios"))
+        self.graphs.append(GraphDialog(table, labels, allData, "\n".join(denotions), self.grabber))
 
     def on_update(self):
-        self.updateButton.setText("Wait. Updating the data...")
+        self.updateButton.setText("Wait a sec. Updating the data...")
         self.app.processEvents()
         downloader.update()
         self.updateButton.setText("Update")
@@ -150,7 +206,6 @@ class GraphDialog(QtGui.QWidget):
     def __init__(self, tableName, tableLabels, data, title, grabber):
         QtGui.QWidget.__init__(self)
 
-        title = tableName + " " + title
         self.setWindowTitle(title)
 
         self.data = data
@@ -160,11 +215,18 @@ class GraphDialog(QtGui.QWidget):
 
         self.main_layout = QtGui.QVBoxLayout(self)
         self.upper_layout = QtGui.QHBoxLayout()
-        self.labels_layout = QtGui.QVBoxLayout()
         self.buttons_layout = QtGui.QHBoxLayout()
+        self.labels_layout = QtGui.QVBoxLayout()
+        self.labels_submit_layout = QtGui.QVBoxLayout()
 
-        self.main_layout.insertLayout(0, self.upper_layout)
-        self.main_layout.insertLayout(1, self.buttons_layout)
+        if "\n" in title:
+            denotions = QtGui.QTextEdit()
+            denotions.setText(title)
+            denotions.setReadOnly(True)
+            self.main_layout.addWidget(denotions, stretch=1)
+
+        self.main_layout.insertLayout(1, self.upper_layout, stretch=10)
+        self.main_layout.insertLayout(2, self.buttons_layout)
 
         self.pattern_list = QtGui.QListWidget()
         if tableName in grabber.patterns:
@@ -173,7 +235,18 @@ class GraphDialog(QtGui.QWidget):
 
         self.graphsTree = QtGui.QTreeWidget()
 
-        self.upper_layout.insertLayout(0, self.labels_layout)
+        self.patternTitle = QtGui.QLineEdit()
+        self.patternTitle.setPlaceholderText("Pattern title")
+        self.labels_submit_layout.addWidget(self.patternTitle)
+
+        self.scrollForLabels = QtGui.QScrollArea()
+        self.scrollForLabels.setWidgetResizable(True)
+        self.inner = QtGui.QFrame(self.scrollForLabels)
+        self.inner.setLayout(self.labels_layout)
+        self.scrollForLabels.setWidget(self.inner)
+        self.labels_submit_layout.addWidget(self.scrollForLabels)
+
+        self.upper_layout.insertLayout(0, self.labels_submit_layout)
         self.upper_layout.addWidget(self.graphsTree)
         self.upper_layout.addWidget(self.pattern_list)
 
@@ -185,10 +258,6 @@ class GraphDialog(QtGui.QWidget):
 
         self.buttons_layout.addWidget(self.submitPattern)
         self.buttons_layout.addWidget(self.drawGraph)
-
-        self.patternTitle = QtGui.QLineEdit()
-        self.patternTitle.setText("Pattern title")
-        self.labels_layout.addWidget(self.patternTitle)
 
         self.labels = []
 
@@ -215,7 +284,7 @@ class GraphDialog(QtGui.QWidget):
 
         self.submitGraph = QtGui.QPushButton('Submit graph')
         self.submitGraph.clicked.connect(self.submit_graph)
-        self.labels_layout.addWidget(self.submitGraph)
+        self.labels_submit_layout.addWidget(self.submitGraph)
 
         self.currentPattern = []
 
@@ -261,6 +330,9 @@ class GraphDialog(QtGui.QWidget):
 
     def submit_pattern(self):
         patternTitle = self.patternTitle.text()
+        if not patternTitle:
+            return
+
         self.pattern_list.addItem(patternTitle)
 
         utils.add_to_dict(self.grabber.patterns, self.tableName, patternTitle, self.currentPattern)

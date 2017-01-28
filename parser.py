@@ -55,60 +55,48 @@ def round_dict(dict_, precision=3):
     return dict_
 
 #division by zero
-def table1_from_fields(fields):
+def from_fields(fields):
     data = {"OI": fields["OI"],
             "NCL": fields["NCL"],
             "NCS": fields["NCS"],
             "NCCP": fields["NCL"] - fields["NCS"],
-            "NCB": 100 * fields["OI"] / (fields["OI"] + fields["NCL"]),
+            "NCB": utils.myDivision(100 * fields["OI"], (fields["OI"] + fields["NCL"])),
             "CL": fields["CL"],
             "CS": fields["CS"],
             "CCP": fields["CL"] - fields["CS"],
-            "CB": 100 * fields["CL"] / (fields["CL"] + fields["CS"]),
+            "CB": utils.myDivision(100 * fields["CL"], (fields["CL"] + fields["CS"])),
             "NRL": fields["NRL"],
             "NRS": fields["NRS"],
             "NRCP": fields["NRL"] - fields["NRS"],
-            "NRB": 100 * fields["NRL"] / (fields["NRL"] + fields["NRS"]),
+            "NRB": utils.myDivision(100 * fields["NRL"], (fields["NRL"] + fields["NRS"])),
             "4L%": fields["4L%"],
             "4S%": fields["4S%"],
             "8L%": fields["8L%"],
             "8S%": fields["8S%"],
-            "4L%/4S%": fields["4L%"] / fields["4S%"],
-            "L%/S%": (fields["4L%"] / fields["4S%"] + fields["8L%"] / fields["8S%"]) / 2,
+            "4L%/4S%": utils.myDivision(fields["4L%"], fields["4S%"]),
+            "L%/S%": (utils.myDivision(fields["4L%"], fields["4S%"]) + utils.myDivision(fields["8L%"], fields["8S%"])) / 2,
             "4L": (fields["NCL"] + fields["CL"] + fields["NRL"]) * fields["4L%"] / 100,
             "4S": (fields["NCS"] + fields["CS"] + fields["NRS"]) * fields["4S%"] / 100,
             "8L": (fields["NCL"] + fields["CL"] + fields["NRL"]) * fields["8L%"] / 100,
             "8S": (fields["NCS"] + fields["CS"] + fields["NRS"]) * fields["8S%"] / 100,
             }
 
-    extra = {"4L/4S": data["4L"] / data["4S"],
-             "(4L/4S + 8L/8S)/2": (data["4L"] / data["4S"] + data["8L"] / data["8S"]) / 2
+    extra = {"4L/4S": utils.myDivision(data["4L"], data["4S"]),
+             "(4L/4S + 8L/8S)/2": (utils.myDivision(data["4L"], data["4S"]) + utils.myDivision(data["8L"], data["8S"])) / 2
             }
 
     data.update(extra)
 
     return round_dict(data)
 
-def table2_from_fields(fields):
-    data = {"4L%": fields["4L%"],
-            "4S%": fields["4S%"],
-            "8L%": fields["8L%"],
-            "8S%": fields["8S%"],
-            "4L%/4S%": fields["4L%"] / fields["4S%"],
-            "L%/S%": (fields["4L%"] / fields["4S%"] + fields["8L%"] / fields["8S%"]) / 2
-            }
-
-    return round_dict(data)
-
-graph1_info = [(["OI"], [("NCCP", 1), ("CCP", 1)]), (["4L%/4S%", "L%/S%"], [("4L%", 1), ("4S%", -1), ("8L%", 1), ("8S%", -1)]), (["Price"], [])]
-
 table1_labels = ["Date", "OI", "NCL", "NCS", "NCCP", "NCB", "CL", "CS",
                  "CCP", "CB", "NRL", "NRS", "NRCP", "NRB", "4L%", "4S%", "8L%",
                  "8S%", "4L%/4S%", "L%/S%", "Quot", "4L", "4S", "4L/4S",
-                 "8L", "8S", "(4L/4S + 8L/8S)/2", "AL", "AS", "Asum"]
+                 "8L", "8S", "(4L/4S + 8L/8S)/2", "AL", "AS", "Asum", "MBase"]
+table1_key_types = [dt.date] + ([float] * (len(table1_labels) - 1))
 
-graph2_info = []
-table2_labels = ["Date", "4L%", "8L%", "8S%", "4L%/4S%", "L%/S%", "Price"]
+table2_labels = ["Date", "4L", "4S", "Quot", "AL", "AS", "4L/4S", "MBase"]
+table2_key_types = [dt.date] + ([float] * (len(table2_labels) - 1))
 
 def parse_axis(axis):
     return [part.split("&") if part else [] for part in axis.split("#")]
@@ -179,6 +167,9 @@ def get_platforms():
 
     return result
 
+def title(platformName, activeName, priceName):
+    return platformName + "/" + activeName + "; Quot from: " + priceName
+
 class Grabber:
     def __init__(self):
         self.actives = {}
@@ -188,18 +179,37 @@ class Grabber:
         self.actives[platform_code] = get_all_actives(platform_code)
         return list(set([key for date, active in self.actives[platform_code] for key in active.keys()]))
 
-    def get_table1(self, platform, active, prices_url):
-        result = sorted([(date, table1_from_fields(actives[active])) for date, actives in self.actives[platform] if active in actives])
-        prices, name, url, new = downloader.get_prices([date for date, _ in result], prices_url)
-        for i in range(len(prices)):
-            current = result[i][1]
-            current["Date"] = result[i][0]
-            current["Quot"] = prices[i]
-            current["AL"] = current["Quot"] * current["4L"]
-            current["AS"] = current["Quot"] * current["4S"]
-            current["Asum"] = current["AL"] + current["AS"]
+    def consolidate(self, platform, active, prices_url):
+        result = sorted([(date, from_fields(actives[active])) for date, actives in self.actives[platform] if active in actives])
+        dates = [date for date, _ in result]
+        mbase = downloader.get_mbase(dates)
 
-        return [i[1] for i in result], name, url, new
+        for i in range(len(mbase)):
+            currentInfo = result[i][1]
+            currentInfo["Date"] = result[i][0]
+            if mbase[i]:
+                currentInfo["MBase"] = mbase[i]
+
+        dicts = [i[1] for i in result]
+
+        if not prices_url:
+            return dicts, "", "", False
+
+        prices, name, url, new = downloader.get_prices(dates, prices_url)
+        for i in range(len(prices)):
+            if prices[i]:
+                currentInfo = result[i][1]
+                currentMBase = mbase[i]
+                currentInfo["Quot"] = prices[i]
+                currentInfo["AL"] = currentInfo["Quot"] * currentInfo["4L"]
+                currentInfo["ALN"] = currentInfo["AL"] / currentMBase
+                currentInfo["AS"] = currentInfo["Quot"] * currentInfo["4S"]
+                currentInfo["ASN"] = currentInfo["AS"] / currentMBase
+                currentInfo["Asum"] = currentInfo["AL"] + currentInfo["AS"]
+
+        return dicts, name, url, new
+
+
 
 
 

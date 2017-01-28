@@ -27,3 +27,12 @@ def flatten(l):
         l = list(itertools.chain.from_iterable(l))
 
     return l
+
+def split(l, value):
+    return [list(group) for key, group in itertools.groupby(l, lambda x: x == value) if not key]
+
+def myDivision(a, b):
+    if b != 0:
+        return a / b
+    else:
+        return None
