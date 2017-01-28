@@ -3,7 +3,7 @@ import re
 import datetime as dt
 import os
 import parser
-from requests import Session
+import requests
 import utils
 
 platformsFile = "platforms"
@@ -11,12 +11,10 @@ datesFile = "dates"
 pricesFile = "prices/pair_ids"
 patternsFile = "patterns"
 monetaryFile = "monetary"
+lastUpdate = "last_update"
 
 def read_url(url):
-    req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-    content = urlopen(req)
-
-    return str(content.read())
+    return requests.get(url).text
 
 def unique(list_):
     return [list_[2 * i] for i in range(0, len(list_) // 2)]
@@ -48,7 +46,7 @@ def get_current_actives(platform_code):
     return content
 
 def get_last_date():
-    content = read_url("http://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm")
+    content = read_url("http://www.cftc.gov/MarketReports/CommitmentsofTraders/index.html")
 
     date_match = re.search(r'Reports Dated (.*) - Current Disaggregated Reports:', content)
 
@@ -85,7 +83,7 @@ def get_net_prices(begin, end, pair_id):
     start_date = begin.strftime("%d/%m/%Y")
     end_date = end.strftime("%d/%m/%Y")
 
-    session = Session()
+    session = requests.Session()
 
     response = session.post(
         url='https://ru.investing.com/instruments/HistoricalDataAjax',
@@ -219,6 +217,17 @@ def update():
 
     if not os.path.exists("prices"):
         os.makedirs("prices")
+
+    if os.path.isfile(lastUpdate):
+        last_update_file = open(lastUpdate, "r")
+        last_update_date = parser.parse_isoformat_date(last_update_file.readline())
+        last_update_file.close()
+        if dt.date.today() == last_update_date:
+            return
+
+    last_update_file = open(lastUpdate, "w")
+    last_update_file.write(dt.date.today().isoformat())
+    last_update_file.close()
 
     monetary_file = open(monetaryFile, "a+")
     monetary_file.seek(0)

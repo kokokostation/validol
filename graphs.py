@@ -1,4 +1,4 @@
-import math
+from PyQt4 import QtGui, QtCore
 import pyqtgraph as pg
 import numpy as np
 
@@ -34,7 +34,29 @@ class ItemData():
     def __init__(self, symbol, brush):
         self.opts = {'symbol': symbol, 'brush': brush, 'pen': None, 'size': 20}
 
-def draw_graph(contents, title):
+def draw_axis(label, legend, plotItem, xs, data, color, lines, bars, mbars):
+    legend.addItem(ItemData(None, None), label)
+
+    for key in lines:
+        plot = pg.PlotDataItem(xs, [d[key] for d in data], pen={'color': colors[color], 'width': 2})
+        plotItem.addItem(plot)
+        legend.addItem(plot, key)
+        color += 1
+    if bars or mbars:
+        bar_width = 0.9 / max(len(bars), len(mbars))
+
+        for bs, sign in [(bars, 1), (mbars, -1)]:
+            for i in range(len(bs)):
+                key = bs[i]
+                barGraph = pg.BarGraphItem(x=xs + bar_width * i, height=[sign * d[key] for d in data], width=bar_width, brush=pg.mkBrush(colors[color] + (130,)), pen=pg.mkPen('k'))
+                plotItem.addItem(barGraph)
+                legend.addItem(ItemData('s', colors[color] + (200,)), key)
+
+                color += 1
+
+    return color
+
+def draw_graph(data, pattern, title):
     win = pg.GraphicsWindow()
     win.setWindowTitle(title)
 
@@ -42,48 +64,40 @@ def draw_graph(contents, title):
     plots = []
     twins = []
     legends = []
+    
+    xs = np.arange(len(data))
+    str_dates = [d["Date"].strftime("%d/%m/%Y") for d in data]
 
-    for data, scheme in contents:
-        xs = np.arange(len(data))
-        str_dates = [d["Date"].strftime("%d/%m/%Y") for d in data]
-        
-        for i in range(len(scheme)):
-            win.nextRow()
-            plots.append(MyPlot(str_dates))
-            win.addItem(item=plots[-1])
-            color = 0
-            legends.append(pg.LegendItem(offset=(50, 20)))
-            legends[-1].setParentItem(plots[-1])
-        
-            for key in scheme[i][0]:
-                legends[-1].addItem(plots[-1].plot(xs, [d[key] for d in data], pen={'color': colors[color], 'width': 2}), key)
-        
-                color += 1
-        
-            twins.append(pg.ViewBox())
-            if scheme[i][1]:
-                plots[-1].showAxis('right')
-                plots[-1].scene().addItem(twins[-1])
-                plots[-1].getAxis('right').linkToView(twins[-1])
-                twins[-1].setXLink(plots[-1])
+    for left, right in pattern:
+        color = 0
+        win.nextRow()
+        plots.append(MyPlot(str_dates))
+        win.addItem(item=plots[-1])
+        legends.append(pg.LegendItem(offset=(50, 20)))
+        legends[-1].setParentItem(plots[-1])
 
-                #сделать нормально
-                def updateViews():
-                    for p, last_plot in zip(twins, plots):
-                        p.setGeometry(last_plot.vb.sceneBoundingRect())
-                        p.linkedViewChanged(last_plot.vb, p.XAxis)
-        
-                updateViews()
-                plots[-1].vb.sigResized.connect(updateViews)
-        
-                bar_width = 0.9 / math.ceil(len(scheme[i][1]) / 2)
-        
-                for j in range(len(scheme[i][1])):
-                    key, sign = scheme[i][1][j]
-                    barGraph = pg.BarGraphItem(x=xs + bar_width * (j // 2), height=[sign * d[key] for d in data], width=bar_width, brush=pg.mkBrush(colors[color] + (130,)), pen=pg.mkPen('k'))
-                    twins[-1].addItem(barGraph)
-                    legends[-1].addItem(ItemData('s', colors[color] + (200,)), key)
-                    color += 1
+        color = draw_axis("left", legends[-1], plots[-1], xs, data, color, *left)
+
+        twins.append(pg.ViewBox())
+        if right:
+            plots[-1].showAxis('right')
+            plots[-1].scene().addItem(twins[-1])
+            plots[-1].getAxis('right').linkToView(twins[-1])
+            twins[-1].setXLink(plots[-1])
+            twins[-1].setAutoVisible(y=1)
+
+            #сделать нормально
+            def updateViews():
+                for p, last_plot in zip(twins, plots):
+                    #проблема
+                    p.enableAutoRange(y=True)
+                    p.setGeometry(last_plot.vb.sceneBoundingRect())
+                    p.linkedViewChanged(last_plot.vb, p.XAxis)
+
+            updateViews()
+            plots[-1].vb.sigResized.connect(updateViews)
+
+            draw_axis("right", legends[-1], twins[-1], xs, data, color, *right)
         
     for i in range(len(plots)):
         for j in range(i + 1, len(plots)):
@@ -112,6 +126,46 @@ def draw_graph(contents, title):
 
     win.scene().sigMouseMoved.connect(mouseMoved)
 
-    win.showMaximized()
-
     return win
+
+class CheckedGraph(QtGui.QWidget):
+    def __init__(self, data, pattern, title):
+        QtGui.QWidget.__init__(self)
+
+        self.setWindowTitle(title)
+        self.pattern = pattern
+        self.data = data
+
+        self.mainLayout = QtGui.QHBoxLayout(self)
+
+        self.choiceTree = QtGui.QTreeWidget()
+        for i in range(len(self.pattern)):
+            root = QtGui.QTreeWidgetItem([str(i)])
+            children = [QtGui.QTreeWidgetItem([label]) for label in ["left", "right"]]
+
+            for j in range(2):
+                types = [QtGui.QTreeWidgetItem([label]) for label in ["line", "bar", "-bar"]]
+                for k in range(3):
+                    for label in self.pattern[i][j][k]:
+                        item = QtGui.QTreeWidgetItem([label])
+                        item.setCheckState(0, QtCore.Qt.Checked)
+                        item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+                        types[k].addChild(item)
+                    children[j].addChild(types[k])
+                root.addChild(children[j])
+
+            self.choiceTree.addTopLevelItem(root)
+
+            root.setExpanded(True)
+            for i in range(root.childCount()):
+                root.child(i).setExpanded(True)
+                for j in range(root.child(i).childCount()):
+                    root.child(i).child(j).setExpanded(True)
+
+        self.graph = draw_graph(data, pattern, title)
+
+        self.mainLayout.addWidget(self.choiceTree, stretch=1)
+        self.mainLayout.addWidget(self.graph, stretch=8)
+
+        self.showMaximized()
+

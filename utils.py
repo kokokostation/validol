@@ -15,3 +15,8 @@ def takeClosest(list, date):
         return pos
     else:
         return pos - 1
+
+def add_to_dict(dict, key1, key2, value):
+    if key1 not in dict:
+        dict[key1] = {}
+    dict[key1][key2] = value
