@@ -3,12 +3,17 @@ import parser
 import tables
 import graphs
 import utils
+import downloader
 
 class Window(QtGui.QWidget):
-    def __init__(self):
+    def __init__(self, app):
         QtGui.QWidget.__init__(self)
 
         self.grabber = parser.Grabber()
+
+        self.app = app
+
+        self.setWindowTitle("BatyaGraphs")
 
         self.platforms = QtGui.QListWidget()
         self.platforms.itemClicked.connect(self.platform_chosen)
@@ -37,6 +42,9 @@ class Window(QtGui.QWidget):
 
         self.draw_table2 = QtGui.QPushButton('Draw table 2')
 
+        self.updateButton = QtGui.QPushButton('Update')
+        self.updateButton.clicked.connect(self.on_update)
+
         self.main_layout = QtGui.QVBoxLayout(self)
 
         self.lists_layout = QtGui.QHBoxLayout()
@@ -57,6 +65,7 @@ class Window(QtGui.QWidget):
         self.bottom_buttons_layout.addWidget(self.submit_active_button)
         self.bottom_buttons_layout.addWidget(self.draw_table1)
         self.bottom_buttons_layout.addWidget(self.draw_table2)
+        self.bottom_buttons_layout.addWidget(self.updateButton)
 
         self.main_layout.insertLayout(0, self.lists_layout)
         self.main_layout.insertLayout(1, self.bottom_buttons_layout)
@@ -131,11 +140,18 @@ class Window(QtGui.QWidget):
         self.table = tables.draw_table(data, parser.table1_labels, title)
         self.win = GraphDialog("table1", parser.table1_labels[1:], data, title, self.grabber)
 
+    def on_update(self):
+        self.updateButton.setText("Wait. Updating the data...")
+        self.app.processEvents()
+        downloader.update()
+        self.updateButton.setText("Update")
+
 class GraphDialog(QtGui.QWidget):
     def __init__(self, tableName, tableLabels, data, title, grabber):
         QtGui.QWidget.__init__(self)
 
-        self.setWindowTitle(tableName + " " + title)
+        title = tableName + " " + title
+        self.setWindowTitle(title)
 
         self.data = data
         self.title = title

@@ -11,7 +11,6 @@ datesFile = "dates"
 pricesFile = "prices/pair_ids"
 patternsFile = "patterns"
 monetaryFile = "monetary"
-lastUpdate = "last_update"
 
 def read_url(url):
     return requests.get(url).text
@@ -46,7 +45,7 @@ def get_current_actives(platform_code):
     return content
 
 def get_last_date():
-    content = read_url("http://www.cftc.gov/MarketReports/CommitmentsofTraders/index.html")
+    content = read_url("http://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm")
 
     date_match = re.search(r'Reports Dated (.*) - Current Disaggregated Reports:', content)
 
@@ -173,7 +172,7 @@ def get_net_monetary(cosd, coed):
     if cosd:
         cosd = (parser.parse_isoformat_date(cosd) + dt.timedelta(1)).isoformat()
 
-    session = Session()
+    session = requests.Session()
 
     response = session.get(
         url='https://fred.stlouisfed.org/graph/fredgraph.csv',
@@ -193,7 +192,6 @@ def get_net_monetary(cosd, coed):
     else:
         return response.text[response.text.find("\n") + 1:]
 
-
 def get_monetary(requestedDates):
     file = open(monetaryFile, "r")
     data = [line.split(",") for line in file.read().splitlines()]
@@ -208,26 +206,21 @@ def get_monetary(requestedDates):
 
     return result
 
-#даты при закачке смотреть отдельно для каждой платформы
-def update():
+def init():
+    ifNeedsUpdate = False
     if not os.path.exists("data"):
+        ifNeedsUpdate = True
         os.makedirs("data")
 
     os.chdir("data")
 
+    if ifNeedsUpdate:
+        update()
+
+#даты при закачке смотреть отдельно для каждой платформы
+def update():
     if not os.path.exists("prices"):
         os.makedirs("prices")
-
-    if os.path.isfile(lastUpdate):
-        last_update_file = open(lastUpdate, "r")
-        last_update_date = parser.parse_isoformat_date(last_update_file.readline())
-        last_update_file.close()
-        if dt.date.today() == last_update_date:
-            return
-
-    last_update_file = open(lastUpdate, "w")
-    last_update_file.write(dt.date.today().isoformat())
-    last_update_file.close()
 
     monetary_file = open(monetaryFile, "a+")
     monetary_file.seek(0)

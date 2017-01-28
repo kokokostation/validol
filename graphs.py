@@ -1,6 +1,7 @@
 from PyQt4 import QtGui, QtCore
 import pyqtgraph as pg
 import numpy as np
+import utils
 
 colors = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255), (255, 255, 0), (255, 0, 255), (0, 0, 255)]
 # colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
@@ -34,99 +35,111 @@ class ItemData():
     def __init__(self, symbol, brush):
         self.opts = {'symbol': symbol, 'brush': brush, 'pen': None, 'size': 20}
 
-def draw_axis(label, legend, plotItem, xs, data, color, lines, bars, mbars):
-    legend.addItem(ItemData(None, None), label)
+class BatyaGraph(pg.GraphicsWindow):
+    def __init__(self, data, pattern):
+        pg.GraphicsWindow.__init__(self)
 
-    for key in lines:
-        plot = pg.PlotDataItem(xs, [d[key] for d in data], pen={'color': colors[color], 'width': 2})
-        plotItem.addItem(plot)
-        legend.addItem(plot, key)
-        color += 1
-    if bars or mbars:
-        bar_width = 0.9 / max(len(bars), len(mbars))
+        self.widgets = []
+        self.pattern = utils.flatten(pattern)
 
-        for bs, sign in [(bars, 1), (mbars, -1)]:
-            for i in range(len(bs)):
-                key = bs[i]
-                barGraph = pg.BarGraphItem(x=xs + bar_width * i, height=[sign * d[key] for d in data], width=bar_width, brush=pg.mkBrush(colors[color] + (130,)), pen=pg.mkPen('k'))
-                plotItem.addItem(barGraph)
-                legend.addItem(ItemData('s', colors[color] + (200,)), key)
+        self.draw_graph(data, pattern)
 
-                color += 1
+    def fix(self, label, toDo):
+        plotItem, plot = self.widgets[self.pattern.index(label)]
+        if toDo == True:
+            plotItem.addItem(plot)
+        else:
+            plotItem.removeItem(plot)
 
-    return color
+    def draw_axis(self, label, legend, plotItem, xs, data, color, lines, bars, mbars):
+        legend.addItem(ItemData(None, None), label)
 
-def draw_graph(data, pattern, title):
-    win = pg.GraphicsWindow()
-    win.setWindowTitle(title)
+        for key in lines:
+            plot = pg.PlotDataItem(xs, [d[key] for d in data], pen={'color': colors[color], 'width': 2})
+            self.widgets.append((plotItem, plot))
+            plotItem.addItem(plot)
+            legend.addItem(plot, key)
+            color += 1
+        if bars or mbars:
+            bar_width = 0.9 / max(len(bars), len(mbars))
 
-    pg.setConfigOption('foreground', 'w')
-    plots = []
-    twins = []
-    legends = []
-    
-    xs = np.arange(len(data))
-    str_dates = [d["Date"].strftime("%d/%m/%Y") for d in data]
+            for bs, sign in [(bars, 1), (mbars, -1)]:
+                for i in range(len(bs)):
+                    key = bs[i]
+                    barGraph = pg.BarGraphItem(x=xs + bar_width * i, height=[sign * d[key] for d in data], width=bar_width, brush=pg.mkBrush(colors[color] + (130,)), pen=pg.mkPen('k'))
+                    self.widgets.append((plotItem, barGraph))
+                    plotItem.addItem(barGraph)
+                    legend.addItem(ItemData('s', colors[color] + (200,)), key)
 
-    for left, right in pattern:
-        color = 0
-        win.nextRow()
-        plots.append(MyPlot(str_dates))
-        win.addItem(item=plots[-1])
-        legends.append(pg.LegendItem(offset=(50, 20)))
-        legends[-1].setParentItem(plots[-1])
+                    color += 1
 
-        color = draw_axis("left", legends[-1], plots[-1], xs, data, color, *left)
+        return color
 
-        twins.append(pg.ViewBox())
-        if right:
-            plots[-1].showAxis('right')
-            plots[-1].scene().addItem(twins[-1])
-            plots[-1].getAxis('right').linkToView(twins[-1])
-            twins[-1].setXLink(plots[-1])
-            twins[-1].setAutoVisible(y=1)
+    def draw_graph(self, data, pattern):
+        pg.setConfigOption('foreground', 'w')
+        plots = []
+        twins = []
+        legends = []
 
-            #сделать нормально
-            def updateViews():
-                for p, last_plot in zip(twins, plots):
-                    #проблема
-                    p.enableAutoRange(y=True)
-                    p.setGeometry(last_plot.vb.sceneBoundingRect())
-                    p.linkedViewChanged(last_plot.vb, p.XAxis)
+        xs = np.arange(len(data))
+        str_dates = [d["Date"].strftime("%d/%m/%Y") for d in data]
 
-            updateViews()
-            plots[-1].vb.sigResized.connect(updateViews)
+        for left, right in pattern:
+            color = 0
+            self.nextRow()
+            plots.append(MyPlot(str_dates))
+            self.addItem(item=plots[-1])
+            legends.append(pg.LegendItem(offset=(50, 20)))
+            legends[-1].setParentItem(plots[-1])
 
-            draw_axis("right", legends[-1], twins[-1], xs, data, color, *right)
-        
-    for i in range(len(plots)):
-        for j in range(i + 1, len(plots)):
-            plots[i].setXLink(plots[j])
+            color = self.draw_axis("left", legends[-1], plots[-1], xs, data, color, *left)
 
-    vLines = []
-    hLines = []
-    labels = []
-    for p in plots:
-        vLines.append(pg.InfiniteLine(angle=90, movable=False, hoverPen=pg.mkPen('w')))
-        hLines.append(pg.InfiniteLine(angle=0, movable=False, hoverPen=pg.mkPen('w')))
-        labels.append(pg.TextItem(anchor=(0, 1)))
-        p.addItem(vLines[-1], ignoreBounds=True)
-        p.addItem(hLines[-1], ignoreBounds=True)
-        p.addItem(labels[-1], ignoreBounds=True)
+            twins.append(pg.ViewBox())
+            if right:
+                plots[-1].showAxis('right')
+                plots[-1].scene().addItem(twins[-1])
+                plots[-1].getAxis('right').linkToView(twins[-1])
+                twins[-1].setXLink(plots[-1])
+                twins[-1].setAutoVisible(y=1)
 
-    def mouseMoved(evt):
+                #сделать нормально
+                def updateViews():
+                    for p, last_plot in zip(twins, plots):
+                        p.enableAutoRange(y=True)
+                        p.setGeometry(last_plot.vb.sceneBoundingRect())
+                        p.linkedViewChanged(last_plot.vb, p.XAxis)
+
+                updateViews()
+                plots[-1].vb.sigResized.connect(updateViews)
+
+                self.draw_axis("right", legends[-1], twins[-1], xs, data, color, *right)
+
         for i in range(len(plots)):
-            mousePoint = plots[i].vb.mapSceneToView(evt)
-            x, y = mousePoint.x(), mousePoint.y()
-            vLines[i].setPos(x)
-            hLines[i].setPos(y)
-            labels[i].setPos(x, plots[i].vb.viewRange()[1][0])
-            if 0 <= int(x) < len(str_dates):
-                labels[i].setText(str_dates[int(x)])
+            for j in range(i + 1, len(plots)):
+                plots[i].setXLink(plots[j])
 
-    win.scene().sigMouseMoved.connect(mouseMoved)
+        vLines = []
+        hLines = []
+        labels = []
+        for p in plots:
+            vLines.append(pg.InfiniteLine(angle=90, movable=False, hoverPen=pg.mkPen('w')))
+            hLines.append(pg.InfiniteLine(angle=0, movable=False, hoverPen=pg.mkPen('w')))
+            labels.append(pg.TextItem(anchor=(0, 1)))
+            p.addItem(vLines[-1], ignoreBounds=True)
+            p.addItem(hLines[-1], ignoreBounds=True)
+            p.addItem(labels[-1], ignoreBounds=True)
 
-    return win
+        def mouseMoved(evt):
+            for i in range(len(plots)):
+                mousePoint = plots[i].vb.mapSceneToView(evt)
+                x, y = mousePoint.x(), mousePoint.y()
+                vLines[i].setPos(x)
+                hLines[i].setPos(y)
+                labels[i].setPos(x, plots[i].vb.viewRange()[1][0])
+                if 0 <= int(x) < len(str_dates):
+                    labels[i].setText(str_dates[int(x)])
+
+        self.scene().sigMouseMoved.connect(mouseMoved)
 
 class CheckedGraph(QtGui.QWidget):
     def __init__(self, data, pattern, title):
@@ -134,7 +147,7 @@ class CheckedGraph(QtGui.QWidget):
 
         self.setWindowTitle(title)
         self.pattern = pattern
-        self.data = data
+        self.graph = BatyaGraph(data, pattern)
 
         self.mainLayout = QtGui.QHBoxLayout(self)
 
@@ -161,11 +174,12 @@ class CheckedGraph(QtGui.QWidget):
                 root.child(i).setExpanded(True)
                 for j in range(root.child(i).childCount()):
                     root.child(i).child(j).setExpanded(True)
-
-        self.graph = draw_graph(data, pattern, title)
+        self.choiceTree.itemChanged.connect(self.fix)
 
         self.mainLayout.addWidget(self.choiceTree, stretch=1)
         self.mainLayout.addWidget(self.graph, stretch=8)
 
         self.showMaximized()
 
+    def fix(self, item, i):
+        self.graph.fix(item.text(0), item.checkState(0) == QtCore.Qt.Checked)

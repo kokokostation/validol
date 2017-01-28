@@ -1,11 +1,11 @@
 import sys
 from PyQt4 import QtGui, QtCore
 from interface import Window
-from downloader import update
+from downloader import init
 
-update()
+init()
 
 app = QtGui.QApplication(sys.argv)
-window = Window()
+window = Window(app)
 window.show()
 sys.exit(app.exec_())
