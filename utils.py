@@ -1,7 +1,10 @@
 from bisect import bisect_left
+import datetime as dt
 import itertools
 
-def takeClosest(l, date):
+__all__ = ["take_closest", "add_to_dict", "flatten", "split", "my_division", "parse_isoformat_date"]
+
+def take_closest(l, date):
     pos = bisect_left(l, date)
 
     if pos == 0:
@@ -31,8 +34,11 @@ def flatten(l):
 def split(l, value):
     return [list(group) for key, group in itertools.groupby(l, lambda x: x == value) if not key]
 
-def myDivision(a, b):
+def my_division(a, b):
     if b != 0:
         return a / b
     else:
         return None
+
+def parse_isoformat_date(date):
+    return dt.datetime.strptime(date, "%Y-%m-%d").date()

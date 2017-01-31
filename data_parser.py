@@ -1,15 +1,10 @@
-import urllib.request as ul
 import re
 import datetime as dt
 import os
 import downloader
-import numpy as np
 import utils
 
-#ice us bug
-
-def parse_isoformat_date(date):
-    return dt.datetime.strptime(date, "%Y-%m-%d").date()
+__all__ = ["table1_labels", "table2_labels", "table1_key_types", "table2_key_types", "places_num", "get_platforms", "get_cached_prices", "Grabber"]
 
 def parse_active(entry):
     entry = entry.replace(",", "")
@@ -29,13 +24,13 @@ def parse_active(entry):
     return name, fields
 
 def get_actives_from_page(content):
-    start, end = re.search(r'<!--ih:includeHTML file=\".*\"-->[ \t]*', content), re.search(r'<!--/ih:includeHTML-->', content)
+    start, end = re.search(r'<!--ih:includeHTML file=\".*\"-->[\t\\rnb\' ,]*', content), re.search(r'<!--/ih:includeHTML-->', content)
     if start and end:
-        content = re.compile(r'\\n[\', b\\tr]*\\n[\', b]*').split(content[start.end():end.start()])
+        activesList = list(filter(lambda s: '-' in s, re.compile(r'([\', b\\r]*\\n){2,3}[\', b]*').split(content[start.end():end.start()])))
     else:
         return []
 
-    return dict(map(parse_active, content[:-1]))
+    return dict(map(parse_active, activesList))
 
 def get_all_actives(platform_code):
     result = []
@@ -44,7 +39,7 @@ def get_all_actives(platform_code):
         actives = get_actives_from_page(file.read())
         file.close()
         if actives:
-            result.append((parse_isoformat_date(file_name), actives))
+            result.append((utils.parse_isoformat_date(file_name), actives))
 
     return result
 
@@ -54,35 +49,34 @@ def round_dict(dict_, precision=3):
             dict_[key] = round(dict_[key], precision)
     return dict_
 
-#division by zero
 def from_fields(fields):
     data = {"OI": fields["OI"],
             "NCL": fields["NCL"],
             "NCS": fields["NCS"],
             "NCCP": fields["NCL"] - fields["NCS"],
-            "NCB": utils.myDivision(100 * fields["OI"], (fields["OI"] + fields["NCL"])),
+            "NCB": utils.my_division(100 * fields["OI"], (fields["OI"] + fields["NCL"])),
             "CL": fields["CL"],
             "CS": fields["CS"],
             "CCP": fields["CL"] - fields["CS"],
-            "CB": utils.myDivision(100 * fields["CL"], (fields["CL"] + fields["CS"])),
+            "CB": utils.my_division(100 * fields["CL"], (fields["CL"] + fields["CS"])),
             "NRL": fields["NRL"],
             "NRS": fields["NRS"],
             "NRCP": fields["NRL"] - fields["NRS"],
-            "NRB": utils.myDivision(100 * fields["NRL"], (fields["NRL"] + fields["NRS"])),
+            "NRB": utils.my_division(100 * fields["NRL"], (fields["NRL"] + fields["NRS"])),
             "4L%": fields["4L%"],
             "4S%": fields["4S%"],
             "8L%": fields["8L%"],
             "8S%": fields["8S%"],
-            "4L%/4S%": utils.myDivision(fields["4L%"], fields["4S%"]),
-            "L%/S%": (utils.myDivision(fields["4L%"], fields["4S%"]) + utils.myDivision(fields["8L%"], fields["8S%"])) / 2,
+            "4L%/4S%": utils.my_division(fields["4L%"], fields["4S%"]),
+            "L%/S%": (utils.my_division(fields["4L%"], fields["4S%"]) + utils.my_division(fields["8L%"], fields["8S%"])) / 2,
             "4L": (fields["NCL"] + fields["CL"] + fields["NRL"]) * fields["4L%"] / 100,
             "4S": (fields["NCS"] + fields["CS"] + fields["NRS"]) * fields["4S%"] / 100,
             "8L": (fields["NCL"] + fields["CL"] + fields["NRL"]) * fields["8L%"] / 100,
             "8S": (fields["NCS"] + fields["CS"] + fields["NRS"]) * fields["8S%"] / 100,
             }
 
-    extra = {"4L/4S": utils.myDivision(data["4L"], data["4S"]),
-             "(4L/4S + 8L/8S)/2": (utils.myDivision(data["4L"], data["4S"]) + utils.myDivision(data["8L"], data["8S"])) / 2
+    extra = {"4L/4S": utils.my_division(data["4L"], data["4S"]),
+             "(4L/4S + 8L/8S)/2": (utils.my_division(data["4L"], data["4S"]) + utils.my_division(data["8L"], data["8S"])) / 2
             }
 
     data.update(extra)
@@ -98,8 +92,22 @@ table1_key_types = [dt.date] + ([float] * (len(table1_labels) - 1))
 table2_labels = ["Date", "4L", "4S", "Quot", "AL", "AS", "4L/4S", "MBase"]
 table2_key_types = [dt.date] + ([float] * (len(table2_labels) - 1))
 
+def places_num(bars, mbars):
+    places = [b for _, b in bars] + [b for _, b in mbars]
+    if places:
+        return max(places) + 1
+    else:
+        return None
+
 def parse_axis(axis):
-    return [part.split("&") if part else [] for part in axis.split("#")]
+    return [list(map(parse_item, part.split("&"))) if part else [] for part in axis.split("#")]
+
+def parse_item(item):
+    if '^' in item:
+        name, place = item.split("^")
+        return name, int(place)
+    else:
+        return item
 
 def parse_pattern(line):
     items = line.split("\t")
@@ -111,8 +119,12 @@ def parse_pattern(line):
 
     return table, title, pattern
 
+def pack_bar(bar):
+    name, place = bar
+    return name + "^" + str(place)
+
 def pack_axis(lines, bars, mbars):
-    return "&".join(lines) + "#" + "&".join(bars) + "#" + "&".join(mbars)
+    return "&".join(lines) + "#" + "&".join(map(pack_bar, bars)) + "#" + "&".join(map(pack_bar, mbars))
 
 def pack_pattern(table, title, pattern):
     result = table + "\t" + title
@@ -176,7 +188,8 @@ class Grabber:
         self.patterns = get_patterns()
 
     def get_actives(self, platform_code):
-        self.actives[platform_code] = get_all_actives(platform_code)
+        if platform_code not in self.actives:
+            self.actives[platform_code] = get_all_actives(platform_code)
         return list(set([key for date, active in self.actives[platform_code] for key in active.keys()]))
 
     def consolidate(self, platform, active, prices_url):

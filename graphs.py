@@ -1,10 +1,14 @@
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 import pyqtgraph as pg
-import numpy as np
+import math
 import utils
+import data_parser
+import trees
+
+__all__ = ["CheckedGraph", "colors", "qcolors"]
 
 colors = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255), (255, 255, 0), (255, 0, 255), (0, 0, 255)]
-# colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+qcolors = ["black", "cyan", "red", "magenta", "green", "yellow"]
 
 class MyAxisItem(pg.AxisItem):
     def __init__(self, str_dates, **kargs):
@@ -40,7 +44,7 @@ class Graph(pg.GraphicsWindow):
         pg.GraphicsWindow.__init__(self)
 
         self.widgets = []
-        self.pattern = utils.flatten(pattern)
+        self.pattern = list(map(str, utils.flatten(pattern)))
 
         self.draw_graph(data, pattern)
 
@@ -54,12 +58,11 @@ class Graph(pg.GraphicsWindow):
                 plotItem.removeItem(plot)
 
     def draw_axis(self, label, legend, plotItem, data, color, lines, bars, mbars):
-        legend.addItem(ItemData(None, None), label)
+        legend.addItem(ItemData(None, None), "____" + label + "____")
 
         #code duplication
         for key in lines:
             plots = []
-
             for chain in utils.split([i if key in data[i] else None for i in range(len(data))], None):
                 if chain:
                     plots.append(pg.PlotDataItem(chain, [data[i][key] for i in chain], pen={'color': colors[color], 'width': 2}))
@@ -70,17 +73,22 @@ class Graph(pg.GraphicsWindow):
                 legend.addItem(plots[0], key)
             color += 1
 
-        if bars or mbars:
-            bar_width = 0.9 / max(len(bars), len(mbars))
-            #sequence of bars
+        placesNum = data_parser.places_num(bars, mbars)
+        if placesNum:
+            bar_width = 0.9 / placesNum
             for bs, sign in [(bars, 1), (mbars, -1)]:
-                for i in range(len(bs)):
-                    key = bs[i]
+                for bar in bs:
+                    key, place = bar
                     barGraphs = []
 
                     for chain in utils.split([i if key in data[i] else None for i in range(len(data))], None):
                         if chain:
-                            barGraphs.append(pg.BarGraphItem(x=[c + bar_width * i for c in chain], height=[sign * data[i][key] for i in chain],
+                            ys = [data[i][key] for i in chain]
+                            positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) / 2
+                            if (positive and sign == -1) or (not positive and sign == 1):
+                                ys = [-y for y in ys]
+
+                            barGraphs.append(pg.BarGraphItem(x=[c + bar_width * place for c in chain], height=ys,
                                                              width=bar_width, brush=pg.mkBrush(colors[color] + (130,)), pen=pg.mkPen('k')))
                             plotItem.addItem(barGraphs[-1])
 
@@ -103,7 +111,7 @@ class Graph(pg.GraphicsWindow):
             self.nextRow()
             plots.append(MyPlot(str_dates))
             self.addItem(item=plots[-1])
-            legends.append(pg.LegendItem(offset=(50, 20)))
+            legends.append(pg.LegendItem(offset=(100, 20)))
             legends[-1].setParentItem(plots[-1])
 
             color = self.draw_axis("left", legends[-1], plots[-1], data, color, *left)
@@ -163,34 +171,12 @@ class CheckedGraph(QtGui.QWidget):
         QtGui.QWidget.__init__(self)
 
         self.setWindowTitle(title)
-        self.pattern = pattern
         self.graph = Graph(data, pattern)
 
         self.mainLayout = QtGui.QHBoxLayout(self)
 
         self.choiceTree = QtGui.QTreeWidget()
-        for i in range(len(self.pattern)):
-            root = QtGui.QTreeWidgetItem([str(i)])
-            children = [QtGui.QTreeWidgetItem([label]) for label in ["left", "right"]]
-
-            for j in range(2):
-                types = [QtGui.QTreeWidgetItem([label]) for label in ["line", "bar", "-bar"]]
-                for k in range(3):
-                    for label in self.pattern[i][j][k]:
-                        item = QtGui.QTreeWidgetItem([label])
-                        item.setCheckState(0, QtCore.Qt.Checked)
-                        item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-                        types[k].addChild(item)
-                    children[j].addChild(types[k])
-                root.addChild(children[j])
-
-            self.choiceTree.addTopLevelItem(root)
-
-            root.setExpanded(True)
-            for i in range(root.childCount()):
-                root.child(i).setExpanded(True)
-                for j in range(root.child(i).childCount()):
-                    root.child(i).child(j).setExpanded(True)
+        trees.draw_pattern(self.choiceTree, pattern, True)
         self.choiceTree.itemChanged.connect(self.fix)
 
         self.mainLayout.addWidget(self.choiceTree, stretch=1)

@@ -1,10 +1,10 @@
-from urllib.request import Request, urlopen
 import re
 import datetime as dt
 import os
-import parser
 import requests
 import utils
+
+__all__ = ["platformsFile", "datesFile", "pricesFile", "patternsFile", "monetaryFile", "get_prices", "get_mbase", "init", "update"]
 
 platformsFile = "platforms"
 datesFile = "dates"
@@ -13,7 +13,7 @@ patternsFile = "patterns"
 monetaryFile = "monetary"
 
 def read_url(url):
-    return requests.get(url).text
+    return requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}).text
 
 def unique(list_):
     return [list_[2 * i] for i in range(0, len(list_) // 2)]
@@ -54,6 +54,7 @@ def get_last_date():
 def normalize_url(url):
     return re.sub(r'https://[^.]*\.', r'https://www.', url)
 
+#different urls
 def get_active_info(url):
     new = False
     file = open(pricesFile, "a+")
@@ -103,7 +104,7 @@ def get_net_prices(begin, end, pair_id):
     parsed_values = [n for n in re.findall(r'<td.*>(\d+\.\d*|\d+)</td>', response.text)]
 
     result = ""
-    for i in range(len(parsed_dates) - 1, 0, -1):
+    for i in range(len(parsed_dates) - 1, -1, -1):
         result += parsed_dates[i].isoformat() + " " + parsed_values[4 * i] + "\n"
 
     return result
@@ -116,7 +117,7 @@ def get_prices(dates, url):
     content = ""
     if not new:
         file = open(filePath, "r")
-        begin, end = list(map(parser.parse_isoformat_date, file.readline().strip().split(" ")))
+        begin, end = list(map(utils.parse_isoformat_date, file.readline().strip().split(" ")))
 
         if begin > dates[0] or dates[-1] > end:
             body = file.read()
@@ -147,7 +148,7 @@ def get_prices(dates, url):
     date_price = {}
     for line in content.splitlines():
         date, price = line.split(" ")
-        date = parser.parse_isoformat_date(date)
+        date = utils.parse_isoformat_date(date)
         if dates[0] <= date <= dates[-1]:
             date_price[date] = float(price)
 
@@ -162,7 +163,7 @@ def get_prices(dates, url):
 
 def get_net_mbase(cosd, coed):
     if cosd:
-        cosd = (parser.parse_isoformat_date(cosd) + dt.timedelta(1)).isoformat()
+        cosd = (utils.parse_isoformat_date(cosd) + dt.timedelta(1)).isoformat()
 
     session = requests.Session()
 
@@ -189,12 +190,12 @@ def get_mbase(requestedDates):
     data = [line.split(",") for line in file.read().splitlines()]
     file.close()
 
-    dates = [parser.parse_isoformat_date(date) for date, _ in data]
+    dates = [utils.parse_isoformat_date(date) for date, _ in data]
     values = [int(value) for _, value in data]
 
     result = []
     for date in requestedDates:
-        closest = utils.takeClosest(dates, date)
+        closest = utils.take_closest(dates, date)
         if abs(dates[closest].toordinal() - date.toordinal()) <= 7:
             result.append(values[closest])
         else:
@@ -210,14 +211,14 @@ def init():
 
     os.chdir("data")
 
+    if not os.path.exists("prices"):
+        os.makedirs("prices")
+
     if ifNeedsUpdate:
         update()
 
 #даты при закачке смотреть отдельно для каждой платформы
 def update():
-    if not os.path.exists("prices"):
-        os.makedirs("prices")
-
     monetary_file = open(monetaryFile, "a+")
     monetary_file.seek(0)
 
@@ -236,7 +237,7 @@ def update():
     last_net_date = get_last_date()
     written_dates = dates_file.read().splitlines()
 
-    if written_dates and parser.parse_isoformat_date(written_dates[-1]) == last_net_date:
+    if written_dates and utils.parse_isoformat_date(written_dates[-1]) == last_net_date:
         return
 
     platforms_file = open(platformsFile, "w")

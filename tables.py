@@ -1,6 +1,7 @@
 import numpy as np
 import pyqtgraph as pg
-import itertools
+
+__all__ = ["draw_table"]
 
 def draw_table(data, keys, key_types, title):
     table = pg.TableWidget()

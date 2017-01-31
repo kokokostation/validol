@@ -1,17 +1,21 @@
-from PyQt4 import QtGui, QtCore
-import parser
+from PyQt5 import QtGui, QtCore
+import data_parser
 import tables
 import graphs
 import utils
+import trees
 import downloader
 from bisect import bisect_left
 import datetime as dt
+from functools import partial
+
+__all__ = ["Window", "draw_pattern"]
 
 class Window(QtGui.QWidget):
     def __init__(self, app):
         QtGui.QWidget.__init__(self)
 
-        self.grabber = parser.Grabber()
+        self.grabber = data_parser.Grabber()
 
         self.app = app
 
@@ -19,7 +23,7 @@ class Window(QtGui.QWidget):
 
         self.platforms = QtGui.QListWidget()
         self.platforms.itemClicked.connect(self.platform_chosen)
-        for code, name in parser.get_platforms():
+        for code, name in data_parser.get_platforms():
             wi = QtGui.QListWidgetItem(name)
             wi.setToolTip(code)
             self.platforms.addItem(wi)
@@ -27,7 +31,7 @@ class Window(QtGui.QWidget):
         self.actives = QtGui.QListWidget()
 
         self.cached_prices = QtGui.QListWidget()
-        for url, name in parser.get_cached_prices():
+        for url, name in data_parser.get_cached_prices():
             wi = QtGui.QListWidgetItem(name)
             wi.setToolTip(url)
             self.cached_prices.addItem(wi)
@@ -144,10 +148,10 @@ class Window(QtGui.QWidget):
         data, name, url, new = self.grabber.consolidate(chosen_platform, chosen_active, url_widget.text())
         self.add_price(new, url, name)
 
-        title = parser.title(chosen_platform_name, chosen_active, name)
+        title = data_parser.title(chosen_platform_name, chosen_active, name)
 
-        self.tables.append(tables.draw_table(data, parser.table1_labels, parser.table1_key_types, title))
-        self.graphs.append(GraphDialog(table, parser.table1_labels[1:], data, title, self.grabber))
+        self.tables.append(tables.draw_table(data, data_parser.table1_labels, data_parser.table1_key_types, title))
+        self.graphs.append(GraphDialog(table, data_parser.table1_labels[1:], data, title, self.grabber))
 
     def table2(self):
         actives = "ABCD"
@@ -160,19 +164,19 @@ class Window(QtGui.QWidget):
             chosen_platform, chosen_platform_name, chosen_active = self.chosen_actives[i]
             info.append(self.grabber.consolidate(chosen_platform, chosen_active, url))
             data, name, url, new = info[-1]
-            titles.append(parser.title(chosen_platform_name, chosen_active, name))
+            titles.append(data_parser.title(chosen_platform_name, chosen_active, name))
             title = actives[i] + ": " + titles[-1]
             denotions.append(title)
-            self.tables.append(tables.draw_table(data, parser.table2_labels, parser.table2_key_types, title))
+            self.tables.append(tables.draw_table(data, data_parser.table2_labels, data_parser.table2_key_types, title))
             self.add_price(new, url, name)
 
         labels = []
-        primary_labels = parser.table2_labels[1:]
+        primary_labels = data_parser.table2_labels[1:]
         primary_labels.extend(["ALN", "ASN"])
         allDates = sorted(list(set([d["Date"] for data, _, _, _ in info for d in data])))
         allData = [{"Date": date} for date in allDates]
         for i in range(len(info)):
-            for label in parser.table2_labels[1:]:
+            for label in primary_labels:
                 labels.append(label + " " + actives[i])
             for data in info[i][0]:
                 j = bisect_left(allDates, data["Date"])
@@ -218,6 +222,7 @@ class GraphDialog(QtGui.QWidget):
         self.buttons_layout = QtGui.QHBoxLayout()
         self.labels_layout = QtGui.QVBoxLayout()
         self.labels_submit_layout = QtGui.QVBoxLayout()
+        self.patternChoiceLayout = QtGui.QVBoxLayout()
 
         if "\n" in title:
             denotions = QtGui.QTextEdit()
@@ -232,6 +237,12 @@ class GraphDialog(QtGui.QWidget):
         if tableName in grabber.patterns:
             for graphName in grabber.patterns[tableName].keys():
                 self.pattern_list.addItem(graphName)
+        self.pattern_list.itemDoubleClicked.connect(self.draw_item)
+
+        self.patternTree = QtGui.QTreeWidget()
+
+        self.patternChoiceLayout.addWidget(self.pattern_list)
+        self.patternChoiceLayout.addWidget(self.patternTree)
 
         self.graphsTree = QtGui.QTreeWidget()
 
@@ -248,7 +259,7 @@ class GraphDialog(QtGui.QWidget):
 
         self.upper_layout.insertLayout(0, self.labels_submit_layout)
         self.upper_layout.addWidget(self.graphsTree)
-        self.upper_layout.addWidget(self.pattern_list)
+        self.upper_layout.insertLayout(2, self.patternChoiceLayout)
 
         self.submitPattern = QtGui.QPushButton('Submit pattern')
         self.submitPattern.clicked.connect(self.submit_pattern)
@@ -258,6 +269,8 @@ class GraphDialog(QtGui.QWidget):
 
         self.buttons_layout.addWidget(self.submitPattern)
         self.buttons_layout.addWidget(self.drawGraph)
+
+        self.graphs = []
 
         self.labels = []
 
@@ -274,11 +287,23 @@ class GraphDialog(QtGui.QWidget):
             buttonGroups = []
             for t in [[0, 1], [2, 3, 4]]:
                 buttonGroups.append(MyButtonGroup())
-                for i in t:
-                    buttonGroups[-1].add_item(checkBoxes[i])
-                    lastLabel.addWidget(checkBoxes[i])
+                for j in t:
+                    buttonGroups[-1].add_item(checkBoxes[j])
+                    lastLabel.addWidget(checkBoxes[j])
 
-            self.labels.append((textBox, buttonGroups, checkBoxes))
+            comboBox = QtGui.QComboBox()
+            model = comboBox.model()
+            for color in graphs.qcolors:
+                item = QtGui.QStandardItem(color)
+                item.setBackground(QtGui.QColor(color))
+                model.appendRow(item)
+
+            comboBox.setStyleSheet("color: white; background-color: " + graphs.qcolors[0])
+            comboBox.currentIndexChanged.connect(partial(self.indexChanged, comboBox))
+
+            lastLabel.addWidget(comboBox)
+
+            self.labels.append((textBox, buttonGroups, checkBoxes, comboBox))
 
             self.labels_layout.insertLayout(i, lastLabel)
 
@@ -290,43 +315,50 @@ class GraphDialog(QtGui.QWidget):
 
         self.showMaximized()
 
+    def draw_item(self, item):
+        pattern = self.grabber.patterns[self.tableName][item.text()]
+        self.patternTree.clear()
+        trees.draw_pattern(self.patternTree, pattern)
+
+    def indexChanged(self, comboBox, color):
+        comboBox.setStyleSheet("color: white; background-color: " + graphs.qcolors[color])
+
     def draw_graph(self):
-        self.graph = graphs.CheckedGraph(self.data, self.grabber.patterns[self.tableName][self.pattern_list.currentItem().text()], self.title)
+        self.graphs.append(graphs.CheckedGraph(self.data, self.grabber.patterns[self.tableName][self.pattern_list.currentItem().text()], self.title))
 
     def submit_graph(self):
-        root = QtGui.QTreeWidgetItem([str(len(self.currentPattern))])
-        children = [QtGui.QTreeWidgetItem([label]) for label in ["left", "right"]]
-        types = [[QtGui.QTreeWidgetItem([label]) for label in ["line", "bar", "-bar"]] for _ in range(len(children))]
+        places = []
 
         graph = [[[] for _ in range(3)] for _ in range(2)]
-        for textBox, buttonGroups, _ in self.labels:
+        for textBox, buttonGroups, checkBoxes, comboBox in self.labels:
             lr, t = buttonGroups[0].checked_button(), buttonGroups[1].checked_button()
             if lr and t:
-                graph[lr[0]][t[0]].append(textBox.text())
+                color = comboBox.currentText()
+                toAppend = textBox.text()
+                if t[0] != 0:
+                    if color in places:
+                        toAppend = textBox.text(), places.index(color)
+                    else:
+                        toAppend = textBox.text(), len(places)
+                        places.append(color)
 
-                types[lr[0]][t[0]].addChild(QtGui.QTreeWidgetItem([textBox.text() + " " + t[1]]))
+                graph[lr[0]][t[0]].append(toAppend)
 
         self.currentPattern.append(graph)
 
-        for i in range(len(children)):
-            for j in range(len(types[i])):
-                children[i].addChild(types[i][j])
+        trees.add_root(self.graphsTree, self.currentPattern[-1], str(len(self.currentPattern)))
 
-        for item in children:
-            root.addChild(item)
-
-        self.graphsTree.addTopLevelItem(root)
-        root.setExpanded(True)
-        for i in range(root.childCount()):
-            root.child(i).setExpanded(True)
-            for j in range(root.child(i).childCount()):
-                root.child(i).child(j).setExpanded(True)
+        self.clear_comboboxes()
         self.clear_checkboxes()
 
     def clear_checkboxes(self):
-        for _, _, checkBoxes in self.labels:
+        for _, _, checkBoxes, _ in self.labels:
             for cb in checkBoxes:
                 cb.setChecked(False)
+
+    def clear_comboboxes(self):
+        for _, _, _, comboBox in self.labels:
+            comboBox.setCurrentIndex(0)
 
     def submit_pattern(self):
         patternTitle = self.patternTitle.text()
@@ -337,9 +369,11 @@ class GraphDialog(QtGui.QWidget):
 
         utils.add_to_dict(self.grabber.patterns, self.tableName, patternTitle, self.currentPattern)
 
-        parser.add_pattern(self.tableName, patternTitle, self.currentPattern)
+        data_parser.add_pattern(self.tableName, patternTitle, self.currentPattern)
 
         self.clear_checkboxes()
+        self.clear_comboboxes()
+        self.patternTitle.clear()
 
         self.graphsTree.clear()
         self.currentPattern = []
