@@ -1,6 +1,7 @@
 from bisect import bisect_left
 import datetime as dt
 import itertools
+import heapq
 
 __all__ = ["take_closest", "add_to_dict", "flatten", "split", "my_division", "parse_isoformat_date"]
 
@@ -42,3 +43,28 @@ def my_division(a, b):
 
 def parse_isoformat_date(date):
     return dt.datetime.strptime(date, "%Y-%m-%d").date()
+
+def zip_map(funcList, values):
+    return list(map(lambda f, x: f(x), funcList, values))
+
+def merge_lists(lists):
+    heads = [(lists[i][0], i) for i in range(len(lists))]
+    indexes = [[] for _ in range(len(lists))]
+    poses = [1] * len(lists)
+    result = []
+    heapq.heapify(heads)
+    while len(heads):
+        val, index = heapq.heappop(heads)
+        pos = poses[index]
+        if pos != len(lists[index]):
+            heapq.heappush(heads, lists[index][pos])
+            pos += 1
+
+        indexPos = len(result) - 1
+        if not result or val != result[-1]:
+            result.append(val)
+            indexPos += 1
+
+        indexes[index] = indexPos
+
+    return result, indexes

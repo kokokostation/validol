@@ -3,14 +3,9 @@ import datetime as dt
 import os
 import requests
 import utils
+import filenames
 
-__all__ = ["platformsFile", "datesFile", "pricesFile", "patternsFile", "monetaryFile", "get_prices", "get_mbase", "init", "update"]
-
-platformsFile = "platforms"
-datesFile = "dates"
-pricesFile = "prices/pair_ids"
-patternsFile = "patterns"
-monetaryFile = "monetary"
+__all__ = ["get_prices", "get_mbase", "init", "update"]
 
 def read_url(url):
     return requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}).text
@@ -57,7 +52,7 @@ def normalize_url(url):
 #different urls
 def get_active_info(url):
     new = False
-    file = open(pricesFile, "a+")
+    file = open(filenames.pricesFile, "a+")
     file.seek(0)
 
     pair_ids = []
@@ -159,7 +154,7 @@ def get_prices(dates, url):
         else:
             result.append(None)
 
-    return result, name, url, new
+    return result
 
 def get_net_mbase(cosd, coed):
     if cosd:
@@ -186,7 +181,7 @@ def get_net_mbase(cosd, coed):
         return response.text[response.text.find("\n") + 1:]
 
 def get_mbase(requestedDates):
-    file = open(monetaryFile, "r")
+    file = open(filenames.monetaryFile, "r")
     data = [line.split(",") for line in file.read().splitlines()]
     file.close()
 
@@ -202,67 +197,3 @@ def get_mbase(requestedDates):
             result.append(None)
 
     return result
-
-def init():
-    ifNeedsUpdate = False
-    if not os.path.exists("data"):
-        ifNeedsUpdate = True
-        os.makedirs("data")
-
-    os.chdir("data")
-
-    if not os.path.exists("prices"):
-        os.makedirs("prices")
-
-    if ifNeedsUpdate:
-        update()
-
-#даты при закачке смотреть отдельно для каждой платформы
-def update():
-    monetary_file = open(monetaryFile, "a+")
-    monetary_file.seek(0)
-
-    content = monetary_file.read()
-    if content:
-        last_date = content.splitlines()[-1].split(",")[0]
-    else:
-        last_date = ""
-    monetary_file.write(get_net_mbase(last_date, dt.date.today().isoformat()))
-
-    monetary_file.close()
-
-    dates_file = open(datesFile, "a+")
-    dates_file.seek(0)
-
-    last_net_date = get_last_date()
-    written_dates = dates_file.read().splitlines()
-
-    if written_dates and utils.parse_isoformat_date(written_dates[-1]) == last_net_date:
-        return
-
-    platforms_file = open(platformsFile, "w")
-    net_platforms = get_platforms()
-    for code, name in net_platforms:
-        if not os.path.exists(code):
-            os.makedirs(code)
-        platforms_file.write(code + " " + name + "\n")
-    platforms_file.close()
-
-    dates = get_dates(last_net_date)
-    all_dates = get_net_dates()
-    all_dates.append(last_net_date)
-    all_dates.extend(dates)
-    all_dates = sorted(list(set(all_dates)))
-
-    for code, _ in net_platforms:
-        for date in all_dates[len(written_dates):-1]:
-            file = open(code + "/" + date.isoformat(), "w")
-            file.write(get_actives(date, code))
-            file.close()
-        file = open(code + "/" + all_dates[-1].isoformat(), "w")
-        file.write(get_current_actives(code))
-        file.close()
-
-    for date in all_dates[len(written_dates):]:
-        dates_file.write(date.isoformat() + "\n")
-    dates_file.close()

@@ -3,7 +3,8 @@ import pyqtgraph as pg
 import math
 import utils
 import data_parser
-import trees
+import interface_common
+from functools import partial
 
 __all__ = ["CheckedGraph", "colors", "qcolors"]
 
@@ -40,16 +41,15 @@ class ItemData():
         self.opts = {'symbol': symbol, 'brush': brush, 'pen': None, 'size': 20}
 
 class Graph(pg.GraphicsWindow):
-    def __init__(self, data, pattern):
+    def __init__(self, dates, values, pattern):
         pg.GraphicsWindow.__init__(self)
 
         self.widgets = []
-        self.pattern = list(map(str, utils.flatten(pattern)))
 
-        self.draw_graph(data, pattern)
+        self.draw_graph(dates, values, pattern)
 
-    def fix(self, label, toDo):
-        plotItem, plots = self.widgets[self.pattern.index(label)]
+    def fix(self, index, toDo):
+        plotItem, plots = self.widgets[index]
 
         for plot in plots:
             if toDo == True:
@@ -57,15 +57,15 @@ class Graph(pg.GraphicsWindow):
             else:
                 plotItem.removeItem(plot)
 
-    def draw_axis(self, label, legend, plotItem, data, color, lines, bars, mbars):
+    def draw_axis(self, label, legend, plotItem, values, color, lines, bars, mbars):
         legend.addItem(ItemData(None, None), "____" + label + "____")
 
         #code duplication
         for key in lines:
             plots = []
-            for chain in utils.split([i if key in data[i] else None for i in range(len(data))], None):
+            for chain in utils.split([value[key] for value in values], None):
                 if chain:
-                    plots.append(pg.PlotDataItem(chain, [data[i][key] for i in chain], pen={'color': colors[color], 'width': 2}))
+                    plots.append(pg.PlotDataItem(chain, [values[i][key] for i in chain], pen={'color': colors[color], 'width': 2}))
                     plotItem.addItem(plots[-1])
 
             self.widgets.append((plotItem, plots))
@@ -81,9 +81,9 @@ class Graph(pg.GraphicsWindow):
                     key, place = bar
                     barGraphs = []
 
-                    for chain in utils.split([i if key in data[i] else None for i in range(len(data))], None):
+                    for chain in utils.split([value[key] for value in values], None):
                         if chain:
-                            ys = [data[i][key] for i in chain]
+                            ys = [values[i][key] for i in chain]
                             positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) / 2
                             if (positive and sign == -1) or (not positive and sign == 1):
                                 ys = [-y for y in ys]
@@ -98,13 +98,13 @@ class Graph(pg.GraphicsWindow):
 
         return color
 
-    def draw_graph(self, data, pattern):
+    def draw_graph(self, dates, values, pattern):
         pg.setConfigOption('foreground', 'w')
         plots = []
         twins = []
         legends = []
 
-        str_dates = [d["Date"].strftime("%d/%m/%Y") for d in data]
+        str_dates = [date.strftime("%d/%m/%Y") for date in dates]
 
         for left, right in pattern:
             color = 0
@@ -114,7 +114,7 @@ class Graph(pg.GraphicsWindow):
             legends.append(pg.LegendItem(offset=(100, 20)))
             legends[-1].setParentItem(plots[-1])
 
-            color = self.draw_axis("left", legends[-1], plots[-1], data, color, *left)
+            color = self.draw_axis("left", legends[-1], plots[-1], values, color, *left)
 
             twins.append(pg.ViewBox())
             if right:
@@ -124,17 +124,15 @@ class Graph(pg.GraphicsWindow):
                 twins[-1].setXLink(plots[-1])
                 twins[-1].setAutoVisible(y=1)
 
-                #сделать нормально
-                def updateViews():
-                    for p, last_plot in zip(twins, plots):
-                        p.enableAutoRange(y=True)
-                        p.setGeometry(last_plot.vb.sceneBoundingRect())
-                        p.linkedViewChanged(last_plot.vb, p.XAxis)
+                def updateViews(twin, plot):
+                    twin.enableAutoRange(y=True)
+                    twin.setGeometry(plot.vb.sceneBoundingRect())
+                    twin.linkedViewChanged(plot.vb, twin.XAxis)
 
-                updateViews()
-                plots[-1].vb.sigResized.connect(updateViews)
+                updateViews(twins[-1], plots[-1])
+                plots[-1].vb.sigResized.connect(partial(updateViews, twins[-1], plots[-1]))
 
-                self.draw_axis("right", legends[-1], twins[-1], data, color, *right)
+                self.draw_axis("right", legends[-1], twins[-1], values, color, *right)
 
         for i in range(len(plots)):
             for j in range(i + 1, len(plots)):
@@ -167,22 +165,25 @@ class Graph(pg.GraphicsWindow):
         self.scene().sigMouseMoved.connect(mouseMoved)
 
 class CheckedGraph(QtGui.QWidget):
-    def __init__(self, data, pattern, title):
+    def __init__(self, dates, values, pattern, tableLabels, title):
         QtGui.QWidget.__init__(self)
 
         self.setWindowTitle(title)
-        self.graph = Graph(data, pattern)
+        self.graph = Graph(dates, values, pattern)
 
-        self.mainLayout = QtGui.QHBoxLayout(self)
+        self.mainLayout = QtGui.QVBoxLayout(self)
+        interface_common.set_title(self.mainLayout, title)
+        self.graphLayout = QtGui.QHBoxLayout()
+        self.mainLayout.insertLayout(1, self.graphLayout, stretch=10)
 
         self.choiceTree = QtGui.QTreeWidget()
-        trees.draw_pattern(self.choiceTree, pattern, True)
+        self.relation = interface_common.draw_pattern(self.choiceTree, pattern, tableLabels, True)
         self.choiceTree.itemChanged.connect(self.fix)
 
-        self.mainLayout.addWidget(self.choiceTree, stretch=1)
-        self.mainLayout.addWidget(self.graph, stretch=8)
+        self.graphLayout.addWidget(self.choiceTree, stretch=1)
+        self.graphLayout.addWidget(self.graph, stretch=8)
 
         self.showMaximized()
 
     def fix(self, item, i):
-        self.graph.fix(item.text(0), item.checkState(0) == QtCore.Qt.Checked)
+        self.graph.fix(self.relation[item], item.checkState(0) == QtCore.Qt.Checked)
