@@ -1,4 +1,4 @@
-from PyQt5 import QtGui, QtCore
+from PyQt4 import QtGui, QtCore
 import data_parser
 import graphs
 import utils
@@ -8,17 +8,17 @@ from pyparsing import alphas
 import itertools
 
 class GraphDialog(QtGui.QWidget):
-    def __init__(self, dates, values, tableName, tablePattern, title):
+    def __init__(self, dates, values, tableName, tableLabels, title):
         QtGui.QWidget.__init__(self)
 
         self.setWindowTitle(tableName)
 
         self.dates = dates
-        self.values = values
+
+        self.values = [list(itertools.chain.from_iterable([value[i] for value in values])) for i in range(len(dates))]
         self.title = title
         self.tableName = tableName
-        self.tablePattern = itertools.chain.from_iterable(tablePattern)
-        self.tableLabels = [name + " " + alphas[index] for name, index in self.tablePattern]
+        self.tableLabels = utils.flatten(tableLabels)
 
         self.main_layout = QtGui.QVBoxLayout(self)
         self.upper_layout = QtGui.QHBoxLayout()
@@ -50,12 +50,7 @@ class GraphDialog(QtGui.QWidget):
         self.patternTitle.setPlaceholderText("Pattern title")
         self.labels_submit_layout.addWidget(self.patternTitle)
 
-        self.scrollForLabels = QtGui.QScrollArea()
-        self.scrollForLabels.setWidgetResizable(True)
-        self.inner = QtGui.QFrame(self.scrollForLabels)
-        self.inner.setLayout(self.labels_layout)
-        self.scrollForLabels.setWidget(self.inner)
-        self.labels_submit_layout.addWidget(self.scrollForLabels)
+        self.labels_submit_layout.addWidget(interface_common.scrollable_area(self.labels_layout))
 
         self.upper_layout.insertLayout(0, self.labels_submit_layout)
         self.upper_layout.addWidget(self.graphsTree)
@@ -70,19 +65,16 @@ class GraphDialog(QtGui.QWidget):
         self.buttons_layout.addWidget(self.submitPattern)
         self.buttons_layout.addWidget(self.drawGraph)
 
-        self.relation = {}
-
         self.graphs = []
 
         self.labels = []
 
-        for i in range(len(self.tablePattern)):
+        for i in range(len(self.tableLabels)):
             lastLabel = QtGui.QHBoxLayout()
 
             textBox = QtGui.QLineEdit()
             textBox.setReadOnly(True)
             textBox.setText(self.tableLabels[i])
-            self.relation[textBox] = i
             lastLabel.addWidget(textBox)
 
             checkBoxes = [QtGui.QCheckBox(label) for label in ["left", "right", "line", "bar", "-bar"]]
@@ -118,8 +110,12 @@ class GraphDialog(QtGui.QWidget):
 
         self.showMaximized()
 
+    def closeEvent(self, _):
+        for graph in self.graphs:
+            graph.close()
+
     def draw_item(self, item):
-        pattern = self.grabber.patterns[self.tableName][item.text()]
+        pattern = self.patterns[self.tableName][item.text()]
         self.patternTree.clear()
         interface_common.draw_pattern(self.patternTree, pattern, self.tableLabels)
 
@@ -128,18 +124,19 @@ class GraphDialog(QtGui.QWidget):
 
     def draw_graph(self):
         self.graphs.append(graphs.CheckedGraph(self.dates, self.values,
-                                               self.grabber.patterns[self.tableName][self.pattern_list.currentItem().text()],
+                                               self.patterns[self.tableName][self.pattern_list.currentItem().text()],
                                                self.tableLabels, self.title))
 
     def submit_graph(self):
         places = []
 
         graph = [[[] for _ in range(3)] for _ in range(2)]
-        for textBox, buttonGroups, checkBoxes, comboBox in self.labels:
+        for i in range(len(self.labels)):
+            textBox, buttonGroups, checkBoxes, comboBox = self.labels[i]
             lr, t = buttonGroups[0].checked_button(), buttonGroups[1].checked_button()
             if lr and t:
                 color = comboBox.currentText()
-                toAppend = self.relation[textBox]
+                toAppend = i
                 if t[0] != 0:
                     if color in places:
                         toAppend = toAppend, places.index(color)
@@ -172,9 +169,8 @@ class GraphDialog(QtGui.QWidget):
 
         self.pattern_list.addItem(patternTitle)
 
-        utils.add_to_dict(self.grabber.patterns, self.tableName, patternTitle, self.currentPattern)
-
         data_parser.add_pattern(self.tableName, patternTitle, self.currentPattern)
+        utils.add_to_dict(self.patterns, self.tableName, patternTitle, self.currentPattern)
 
         self.clear_checkboxes()
         self.clear_comboboxes()

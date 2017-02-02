@@ -3,7 +3,9 @@ import downloader
 import filenames
 import utils
 import data_parser
+import datetime as dt
 
+#создать все необходимые файлы и поубирать if'ы
 def init():
     ifNeedsUpdate = False
     if not os.path.exists("data"):
@@ -18,7 +20,6 @@ def init():
     if ifNeedsUpdate:
         update()
 
-#даты при закачке смотреть отдельно для каждой платформы
 def update():
     monetary_file = open(filenames.monetaryFile, "a+")
     monetary_file.seek(0)
@@ -58,18 +59,16 @@ def update():
 
     for code, _ in net_platforms:
         index = data_parser.get_actives(code)
-        for date in all_dates[len(written_dates):-1]:
-            file = open(code + "/" + date.isoformat(), "w")
-
+        for date in all_dates[len(written_dates):]:
             if date == all_dates[-1]:
                 data = downloader.get_current_actives(code)
             else:
                 data = downloader.get_actives(date, code)
 
-            data_parser.parse_date(code, date, data, index)
-
-            file.write(data)
-            file.close()
+            if data_parser.parse_date(code, date, data, index):
+                file = open(code + "/" + date.isoformat(), "w")
+                file.write(data)
+                file.close()
 
     for date in all_dates[len(written_dates):]:
         dates_file.write(date.isoformat() + "\n")

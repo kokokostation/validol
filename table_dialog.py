@@ -1,15 +1,23 @@
-from PyQt5 import QtGui, QtCore
+from PyQt4 import QtGui, QtCore
 import formulae
 
 class TableDialog(QtGui.QWidget):
-    def __init__(self):
+    def __init__(self, new_table):
         QtGui.QWidget.__init__(self)
 
-        self.mainLayout = QtGui.QHBoxLayout(self)
-        self.buttonsLayout = QtGui.QVBoxLayout()
+        self.new_table = new_table
+
+        self.setWindowTitle("Table edit")
+
+        self.mainLayout = QtGui.QVBoxLayout(self)
+        self.boxesLayout = QtGui.QHBoxLayout()
+        self.buttonsLayout = QtGui.QHBoxLayout()
         self.editLayout = QtGui.QVBoxLayout()
 
         self.atomList = QtGui.QListWidget()
+        for name, _, presentation in formulae.get_atoms():
+            self.add_atom(name, presentation)
+        self.atomList.itemDoubleClicked.connect(self.insertAtom)
 
         self.name = QtGui.QLineEdit()
         self.mainEdit = QtGui.QTextEdit()
@@ -26,20 +34,34 @@ class TableDialog(QtGui.QWidget):
         self.buttonsLayout.addWidget(self.submitAtom)
         self.buttonsLayout.addWidget(self.submitTablePattern)
 
-        self.mainLayout.addWidget(self.atomList)
-        self.mainLayout.insertLayout(1, self.edits)
-        self.mainLayout.insertLayout(2, self.editLayout)
+        self.boxesLayout.addWidget(self.atomList)
+        self.boxesLayout.insertLayout(1, self.editLayout)
 
-        self.showMaximized()
+        self.mainLayout.insertLayout(0, self.boxesLayout)
+        self.mainLayout.insertLayout(1, self.buttonsLayout)
+
+        self.show()
+
+    def add_atom(self, name, presentation):
+        wi = QtGui.QListWidgetItem(name)
+        wi.setToolTip(presentation)
+        self.atomList.addItem(wi)
+
+    def insertAtom(self):
+        self.mainEdit.insertPlainText(self.atomList.currentItem().text())
+        self.mainEdit.setFocus()
 
     def clear_edits(self):
         self.name.clear()
         self.mainEdit.clear()
 
-    def submit_item(self):
-        formulae.write_atom(self.name.text(), self.mainEdit.text(), formulae.get_atoms())
+    def submit_atom(self):
+        name, presentation = self.name.text(), self.mainEdit.toPlainText()
+        formulae.write_atom(name, presentation, formulae.get_atoms())
+        self.add_atom(name, presentation)
         self.clear_edits()
 
     def submit_table_pattern(self):
-        formulae.write_table(self.name.text(), [line.split(" ") for line in self.mainEdit.splitlines()])
+        formulae.write_table(self.name.text(), self.mainEdit.toPlainText())
+        self.new_table()
         self.clear_edits()

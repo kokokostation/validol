@@ -1,8 +1,16 @@
-from PyQt5 import QtGui, QtCore
+from PyQt4 import QtGui, QtCore
 
 __all__ = ["add_root", "draw_pattern", "set_title"]
 
-def add_root(tree, graph, tableLabels, label, info=None, current=None, checkable=False):
+def scrollable_area(layout):
+    scroll = QtGui.QScrollArea()
+    scroll.setWidgetResizable(True)
+    inner = QtGui.QFrame(scroll)
+    inner.setLayout(layout)
+    scroll.setWidget(inner)
+    return scroll
+
+def add_root(tree, graph, tableLabels, label, current=None, checkable=False):
     root = QtGui.QTreeWidgetItem([label])
     children = [QtGui.QTreeWidgetItem([label]) for label in ["left", "right"]]
 
@@ -16,8 +24,8 @@ def add_root(tree, graph, tableLabels, label, info=None, current=None, checkable
                     index = piece[0]
 
                 item = QtGui.QTreeWidgetItem([tableLabels[index]])
-                if info:
-                    info[item] = current
+                if current != None:
+                    item.setToolTip(0, str(current))
                     current += 1
 
                 if checkable:
@@ -34,17 +42,14 @@ def add_root(tree, graph, tableLabels, label, info=None, current=None, checkable
         root.child(i).setExpanded(True)
         for j in range(root.child(i).childCount()):
             root.child(i).child(j).setExpanded(True)
-
-    if info:
+    if current != None:
         return current
 
 def draw_pattern(tree, pattern, tableLabels, checkable=False):
     current = 0
-    info = {}
     for i in range(len(pattern)):
-        current = add_root(tree, pattern[i], tableLabels, str(i), info, current, checkable)
+        current = add_root(tree, pattern[i], tableLabels, str(i), current, checkable)
 
-    return info
 
 def set_title(layout, title):
     denotions = QtGui.QTextEdit()

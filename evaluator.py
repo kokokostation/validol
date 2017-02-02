@@ -27,7 +27,7 @@ class NumericStringParser(object):
         e = CaselessLiteral("E")
         fnumber = Combine(Word("+-" + nums, nums) +
                           Optional(point + Optional(Word(nums))) +
-                          Optional(e + Word("+-" + nums, nums))) | Word("%" + nums)
+                          Optional(e + Word("+-" + nums, nums))) | Word("~" + nums)
         ident = Word(alphas, alphas + nums + "_$")
         plus = Literal("+")
         minus = Literal("-")
@@ -87,8 +87,8 @@ class NumericStringParser(object):
             return lambda v: math.e  # 2.718281828
         elif op in self.fn:
             return lambda v: self.fn[op](self.evaluateStack(s)(v))
-        elif op[0] == "%":
-            return lambda v: v[int(op.replace("~", ""))]
+        elif op[0] == "~":
+            return lambda v: v[int(op[1:])]
         else:
             return lambda v: float(op)
 

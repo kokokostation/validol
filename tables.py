@@ -1,17 +1,27 @@
 import numpy as np
 import pyqtgraph as pg
 import datetime as dt
+import interface_common
+from PyQt4 import QtGui
 
 __all__ = ["draw_table"]
 
-def draw_table(dates, values, labels, title):
-    table = pg.TableWidget()
-    table.setWindowTitle(title)
+class Table(QtGui.QWidget):
+    def __init__(self, dates, values, labels, title):
+        QtGui.QWidget.__init__(self)
 
-    data = np.array([(dates[i],) + tuple(values[i]) for i in range(len(data))], dtype=list(zip(["Date"] + labels, [dt.date] + [float] * len(labels))))
+        self.setWindowTitle(title)
 
-    table.setData(data)
+        table = pg.TableWidget()
 
-    table.showMaximized()
+        data = np.array([(dates[i],) + tuple(values[i]) for i in range(len(dates))], dtype=list(zip(["Date"] + labels, [dt.date] + [float] * len(labels))))
 
-    return table
+        table.setData(data)
+
+        self.mainLayout = QtGui.QVBoxLayout(self)
+
+        interface_common.set_title(self.mainLayout, title)
+        self.mainLayout.addWidget(table, stretch=10)
+
+        self.showMaximized()
+

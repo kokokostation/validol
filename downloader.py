@@ -49,7 +49,6 @@ def get_last_date():
 def normalize_url(url):
     return re.sub(r'https://[^.]*\.', r'https://www.', url)
 
-#different urls
 def get_active_info(url):
     new = False
     file = open(filenames.pricesFile, "a+")
@@ -66,7 +65,7 @@ def get_active_info(url):
     content = read_url(url)
 
     pair_id = re.search(r'data-pair-id="(\d*)"', content).group(1)
-    name = re.search(r'<title>(.*) - .*</title>', content).group(1)
+    name = re.search(r'<title>(.*)</title>', content).group(1).rsplit(" - ")[0]
 
     if pair_id not in pair_ids:
         file.write(url + " " + pair_id + " " + name + "\n")
@@ -104,13 +103,10 @@ def get_net_prices(begin, end, pair_id):
 
     return result
 
-def get_prices(dates, url):
-    url = normalize_url(url)
-
-    pair_id, name, new = get_active_info(url)
+def get_prices(dates, pair_id):
     filePath = "prices/" + pair_id
     content = ""
-    if not new:
+    if os.path.isfile(filePath):
         file = open(filePath, "r")
         begin, end = list(map(utils.parse_isoformat_date, file.readline().strip().split(" ")))
 

@@ -1,4 +1,4 @@
-from PyQt5 import QtGui
+from PyQt4 import QtGui, QtCore
 import data_parser
 import tables
 import downloader
@@ -6,6 +6,8 @@ import table_dialog
 import graph_dialog
 import formulae
 from pyparsing import alphas
+import startup
+import interface_common
 
 __all__ = ["Window", "draw_pattern"]
 
@@ -17,26 +19,35 @@ class Window(QtGui.QWidget):
 
         self.setWindowTitle("COTs")
 
+        self.searchResult = None
+
+        self.actives = QtGui.QListWidget()
+        self.actives.itemDoubleClicked.connect(self.submit_active)
+        self.searchLine = QtGui.QLineEdit()
+        self.searchLine.setPlaceholderText("Search")
+        self.searchLine.textChanged.connect(self.search)
+        self.searchLine.returnPressed.connect(self.search)
+        self.activesListLayout = QtGui.QVBoxLayout()
+        self.activesListLayout.addWidget(self.searchLine)
+        self.activesListLayout.addWidget(self.actives)
+
         self.platforms = QtGui.QListWidget()
         self.platforms.currentItemChanged.connect(self.platform_chosen)
+        flag = False
         for code, name in data_parser.get_platforms():
             wi = QtGui.QListWidgetItem(name)
             wi.setToolTip(code)
             self.platforms.addItem(wi)
-
-        self.actives = QtGui.QListWidget()
-
-        self.cached_prices = QtGui.QListWidget()
-        self.set_cached_prices()
-
-        self.submit_active_button = QtGui.QPushButton('Submit active')
-        self.submit_active_button.clicked.connect(self.submit_active)
-
-        self.clear = QtGui.QPushButton('Clear')
-        self.clear.clicked.connect(self.clear_actives)
+            if flag == False:
+                self.platforms.setCurrentItem(wi)
+                self.platform_chosen()
+                flag = True
 
         self.drawTable = QtGui.QPushButton('Draw table')
-        self.drawTableable.clicked.connect(self.draw_table)
+        self.drawTable.clicked.connect(self.draw_table)
+
+        self.clear = QtGui.QPushButton('Clear all')
+        self.clear.clicked.connect(self.clear_actives)
 
         self.createTable = QtGui.QPushButton('Create table')
         self.createTable.clicked.connect(self.create_table)
@@ -44,10 +55,17 @@ class Window(QtGui.QWidget):
         self.updateButton = QtGui.QPushButton('Update')
         self.updateButton.clicked.connect(self.on_update)
 
+        self.leftLayout = QtGui.QVBoxLayout()
+        self.leftLayout.addWidget(self.platforms)
+        self.leftLayout.addWidget(self.updateButton)
+
+        self.cached_prices = QtGui.QListWidget()
+        self.set_cached_prices()
+
         self.tablesList = QtGui.QListWidget()
-        self.availableTables = {}
+        self.availableTables = []
         self.set_tables()
-        self.tablesList.currentItemChanged.connect(self.table_chosen)
+        self.tablesList.itemDoubleClicked.connect(self.table_chosen)
 
         self.tableView = QtGui.QTextEdit()
         self.tableView.setReadOnly(True)
@@ -68,36 +86,51 @@ class Window(QtGui.QWidget):
         self.actives_layout_lines = []
         self.chosen_actives = []
 
-        self.bottom_buttons_layout = QtGui.QHBoxLayout()
-
-        self.lists_layout.addWidget(self.platforms)
-        self.lists_layout.addWidget(self.actives)
-        self.lists_layout.insertLayout(2, self.actives_layout)
-        self.lists_layout.addWidget(self.cached_prices)
-
-        self.bottom_buttons_layout.addWidget(self.submit_active_button)
-        self.bottom_buttons_layout.addWidget(self.drawTable)
-        self.bottom_buttons_layout.addWidget(self.updateButton)
+        self.lists_layout.insertLayout(0, self.leftLayout)
+        self.lists_layout.insertLayout(1, self.activesListLayout)
+        self.lists_layout.addWidget(interface_common.scrollable_area(self.actives_layout))
+        self.lists_layout.insertLayout(3, self.rightLayout)
 
         self.main_layout.insertLayout(0, self.lists_layout)
-        self.main_layout.insertLayout(1, self.bottom_buttons_layout)
+        self.main_layout.addWidget(self.drawTable)
 
         self.tables = []
         self.graphs = []
+        self.tableDialogs = []
 
         self.showMaximized()
 
+    def closeEvent(self, _):
+        for graph in self.graphs:
+            graph.close()
+
+        for table in self.tables:
+            table.close()
+
+        for tableDialog in self.tableDialogs:
+            tableDialog.close()
+
+    def search(self):
+        searchText = self.searchLine.text()
+        if (self.searchResult and self.searchResult[0] != searchText) or not self.searchResult:
+            self.searchResult = [searchText, self.actives.findItems(self.searchLine.text(), QtCore.Qt.MatchContains), 0]
+
+        _, items, index = self.searchResult
+        self.actives.setCurrentItem(items[index % len(items)])
+        self.searchResult[2] += 1
+
     def table_chosen(self):
-        self.tableView.setText(self.availableTables[self.tablesList.currentItem()])
+        _, presentation = self.availableTables[self.tablesList.currentRow()]
+        self.tableView.setText(presentation)
 
     def set_tables(self):
         self.tablesList.clear()
-        self.availableTables = {}
+        self.availableTables = []
 
         tables = formulae.get_tables()
-        for name, table in tables:
+        for name, presentation, tablePattern in tables:
             wi = QtGui.QListWidgetItem(name)
-            self.availableTables[wi] = table
+            self.availableTables.append((tablePattern, presentation))
             self.tablesList.addItem(wi)
 
     def set_cached_prices(self):
@@ -107,9 +140,6 @@ class Window(QtGui.QWidget):
             self.cached_prices.addItem(wi)
 
     def submit_active(self):
-        if len(self.chosen_actives) == 4:
-            return
-
         self.chosen_actives.append((self.platforms.currentItem().toolTip(), self.platforms.currentItem().text(), self.actives.currentItem().text()))
 
         self.actives_layout_widgets.append((QtGui.QLineEdit(), QtGui.QLineEdit(), QtGui.QPushButton('Submit cached'), QtGui.QPushButton('Clear')))
@@ -127,7 +157,7 @@ class Window(QtGui.QWidget):
         for w in last_line_widgets:
             last_line.addWidget(w)
 
-        self.actives_layout.insertLayout(len(self.actives_layout_lines) - 1, last_line)
+        self.actives_layout.insertLayout(len(self.actives_layout_lines), last_line)
 
     def submit_cached(self, lineEdit, listWidget):
         lineEdit.setText(listWidget.currentItem().toolTip())
@@ -135,7 +165,7 @@ class Window(QtGui.QWidget):
     def platform_chosen(self):
         self.actives.clear()
 
-        for active in self.grabber.get_actives(self.platforms.currentItem().toolTip()):
+        for active in data_parser.get_actives(self.platforms.currentItem().toolTip()):
             self.actives.addItem(active)
 
     def clearActive(self, vbox):
@@ -166,31 +196,35 @@ class Window(QtGui.QWidget):
             self.cached_prices.addItem(wi)
 
     def draw_table(self):
-        tlci = self.tablesList.currentItem()
-        tableName, tablePattern = tlci.text(), self.availableTables[tlci]
+        tableName = self.tablesList.currentItem().text()
+        tablePattern, tableLabels = self.availableTables[self.tablesList.currentRow()]
+        tableLabels = [table.split(",") for table in tableLabels.split("\n")]
         info = []
         title = ""
         for i in range(len(self.actives_layout_widgets)):
-            url = self.actives_layout_widgets[i][1].text()
+            url, name = self.actives_layout_widgets[i][1].text(), None
             chosen_platform, chosen_platform_name, chosen_active = self.chosen_actives[i]
-            url, name, new = downloader.get_active_info(downloader.normalize_url(url))
-            self.add_price(new, url, name)
+            if url:
+                pair_id, name, new = downloader.get_active_info(downloader.normalize_url(url))
+                self.add_price(new, url, name)
+            else:
+                pair_id = None
 
             title += alphas[i] + ": " + data_parser.title(chosen_platform_name, chosen_active, name) + "\n"
-            info.append((chosen_platform, chosen_active, url))
+            info.append((chosen_platform, chosen_active, pair_id))
 
-        dates, values = data_parser.prepare_tables(tables, info)
+        dates, values = data_parser.prepare_tables(tablePattern, info)
 
-        for i in range(len(tablePattern)):
-            self.tables.append(tables.draw_table(dates, values[i], tablePattern[i], title))
+        for i in range(len(tableLabels)):
+            self.tables.append(tables.Table(dates, values[i], tableLabels[i], title))
 
-        self.graphs.append(graph_dialog.GraphDialog(dates, values, tableName, tablePattern, title))
+        self.graphs.append(graph_dialog.GraphDialog(dates, values, tableName, tableLabels, title))
 
     def create_table(self):
-        self.tableDialog = table_dialog.TableDialog()
+        self.tableDialogs.append(table_dialog.TableDialog(lambda: self.set_tables()))
 
     def on_update(self):
         self.updateButton.setText("Wait a sec. Updating the data...")
         self.app.processEvents()
-        downloader.update()
+        startup.update()
         self.updateButton.setText("Update")
