@@ -121,7 +121,7 @@ class GraphDialog(QtGui.QWidget):
         self.showMaximized()
 
     def remove_pattern(self):
-        title = self.pattern_list.currentItem().text
+        title = self.pattern_list.currentItem().text()
         self.pattern_list.takeItem(self.pattern_list.currentRow())
         self.patternTree.clear()
         self.patternTree.setHeaderLabel("")

@@ -13,18 +13,3 @@ app = QtGui.QApplication(sys.argv)
 window = Window(app)
 window.show()
 sys.exit(app.exec_())
-
-# os.chdir("data")
-#
-# import filenames, downloader, pickle
-#
-#
-# for code, _ in data_parser.get_platforms():
-#     index = data_parser.get_actives(code)
-#     dates = list(sorted(map(utils.parse_isoformat_date, os.listdir(code))))
-#     os.makedirs("/".join([code, "parsed"]))
-#
-#     for date in dates:
-#         file = open(code + "/" + date.isoformat(), "r")
-#         data_parser.parse_date(code, date, file.read(), index)
-#         file.close()
