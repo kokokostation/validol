@@ -4,8 +4,10 @@ import os
 import downloader
 import utils
 import filenames
-import formulae
+import user_structures
 from itertools import groupby
+from evaluator import NumericStringParser
+import pickle
 
 __all__ = ["table1_labels", "table2_labels", "table1_key_types", "table2_key_types", "places_num", "get_platforms", "get_cached_prices", "Grabber"]
 
@@ -40,47 +42,11 @@ def get_actives_from_page(content):
     return list(map(parse_active, activesList))
 
 def places_num(bars, mbars):
-    places = [b for _, b in bars] + [b for _, b in mbars]
+    places = [b[1] for b in bars] + [b[1] for b in mbars]
     if places:
         return max(places) + 1
     else:
         return None
-
-def parse_axis(axis):
-    return [list(map(parse_item, part.split("&"))) if part else [] for part in axis.split("#")]
-
-def parse_item(item):
-    if '^' in item:
-        name, place = item.split("^")
-        return int(name), int(place)
-    else:
-        return int(item)
-
-def parse_pattern(line):
-    items = line.split("\t")
-
-    table, title = items[0], items[1]
-    pattern = []
-    for i in range(2, len(items), 2):
-        pattern.append([parse_axis(items[i]), parse_axis(items[i + 1])])
-
-    return table, title, pattern
-
-def pack_bar(bar):
-    name, place = bar
-    return str(name) + "^" + str(place)
-
-def pack_axis(lines, bars, mbars):
-    return "&".join(map(str, lines)) + "#" + "&".join(map(pack_bar, bars)) + "#" + "&".join(map(pack_bar, mbars))
-
-def pack_pattern(table, title, pattern):
-    result = table + "\t" + title
-
-    for g in pattern:
-        for lines, bars, mbars in g:
-            result += "\t" + pack_axis(lines, bars, mbars)
-
-    return result
 
 def get_cached_prices():
     result = []
@@ -91,31 +57,12 @@ def get_cached_prices():
     file = open(filenames.pricesFile, "r")
 
     for line in file.read().splitlines():
-        url, pair_id, name = line.split(" ", 2)
+        url, pair_id, name = line.split("\t", 2)
         result.append((url, name))
 
     file.close()
 
     return result
-
-def get_patterns():
-    result = {}
-
-    if not os.path.isfile(filenames.patternsFile):
-        return result
-
-    file = open(filenames.patternsFile, "r")
-    for table, title, pattern in map(parse_pattern, file.read().splitlines()):
-        utils.add_to_dict(result, table, title, pattern)
-
-    file.close()
-
-    return result
-
-def add_pattern(table, title, pattern):
-    file = open(filenames.patternsFile, "a+")
-    file.write(pack_pattern(table, title, pattern) + "\n")
-    file.close()
 
 def get_platforms():
     if not os.path.isfile(filenames.platformsFile):
@@ -208,7 +155,9 @@ def prepare_active(platform, active, prices_pair_id):
 def prepare_tables(tablePattern, info):
     data = [prepare_active(platform, active, prices_pair_id) for platform, active, prices_pair_id in info]
 
-    allAtoms = dict([(name, formulae.compile_formula(formula)) for name, formula, _ in formulae.get_atoms()])
+    compiler = NumericStringParser()
+
+    allAtoms = dict([(name, compiler.compile(formula)) for name, formula, _ in user_structures.get_atoms()])
 
     allDates, indexes = utils.merge_lists([dates for dates, _ in data])
     newValues = []
@@ -217,7 +166,7 @@ def prepare_tables(tablePattern, info):
         for i in range(len(table)):
             atoms, formula = table[i]
             atoms = [(allAtoms[atom], active) for atom, active in atoms]
-            func = formulae.compile_formula(formula)
+            func = compiler.compile(formula)
             if False not in [index < len(data) for _, index in atoms]:
                 intersection = utils.intersect_lists([indexes[index] for _, index in atoms])
                 for j in range(len(intersection)):

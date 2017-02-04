@@ -4,6 +4,7 @@ import os
 import requests
 import utils
 import filenames
+import pickle
 
 __all__ = ["get_prices", "get_mbase", "init", "update"]
 
@@ -56,7 +57,7 @@ def get_active_info(url):
 
     pair_ids = []
     for line in file.read().splitlines():
-        url_, pair_id, name = line.split(" ", 2)
+        url_, pair_id, name = line.split("\t", 2)
         if url_ == url:
             file.close()
             return pair_id, name, new
@@ -68,7 +69,7 @@ def get_active_info(url):
     name = re.search(r'<title>(.*)</title>', content).group(1).rsplit(" - ")[0]
 
     if pair_id not in pair_ids:
-        file.write(url + " " + pair_id + " " + name + "\n")
+        file.write("\t".join([url, pair_id, name]) + "\n")
         new = True
 
     return pair_id, name, new
@@ -136,19 +137,24 @@ def get_prices(dates, pair_id):
         file.write(content)
         file.close()
 
-    date_price = {}
-    for line in content.splitlines():
-        date, price = line.split(" ")
-        date = utils.parse_isoformat_date(date)
-        if dates[0] <= date <= dates[-1]:
-            date_price[date] = float(price)
-
     result = []
-    for date in dates:
-        if date in date_price:
-            result.append(date_price[date])
-        else:
+    i = 0
+    for line in content.splitlines():
+        if i == len(dates):
+            return result
+
+        date, price = line.split(" ")
+        date, price = utils.parse_isoformat_date(date), float(price)
+
+        neededDate = dates[i]
+        if date == neededDate:
+            result.append(price)
+            i += 1
+        elif date > neededDate:
             result.append(None)
+            i += 1
+
+    result += [None] * (len(dates) - len(result))
 
     return result
 

@@ -1,4 +1,4 @@
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 import data_parser
 import graphs
 import utils
@@ -6,6 +6,7 @@ import interface_common
 from functools import partial
 from pyparsing import alphas
 import itertools
+import user_structures
 
 class GraphDialog(QtGui.QWidget):
     def __init__(self, dates, values, tableName, tableLabels, title):
@@ -33,15 +34,22 @@ class GraphDialog(QtGui.QWidget):
         self.main_layout.insertLayout(2, self.buttons_layout)
 
         self.pattern_list = QtGui.QListWidget()
-        self.patterns = data_parser.get_patterns()
-        if tableName in self.patterns:
-            for graphName in self.patterns[tableName].keys():
+        patterns = user_structures.get_patterns()
+        self.patterns = {}
+        for patternTableName, graphName, pattern in patterns:
+            if patternTableName == tableName:
                 self.pattern_list.addItem(graphName)
+                self.patterns[graphName] = pattern
+
         self.pattern_list.itemDoubleClicked.connect(self.draw_item)
 
         self.patternTree = QtGui.QTreeWidget()
 
+        self.removePattern = QtGui.QPushButton('Remove pattern')
+        self.removePattern.clicked.connect(self.remove_pattern)
+
         self.patternChoiceLayout.addWidget(self.pattern_list)
+        self.patternChoiceLayout.addWidget(self.removePattern)
         self.patternChoiceLayout.addWidget(self.patternTree)
 
         self.graphsTree = QtGui.QTreeWidget()
@@ -81,24 +89,26 @@ class GraphDialog(QtGui.QWidget):
 
             buttonGroups = []
             for t in [[0, 1], [2, 3, 4]]:
-                buttonGroups.append(MyButtonGroup())
+                buttonGroups.append(interface_common.MyButtonGroup())
                 for j in t:
                     buttonGroups[-1].add_item(checkBoxes[j])
                     lastLabel.addWidget(checkBoxes[j])
 
-            comboBox = QtGui.QComboBox()
-            model = comboBox.model()
-            for color in graphs.qcolors:
-                item = QtGui.QStandardItem(color)
-                item.setBackground(QtGui.QColor(color))
-                model.appendRow(item)
+            comboBoxes = [QtGui.QComboBox() for _ in range(2)]
+            for comboBox in comboBoxes:
+                model = comboBox.model()
+                for color in graphs.colors:
+                    item = QtGui.QStandardItem("")
+                    item.setBackground(QtGui.QColor(*color))
+                    model.appendRow(item)
 
-            comboBox.setStyleSheet("color: white; background-color: " + graphs.qcolors[0])
-            comboBox.currentIndexChanged.connect(partial(self.indexChanged, comboBox))
+                comboBox.currentIndexChanged.connect(partial(self.indexChanged, comboBox))
+                comboBox.highlighted.connect(partial(self.activated, comboBox))
+                self.indexChanged(comboBox, 0)
 
-            lastLabel.addWidget(comboBox)
+                lastLabel.addWidget(comboBox)
 
-            self.labels.append((textBox, buttonGroups, checkBoxes, comboBox))
+            self.labels.append((textBox, buttonGroups, checkBoxes, comboBoxes))
 
             self.labels_layout.insertLayout(i, lastLabel)
 
@@ -110,21 +120,33 @@ class GraphDialog(QtGui.QWidget):
 
         self.showMaximized()
 
+    def remove_pattern(self):
+        title = self.pattern_list.currentItem().text
+        self.pattern_list.takeItem(self.pattern_list.currentRow())
+        self.patternTree.clear()
+        self.patternTree.setHeaderLabel("")
+        del self.patterns[title]
+        user_structures.remove_pattern(self.tableName, title)
+
     def closeEvent(self, _):
         for graph in self.graphs:
             graph.close()
 
     def draw_item(self, item):
-        pattern = self.patterns[self.tableName][item.text()]
+        pattern = self.patterns[item.text()]
         self.patternTree.clear()
         interface_common.draw_pattern(self.patternTree, pattern, self.tableLabels)
+        self.patternTree.setHeaderLabel(item.text())
+
+    def activated(self, comboBox, _=None):
+        comboBox.setStyleSheet("color: white; background-color: transparent")
 
     def indexChanged(self, comboBox, color):
-        comboBox.setStyleSheet("color: white; background-color: " + graphs.qcolors[color])
+        comboBox.setStyleSheet("color: white; background-color: rgb" + str(graphs.colors[color]))
 
     def draw_graph(self):
         self.graphs.append(graphs.CheckedGraph(self.dates, self.values,
-                                               self.patterns[self.tableName][self.pattern_list.currentItem().text()],
+                                               self.patterns[self.pattern_list.currentItem().text()],
                                                self.tableLabels, self.title))
 
     def submit_graph(self):
@@ -132,17 +154,19 @@ class GraphDialog(QtGui.QWidget):
 
         graph = [[[] for _ in range(3)] for _ in range(2)]
         for i in range(len(self.labels)):
-            textBox, buttonGroups, checkBoxes, comboBox = self.labels[i]
+            textBox, buttonGroups, checkBoxes, comboBoxes = self.labels[i]
             lr, t = buttonGroups[0].checked_button(), buttonGroups[1].checked_button()
             if lr and t:
-                color = comboBox.currentText()
-                toAppend = i
+                color = comboBoxes[0].currentIndex()
+                toAppend = [i]
                 if t[0] != 0:
                     if color in places:
-                        toAppend = toAppend, places.index(color)
+                        toAppend.append(places.index(color))
                     else:
-                        toAppend = toAppend, len(places)
+                        toAppend.append(len(places))
                         places.append(color)
+
+                toAppend.append(comboBoxes[1].currentIndex())
 
                 graph[lr[0]][t[0]].append(toAppend)
 
@@ -159,8 +183,9 @@ class GraphDialog(QtGui.QWidget):
                 cb.setChecked(False)
 
     def clear_comboboxes(self):
-        for _, _, _, comboBox in self.labels:
-            comboBox.setCurrentIndex(0)
+        for _, _, _, comboBoxes in self.labels:
+            for comboBox in comboBoxes:
+                comboBox.setCurrentIndex(0)
 
     def submit_pattern(self):
         patternTitle = self.patternTitle.text()
@@ -169,8 +194,8 @@ class GraphDialog(QtGui.QWidget):
 
         self.pattern_list.addItem(patternTitle)
 
-        data_parser.add_pattern(self.tableName, patternTitle, self.currentPattern)
-        utils.add_to_dict(self.patterns, self.tableName, patternTitle, self.currentPattern)
+        user_structures.add_pattern(self.tableName, patternTitle, self.currentPattern)
+        self.patterns[patternTitle] = self.currentPattern
 
         self.clear_checkboxes()
         self.clear_comboboxes()
@@ -178,25 +203,3 @@ class GraphDialog(QtGui.QWidget):
 
         self.graphsTree.clear()
         self.currentPattern = []
-
-class MyButtonGroup():
-    def __init__(self):
-        self.buttons = []
-        self.last = None
-
-    def add_item(self, button):
-        button.stateChanged.connect(lambda: self.state_changed(button))
-        self.buttons.append(button)
-
-    def id(self, button):
-        return self.buttons.index(button)
-
-    def state_changed(self, button):
-        if self.last and self.last != button:
-            self.last.setChecked(False)
-
-        self.last = button
-
-    def checked_button(self):
-        if self.last and self.last.checkState() == QtCore.Qt.Checked:
-            return self.buttons.index(self.last), self.last.text()

@@ -1,4 +1,4 @@
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 import pyqtgraph as pg
 import math
 import utils
@@ -9,7 +9,9 @@ from functools import partial
 __all__ = ["CheckedGraph", "colors", "qcolors"]
 
 colors = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255), (255, 255, 0), (255, 0, 255), (0, 0, 255)]
-qcolors = ["black", "cyan", "red", "magenta", "green", "yellow"]
+
+def negate(color):
+    return [255 - rgb for rgb in color]
 
 class MyAxisItem(pg.AxisItem):
     def __init__(self, str_dates, **kargs):
@@ -45,6 +47,7 @@ class Graph(pg.GraphicsWindow):
         pg.GraphicsWindow.__init__(self)
 
         self.widgets = []
+        self.legendData = []
 
         self.dates = dates
         self.values = values
@@ -62,11 +65,11 @@ class Graph(pg.GraphicsWindow):
             else:
                 plotItem.removeItem(plot)
 
-    def draw_axis(self, label, legend, plotItem, color, lines, bars, mbars):
-        legend.addItem(ItemData(None, None), "____" + label + "____")
+    def draw_axis(self, label, plotItem, lines, bars, mbars):
+        self.legendData.append([(ItemData(None, None), "____" + label + "____")])
 
         #code duplication
-        for key in lines:
+        for key, color in lines:
             plots = []
             for chain in utils.split([i if self.values[i][key] is not None else None for i in range(len(self.values))], None):
                 if chain:
@@ -74,16 +77,14 @@ class Graph(pg.GraphicsWindow):
                     plotItem.addItem(plots[-1])
 
             self.widgets.append((plotItem, plots))
-            if plots:
-                legend.addItem(plots[0], self.tableLabels[key])
-            color += 1
+            self.legendData[-1].append((ItemData('s', colors[color]), key))
 
         placesNum = data_parser.places_num(bars, mbars)
         if placesNum:
             bar_width = 0.9 / placesNum
             for bs, sign in [(bars, 1), (mbars, -1)]:
                 for bar in bs:
-                    key, place = bar
+                    key, place, color = bar
                     barGraphs = []
 
                     for chain in utils.split([i if self.values[i][key] is not None else None for i in range(len(self.values))], None):
@@ -98,10 +99,7 @@ class Graph(pg.GraphicsWindow):
                             plotItem.addItem(barGraphs[-1])
 
                     self.widgets.append((plotItem, barGraphs))
-                    legend.addItem(ItemData('s', colors[color] + (200,)), self.tableLabels[key])
-                    color += 1
-
-        return color
+                    self.legendData[-1].append((ItemData('s', colors[color] + (200,)), key))
 
     def draw_graph(self):
         pg.setConfigOption('foreground', 'w')
@@ -112,14 +110,13 @@ class Graph(pg.GraphicsWindow):
         str_dates = [date.strftime("%d/%m/%Y") for date in self.dates]
 
         for left, right in self.pattern:
-            color = 0
             self.nextRow()
             plots.append(MyPlot(str_dates))
             self.addItem(item=plots[-1])
             legends.append(pg.LegendItem(offset=(100, 20)))
             legends[-1].setParentItem(plots[-1])
 
-            color = self.draw_axis("left", legends[-1], plots[-1], color, *left)
+            self.draw_axis("left", plots[-1], *left)
 
             twins.append(pg.ViewBox())
             if right:
@@ -137,7 +134,7 @@ class Graph(pg.GraphicsWindow):
                 updateViews(twins[-1], plots[-1])
                 plots[-1].vb.sigResized.connect(partial(updateViews, twins[-1], plots[-1]))
 
-                self.draw_axis("right", legends[-1], twins[-1], color, *right)
+                self.draw_axis("right", twins[-1], *right)
 
         for i in range(len(plots)):
             for j in range(i + 1, len(plots)):
@@ -150,9 +147,9 @@ class Graph(pg.GraphicsWindow):
         hLines = []
         labels = []
         for p in plots:
-            vLines.append(pg.InfiniteLine(angle=90, movable=False, hoverPen=pg.mkPen('w')))
-            hLines.append(pg.InfiniteLine(angle=0, movable=False, hoverPen=pg.mkPen('w')))
-            labels.append(pg.TextItem(anchor=(0, 1)))
+            vLines.append(pg.InfiniteLine(angle=90, movable=False))
+            hLines.append(pg.InfiniteLine(angle=0, movable=False))
+            labels.append(pg.TextItem(color=(255, 255, 255), anchor=(0, 1)))
             p.addItem(vLines[-1], ignoreBounds=True)
             p.addItem(hLines[-1], ignoreBounds=True)
             p.addItem(labels[-1], ignoreBounds=True)
@@ -163,9 +160,22 @@ class Graph(pg.GraphicsWindow):
                 x, y = mousePoint.x(), mousePoint.y()
                 vLines[i].setPos(x)
                 hLines[i].setPos(y)
-                labels[i].setPos(x, plots[i].vb.viewRange()[1][0])
                 if 0 <= int(x) < len(str_dates):
                     labels[i].setText(str_dates[int(x)])
+                    labels[i].setPos(x, plots[i].vb.viewRange()[1][0])
+
+                    legends[i].items = []
+                    while legends[i].layout.count() > 0:
+                        legends[i].removeAt(0)
+
+                    for j in range(2 * i, 2 * (i + 1)):
+                        for style, key in self.legendData[j]:
+                            if type(key) == int:
+                                label = self.tableLabels[key] + " " + str(self.values[int(x)][key])
+                            else:
+                                label = key
+                            legends[i].addItem(style, label)
+                            legends[i].layout.setColumnSpacing(0, 20)
 
         self.scene().sigMouseMoved.connect(mouseMoved)
 

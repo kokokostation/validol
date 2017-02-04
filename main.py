@@ -1,5 +1,5 @@
 import sys
-from PyQt4 import QtGui
+from PyQt5 import QtGui
 from main_window import Window
 from startup import init
 import data_parser
@@ -15,6 +15,9 @@ window.show()
 sys.exit(app.exec_())
 
 # os.chdir("data")
+#
+# import filenames, downloader, pickle
+#
 #
 # for code, _ in data_parser.get_platforms():
 #     index = data_parser.get_actives(code)

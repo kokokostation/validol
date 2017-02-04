@@ -4,6 +4,7 @@ import itertools
 import heapq
 import numpy as np
 from functools import reduce
+import pickle
 
 __all__ = ["take_closest", "add_to_dict", "flatten", "split", "my_division", "parse_isoformat_date"]
 
@@ -22,11 +23,6 @@ def take_closest(l, date):
         return pos
     else:
         return pos - 1
-
-def add_to_dict(dict, key1, key2, value):
-    if key1 not in dict:
-        dict[key1] = {}
-    dict[key1][key2] = value
 
 def flatten(l):
     while type(l[0]) == list:
@@ -73,3 +69,15 @@ def merge_lists(lists):
 
 def intersect_lists(lists):
     return reduce(np.intersect1d, lists)
+
+def pickleLoader(pklFile):
+    result = []
+    try:
+        while True:
+            result.append(pickle.load(pklFile))
+    except EOFError:
+        return result
+
+def pickleExtend(l, pklFile):
+    for item in l:
+        pickle.dump(item, pklFile)

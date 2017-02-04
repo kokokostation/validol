@@ -2,7 +2,7 @@ import numpy as np
 import pyqtgraph as pg
 import datetime as dt
 import interface_common
-from PyQt4 import QtGui
+from PyQt5 import QtGui
 
 __all__ = ["draw_table"]
 

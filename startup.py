@@ -4,6 +4,7 @@ import filenames
 import utils
 import data_parser
 import datetime as dt
+import pickle
 
 #создать все необходимые файлы и поубирать if'ы
 def init():

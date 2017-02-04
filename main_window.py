@@ -1,10 +1,10 @@
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 import data_parser
 import tables
 import downloader
 import table_dialog
 import graph_dialog
-import formulae
+import user_structures
 from pyparsing import alphas
 import startup
 import interface_common
@@ -55,6 +55,9 @@ class Window(QtGui.QWidget):
         self.updateButton = QtGui.QPushButton('Update')
         self.updateButton.clicked.connect(self.on_update)
 
+        self.removeTable = QtGui.QPushButton('Remove table')
+        self.removeTable.clicked.connect(self.remove_table)
+
         self.leftLayout = QtGui.QVBoxLayout()
         self.leftLayout.addWidget(self.platforms)
         self.leftLayout.addWidget(self.updateButton)
@@ -77,6 +80,7 @@ class Window(QtGui.QWidget):
         self.rightLayout = QtGui.QVBoxLayout()
         self.rightLayout.addWidget(self.cached_prices)
         self.rightLayout.addWidget(self.tablesList)
+        self.rightLayout.addWidget(self.removeTable)
         self.rightLayout.addWidget(self.tableView)
         self.rightLayout.addWidget(self.createTable)
 
@@ -100,6 +104,10 @@ class Window(QtGui.QWidget):
 
         self.showMaximized()
 
+    def remove_table(self):
+        user_structures.remove_table(self.tablesList.currentItem().text())
+        self.set_tables()
+
     def closeEvent(self, _):
         for graph in self.graphs:
             graph.close()
@@ -120,17 +128,17 @@ class Window(QtGui.QWidget):
         self.searchResult[2] += 1
 
     def table_chosen(self):
-        _, presentation = self.availableTables[self.tablesList.currentRow()]
-        self.tableView.setText(presentation)
+        name, presentation, _ = self.availableTables[self.tablesList.currentRow()]
+        self.tableView.setText(name + ":\n" + presentation)
 
     def set_tables(self):
         self.tablesList.clear()
         self.availableTables = []
 
-        tables = formulae.get_tables()
+        tables = user_structures.get_tables()
         for name, presentation, tablePattern in tables:
             wi = QtGui.QListWidgetItem(name)
-            self.availableTables.append((tablePattern, presentation))
+            self.availableTables.append((name, presentation, tablePattern))
             self.tablesList.addItem(wi)
 
     def set_cached_prices(self):
@@ -197,7 +205,7 @@ class Window(QtGui.QWidget):
 
     def draw_table(self):
         tableName = self.tablesList.currentItem().text()
-        tablePattern, tableLabels = self.availableTables[self.tablesList.currentRow()]
+        _, tableLabels, tablePattern = self.availableTables[self.tablesList.currentRow()]
         tableLabels = [table.split(",") for table in tableLabels.split("\n")]
         info = []
         title = ""

@@ -92,7 +92,7 @@ class NumericStringParser(object):
         else:
             return lambda v: float(op)
 
-    def eval(self, num_string, parseAll=True):
+    def compile(self, num_string, parseAll=True):
         self.exprStack = []
         results = self.bnf.parseString(num_string, parseAll)
         return self.evaluateStack(self.exprStack)
