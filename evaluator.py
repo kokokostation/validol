@@ -76,7 +76,8 @@ class NumericStringParser(object):
     def evaluateStack(self, s):
         op = s.pop()
         if op == 'unary -':
-            return lambda v: -self.evaluateStack(s)(v)
+            op2 = self.evaluateStack(s)
+            return lambda v: -op2(v)
         if op in "+-*/^":
             op2 = self.evaluateStack(s)
             op1 = self.evaluateStack(s)
@@ -86,7 +87,8 @@ class NumericStringParser(object):
         elif op == "E":
             return lambda v: math.e  # 2.718281828
         elif op in self.fn:
-            return lambda v: self.fn[op](self.evaluateStack(s)(v))
+            op2 = self.evaluateStack(s)
+            return lambda v: self.fn[op](op2(v))
         elif op[0] == "~":
             return lambda v: v[int(op[1:])]
         else:

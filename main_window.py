@@ -124,8 +124,9 @@ class Window(QtGui.QWidget):
             self.searchResult = [searchText, self.actives.findItems(self.searchLine.text(), QtCore.Qt.MatchContains), 0]
 
         _, items, index = self.searchResult
-        self.actives.setCurrentItem(items[index % len(items)])
-        self.searchResult[2] += 1
+        if items:
+            self.actives.setCurrentItem(items[index % len(items)])
+            self.searchResult[2] += 1
 
     def table_chosen(self):
         name, presentation, _ = self.availableTables[self.tablesList.currentRow()]

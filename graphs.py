@@ -164,9 +164,8 @@ class Graph(pg.GraphicsWindow):
                     labels[i].setText(str_dates[int(x)])
                     labels[i].setPos(x, plots[i].vb.viewRange()[1][0])
 
-                    legends[i].items = []
                     while legends[i].layout.count() > 0:
-                        legends[i].removeAt(0)
+                        legends[i].removeItem(legends[i].items[0][1].text)
 
                     for j in range(2 * i, 2 * (i + 1)):
                         for style, key in self.legendData[j]:
