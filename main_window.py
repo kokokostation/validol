@@ -18,6 +18,7 @@ class Window(QtGui.QWidget):
         self.app = app
 
         self.setWindowTitle("COTs")
+        self.setWindowTitle("govno")
 
         self.searchResult = None
 
