@@ -3,6 +3,7 @@ from pyparsing import (Literal, CaselessLiteral, Word, Combine, Group, Optional,
                        ZeroOrMore, Forward, nums, alphas, oneOf)
 import math
 import operator
+import utils
 
 class NumericStringParser(object):
     def pushFirst(self, strg, loc, toks):
@@ -63,7 +64,7 @@ class NumericStringParser(object):
         self.opn = {"+": operator.add,
                     "-": operator.sub,
                     "*": operator.mul,
-                    "/": operator.truediv,
+                    "/": utils.my_division,
                     "^": operator.pow}
         self.fn = {"sin": math.sin,
                    "cos": math.cos,
