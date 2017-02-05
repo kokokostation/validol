@@ -8,8 +8,11 @@ import pickle
 
 __all__ = ["get_prices", "get_mbase", "init", "update"]
 
+def ascii(text):
+    return re.sub(r'[^\x00-\x7F]', '', text)
+
 def read_url(url):
-    return requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}).text
+    return ascii(requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}).text)
 
 def unique(list_):
     return [list_[2 * i] for i in range(0, len(list_) // 2)]

@@ -2,6 +2,9 @@ import sys
 from PyQt5 import QtGui
 from main_window import Window
 from startup import init
+from update import update_sources
+
+update_sources()
 
 init()
 

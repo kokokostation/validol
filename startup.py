@@ -22,6 +22,15 @@ def init():
         update()
 
 def update():
+    dates_file = open(filenames.datesFile, "a+")
+    dates_file.seek(0)
+
+    last_net_date = downloader.get_last_date()
+    written_dates = dates_file.read().splitlines()
+
+    if written_dates and utils.parse_isoformat_date(written_dates[-1]) == last_net_date:
+        return
+
     monetary_file = open(filenames.monetaryFile, "a+")
     monetary_file.seek(0)
 
@@ -33,15 +42,6 @@ def update():
     monetary_file.write(downloader.get_net_mbase(last_date, dt.date.today().isoformat()))
 
     monetary_file.close()
-
-    dates_file = open(filenames.datesFile, "a+")
-    dates_file.seek(0)
-
-    last_net_date = downloader.get_last_date()
-    written_dates = dates_file.read().splitlines()
-
-    if written_dates and utils.parse_isoformat_date(written_dates[-1]) == last_net_date:
-        return
 
     platforms_file = open(filenames.platformsFile, "w")
     net_platforms = downloader.get_platforms()
