@@ -33,15 +33,13 @@ class Window(QtGui.QWidget):
 
         self.platforms = QtGui.QListWidget()
         self.platforms.currentItemChanged.connect(self.platform_chosen)
-        flag = False
+
         for code, name in data_parser.get_platforms():
             wi = QtGui.QListWidgetItem(name)
             wi.setToolTip(code)
             self.platforms.addItem(wi)
-            if flag == False:
-                self.platforms.setCurrentItem(wi)
-                self.platform_chosen()
-                flag = True
+
+        self.platforms.setCurrentRow(0)
 
         self.drawTable = QtGui.QPushButton('Draw table')
         self.drawTable.clicked.connect(self.draw_table)
@@ -141,6 +139,8 @@ class Window(QtGui.QWidget):
             wi = QtGui.QListWidgetItem(name)
             self.availableTables.append((name, presentation, tablePattern))
             self.tablesList.addItem(wi)
+
+        self.tablesList.setCurrentRow(self.tablesList.count() - 1)
 
     def set_cached_prices(self):
         for url, name in data_parser.get_cached_prices():

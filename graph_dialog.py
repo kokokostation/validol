@@ -193,6 +193,7 @@ class GraphDialog(QtGui.QWidget):
             return
 
         self.pattern_list.addItem(patternTitle)
+        self.pattern_list.setCurrentRow(self.pattern_list.count() - 1)
 
         user_structures.add_pattern(self.tableName, patternTitle, self.currentPattern)
         self.patterns[patternTitle] = self.currentPattern
