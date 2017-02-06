@@ -98,4 +98,12 @@ class NumericStringParser(object):
     def compile(self, num_string, parseAll=True):
         self.exprStack = []
         results = self.bnf.parseString(num_string, parseAll)
-        return self.evaluateStack(self.exprStack)
+        f = self.evaluateStack(self.exprStack)
+
+        def func(v):
+            if None in v:
+                return None
+            else:
+                return f(v)
+
+        return func
