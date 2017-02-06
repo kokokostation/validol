@@ -170,7 +170,7 @@ class Graph(pg.GraphicsWindow):
                     for j in range(2 * i, 2 * (i + 1)):
                         for style, key in self.legendData[j]:
                             if type(key) == int:
-                                label = self.tableLabels[key] + " " + str(self.values[int(x)][key])
+                                label = self.tableLabels[key] + " " + str(round(self.values[int(x)][key], 2))
                             else:
                                 label = key
                             legends[i].addItem(style, label)

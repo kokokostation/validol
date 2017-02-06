@@ -39,6 +39,15 @@ def my_division(a, b):
     else:
         return None
 
+def none_filter(f):
+    def func(*args):
+        if None in args:
+            return None
+        else:
+            return f(*args)
+
+    return func
+
 def parse_isoformat_date(date):
     return dt.datetime.strptime(date, "%Y-%m-%d").date()
 

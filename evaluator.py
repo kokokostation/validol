@@ -82,14 +82,14 @@ class NumericStringParser(object):
         if op in "+-*/^":
             op2 = self.evaluateStack(s)
             op1 = self.evaluateStack(s)
-            return lambda v: self.opn[op](op1(v), op2(v))
+            return lambda v: utils.none_filter(self.opn[op])(op1(v), op2(v))
         elif op == "PI":
             return lambda v: math.pi  # 3.1415926535
         elif op == "E":
             return lambda v: math.e  # 2.718281828
         elif op in self.fn:
             op2 = self.evaluateStack(s)
-            return lambda v: self.fn[op](op2(v))
+            return lambda v: utils.none_filter(self.fn[op])(op2(v))
         elif op[0] == "~":
             return lambda v: v[int(op[1:])]
         else:
@@ -98,12 +98,4 @@ class NumericStringParser(object):
     def compile(self, num_string, parseAll=True):
         self.exprStack = []
         results = self.bnf.parseString(num_string, parseAll)
-        f = self.evaluateStack(self.exprStack)
-
-        def func(v):
-            if None in v:
-                return None
-            else:
-                return f(v)
-
-        return func
+        return self.evaluateStack(self.exprStack)
