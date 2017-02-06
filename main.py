@@ -6,9 +6,13 @@ from update import update_sources
 
 update_sources()
 
-init()
+# init()
+#
+# app = QtGui.QApplication(sys.argv)
+# window = Window(app)
+# window.show()
+# sys.exit(app.exec_())
 
-app = QtGui.QApplication(sys.argv)
-window = Window(app)
-window.show()
-sys.exit(app.exec_())
+from data_parser import reparse
+
+reparse()

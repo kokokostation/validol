@@ -7,7 +7,7 @@ import filenames
 import user_structures
 from itertools import groupby
 from evaluator import NumericStringParser
-import pickle
+import shutil
 
 __all__ = ["table1_labels", "table2_labels", "table1_key_types", "table2_key_types", "places_num", "get_platforms", "get_cached_prices", "Grabber"]
 
@@ -15,8 +15,21 @@ main_primary_labels = 11
 primary_labels = ["OI", "NCL", "NCS", "CL", "CS", "NRL", "NRS", "4L%", "4S%", "8L%", "8S%", "Quot", "MBase", "MBDelta"]
 primary_types = [float] * len(primary_labels)
 
+def reparse():
+    for code, _ in get_platforms():
+        parsed = "/".join([code, filenames.parsed])
+        shutil.rmtree(parsed)
+        index = []
+        dates = list(sorted(map(utils.parse_isoformat_date, os.listdir(code))))
+        os.mkdir(parsed)
+
+        for date in dates:
+            file = open("/".join([code, date.isoformat()]), "r")
+            parse_date(code, date, file.read(), index)
+            file.close()
+
 def parse_active(entry):
-    name = entry.split("\n", 1)[0].rsplit(" - ", 1)[0]
+    name = entry.split("\n", 1)[0].rsplit(" - ", 1)[0].strip()
     entry = entry.replace(",", "")
     lines = [list(map(float, re.findall(r'\d+\.\d+|\d+', s))) for s in re.findall(r'\nAll ([^\n]*)\n', entry)]
     fields = [lines[0][0],
@@ -33,7 +46,7 @@ def parse_active(entry):
     return name, fields
 
 def get_actives_from_page(content):
-    start, end = re.search(r'<!--ih:includeHTML file=\".*\"-->\b', content), re.search(r'<!--/ih:includeHTML-->', content)
+    start, end = re.search(r'<!--ih:includeHTML file=\".*\"-->[ \r\n]*', content), re.search(r'<!--/ih:includeHTML-->', content)
     if start and end:
         activesList = list(filter(lambda s: '-' in s, re.compile(r'(?:[ \r]*\n){2,3}').split(content[start.end():end.start()])))
     else:
