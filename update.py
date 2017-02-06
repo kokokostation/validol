@@ -9,3 +9,6 @@ def update_sources():
     zipFile = zipfile.ZipFile(file,"r")
     for name in zipFile.namelist()[1:]:
         open(name.split("/")[1], "wb").write(zipFile.read(name))
+
+if __name__ == '__main__':
+    update_sources()
