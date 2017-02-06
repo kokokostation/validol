@@ -8,7 +8,11 @@ update_sources()
 
 init()
 
-app = QtGui.QApplication(sys.argv)
-window = Window(app)
-window.show()
-sys.exit(app.exec_())
+# app = QtGui.QApplication(sys.argv)
+# window = Window(app)
+# window.show()
+# sys.exit(app.exec_())
+
+from data_parser import reparse
+
+reparse()
