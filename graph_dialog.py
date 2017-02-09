@@ -41,6 +41,9 @@ class GraphDialog(QtGui.QWidget):
                 self.pattern_list.addItem(graphName)
                 self.patterns[graphName] = pattern
 
+        if self.pattern_list.count() > 0:
+            self.pattern_list.setCurrentRow(0)
+
         self.pattern_list.itemDoubleClicked.connect(self.draw_item)
 
         self.patternTree = QtGui.QTreeWidget()

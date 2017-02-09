@@ -4,15 +4,21 @@ import os
 import requests
 import utils
 import filenames
-import pickle
+import html
 
 __all__ = ["get_prices", "get_mbase", "init", "update"]
 
-def ascii(text):
+def remove_non_ascii(text):
     return re.sub(r'[^\x00-\x7F]', '', text)
 
 def read_url(url):
-    return ascii(requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}).text)
+    temp = remove_non_ascii(requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}).text)
+    content = html.unescape(temp)
+    while temp != content:
+        temp = content
+        content = html.unescape(content)
+
+    return content
 
 def unique(list_):
     return [list_[2 * i] for i in range(0, len(list_) // 2)]

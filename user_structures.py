@@ -11,7 +11,8 @@ def parse_atom(atom):
     return name, alphas.index(index)
 
 def parse_formula(formula):
-    atoms = list(set(re.findall(r'[^ +-/()\^]+\([A-Z]\)', formula)))
+    pure_atoms = "(?:" + "|".join([re.escape(a[0]) for a in get_atoms()]) + ")"
+    atoms = list(set(re.findall(pure_atoms + '\([A-Z]\)', formula)))
     parsed_atoms = list(map(parse_atom, atoms))
     for i in range(len(atoms)):
         formula = formula.replace(atoms[i], "~" + str(i))

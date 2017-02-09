@@ -18,7 +18,8 @@ primary_types = [float] * len(primary_labels)
 def reparse():
     for code, _ in get_platforms():
         parsed = "/".join([code, filenames.parsed])
-        shutil.rmtree(parsed)
+        if os.path.isdir(parsed):
+            shutil.rmtree(parsed)
         index = []
         dates = list(sorted(map(utils.parse_isoformat_date, os.listdir(code))))
         os.mkdir(parsed)
