@@ -21,6 +21,8 @@ def update_sources():
                 os.unlink(target)
             except FileNotFoundError:
                 pass
+        except FileNotFoundError:
+            pass
         shutil.move(os.path.join(path, target), target)
 
     shutil.rmtree(path)
