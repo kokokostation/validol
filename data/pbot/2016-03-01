@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CFTC Commitments of Traders Long Report - NASDAQ (Futures Only)</title>
+<!--begin meta-->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="description" content="This is the viewable version of the most recent release of the NASDAQ long form futures only commitments report." />
+<meta name="file" content="deapbotlf.htm" />
+<meta name="keywords" content="commitments, long, CFTC, NASDAQ, Futures only" />
+<meta name="office" content="dea" />
+<!--end meta-->
+
+<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script><script type='text/javascript'>var pageTracker = _gat._getTracker("UA-21047137-1");	pageTracker._trackPageview();</script><script type="text/javascript" src="/ucm/fragments/web_header/js/gaAddons.js"></script></head>
+<body>
+<!--begin content-->
+ <pre>
+ <!--ih:includeHTML file="deapbotlf.txt"-->HHUB NAT GAS PENULT FINL-10000 - NASDAQ FUTURES                                                         Code-023P02
+Commitments of Traders - Futures Only, March 01, 2016                                                              
+-------------------------------------------------------------------------------------------------------------------
+     :   Total  :                        Reportable Positions                                :   Nonreportable
+     :----------------------------------------------------------------------------------------     Positions
+     :   Open   :           Non-Commercial       :     Commercial      :       Total         :
+     : Interest :   Long   :  Short   : Spreading:   Long   :  Short   :   Long   :  Short   :   Long   :  Short
+-------------------------------------------------------------------------------------------------------------------
+     :          : (Contracts of 10,000 MMBTU'S)                                              :
+     :          :                                                                            :
+All  :    20,409:     3,416      5,458      2,667     14,232     11,584     20,315     19,709:        94        700
+Old  :    20,409:     3,416      5,458      2,667     14,232     11,584     20,315     19,709:        94        700
+Other:         0:         0          0          0          0          0          0          0:         0          0
+     :          :                                                                            :
+     :          :          Changes in Commitments from: February 23, 2016                    :
+     :    -5,382:    -1,551     -3,328       -465     -3,460     -1,673     -5,476     -5,466:        94         84
+     :          :                                                                            :
+     :          :    Percent of Open Interest Represented by Each Category of Trader         :
+All  :     100.0:      16.7       26.7       13.1       69.7       56.8       99.5       96.6:       0.5        3.4
+Old  :     100.0:      16.7       26.7       13.1       69.7       56.8       99.5       96.6:       0.5        3.4
+Other:     100.0:       0.0        0.0        0.0        0.0        0.0        0.0        0.0:       0.0        0.0
+     :          :                                                                            :
+     :# Traders :              Number of Traders in Each Category                            :
+All  :        25:         6         10          8          8          7         20         19:
+Old  :        25:         6         10          8          8          7         20         19:
+Other:         0:         0          0          0          0          0          0          0:
+     :----------------------------------------------------------------------------------------------------
+     :             Percent of Open Interest Held by the Indicated Number of the Largest Traders
+     :                          By Gross Position                       By Net Position
+     :               4 or Less Traders     8 or Less Traders     4 or Less Traders     8 or Less Traders
+     :                 Long:     Short       Long      Short:      Long      Short       Long      Short
+     :----------------------------------------------------------------------------------------------------
+All  :                 62.8       70.8       84.9       87.1       46.1       45.0       54.1       51.0
+Old  :                 62.8       70.8       84.9       87.1       46.1       45.0       54.1       51.0
+Other:                  0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.0
+ 
+
+<!--/ih:includeHTML-->
+</pre>
+<!--end content-->
+<!--begin footer-->
+<hr />
+<p style="text-align:center;font-size:14px;margin-top:0px">Updated March 4, 2016</p>
+<!--end footer-->
+</body>
+</html>

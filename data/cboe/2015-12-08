@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CFTC Commitments of Traders Long Report - CBOE (Futures Only)</title>
+<!--begin meta-->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="description" content="This is the viewable version of the most recent release of the CBOE long form futures only commitments report." />
+<meta name="file" content="deacboelf.htm" />
+<meta name="keywords" content="commitments, long, CFTC, CBOE, Futures only" />
+<meta name="office" content="dea" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!--end meta-->
+
+<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script><script type='text/javascript'>var pageTracker = _gat._getTracker("UA-21047137-1");	pageTracker._trackPageview();</script><script type="text/javascript" src="/ucm/fragments/web_header/js/gaAddons.js"></script></head>
+<body>
+<!--begin content-->
+ <pre>
+ <!--ih:includeHTML file="deacboelf.txt"-->VIX FUTURES - CBOE FUTURES EXCHANGE                                                                     Code-1170E1
+Commitments of Traders - Futures Only, December 08, 2015                                                           
+-------------------------------------------------------------------------------------------------------------------
+     :   Total  :                        Reportable Positions                                :   Nonreportable
+     :----------------------------------------------------------------------------------------     Positions
+     :   Open   :           Non-Commercial       :     Commercial      :       Total         :
+     : Interest :   Long   :  Short   : Spreading:   Long   :  Short   :   Long   :  Short   :   Long   :  Short
+-------------------------------------------------------------------------------------------------------------------
+     :          : ($1000 X INDEX)                                                            :
+     :          :                                                                            :
+All  :   295,272:   115,990    126,170     70,725     88,172     74,822    274,887    271,717:    20,385     23,555
+Old  :   295,272:   115,990    126,170     70,725     88,172     74,822    274,887    271,717:    20,385     23,555
+Other:         0:         0          0          0          0          0          0          0:         0          0
+     :          :                                                                            :
+     :          :          Changes in Commitments from: December 1, 2015                     :
+     :   -16,884:    -1,034    -12,590     -9,263     -4,232      7,394    -14,529    -14,459:    -2,355     -2,425
+     :          :                                                                            :
+     :          :    Percent of Open Interest Represented by Each Category of Trader         :
+All  :     100.0:      39.3       42.7       24.0       29.9       25.3       93.1       92.0:       6.9        8.0
+Old  :     100.0:      39.3       42.7       24.0       29.9       25.3       93.1       92.0:       6.9        8.0
+Other:     100.0:       0.0        0.0        0.0        0.0        0.0        0.0        0.0:       0.0        0.0
+     :          :                                                                            :
+     :# Traders :              Number of Traders in Each Category                            :
+All  :       163:        53         63         61         33         31        122        128:
+Old  :       163:        53         63         61         33         31        122        128:
+Other:         0:         0          0          0          0          0          0          0:
+     :----------------------------------------------------------------------------------------------------
+     :             Percent of Open Interest Held by the Indicated Number of the Largest Traders
+     :                          By Gross Position                       By Net Position
+     :               4 or Less Traders     8 or Less Traders     4 or Less Traders     8 or Less Traders
+     :                 Long:     Short       Long      Short:      Long      Short       Long      Short
+     :----------------------------------------------------------------------------------------------------
+All  :                 40.3       36.4       51.8       48.9       29.6       29.0       37.9       37.3
+Old  :                 40.3       36.4       51.8       48.9       29.6       29.0       37.9       37.3
+Other:                  0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.0
+ 
+
+<!--/ih:includeHTML-->
+</pre>
+<!--end content-->
+<!--begin footer-->
+<hr />
+<p style="text-align:center;font-size:14px;margin-top:0px">Updated December 11, 2015</p>
+<!--end footer-->
+</body>
+</html>

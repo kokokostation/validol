@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CFTC Commitments of Traders Long Report - CBOE (Futures Only)</title>
+<!--begin meta-->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="description" content="This is the viewable version of the most recent release of the CBOE long form futures only commitments report." />
+<meta name="file" content="deacboelf.htm" />
+<meta name="keywords" content="commitments, long, CFTC, CBOE, Futures only" />
+<meta name="office" content="dea" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!--end meta-->
+
+</head>
+<body>
+<!--begin content-->
+ <pre>
+ <!--ih:includeHTML file="deacboelf.txt"-->VIX FUTURES - CBOE FUTURES EXCHANGE                                                                     Code-1170E1
+Commitments of Traders - Futures Only, June 30, 2009                   
+-------------------------------------------------------------------------------------------------------------------
+     :   Total  :                        Reportable Positions                                :   Nonreportable
+     :----------------------------------------------------------------------------------------     Positions
+     :   Open   :           Non-Commercial       :     Commercial      :       Total         :
+     : Interest :   Long   :  Short   : Spreading:   Long   :  Short   :   Long   :  Short   :   Long   :  Short
+-------------------------------------------------------------------------------------------------------------------
+     :          : ($1000 X INDEX)                                                            :
+     :          :                                                                            :
+All  :    27,016:    11,573      5,472      4,953      3,028     13,853     19,554     24,278:     7,462      2,738
+Old  :    27,016:    11,573      5,472      4,953      3,028     13,853     19,554     24,278:     7,462      2,738
+Other:         0:         0          0          0          0          0          0          0:         0          0
+     :          :                                                                            :
+     :          :          Changes in Commitments from: June 23, 2009                        :
+     :     2,440:     3,558      2,705        568       -250        801      3,876      4,074:    -1,436     -1,634
+     :          :                                                                            :
+     :          :    Percent of Open Interest Represented by Each Category of Trader         :
+All  :     100.0:      42.8       20.3       18.3       11.2       51.3       72.4       89.9:      27.6       10.1
+Old  :     100.0:      42.8       20.3       18.3       11.2       51.3       72.4       89.9:      27.6       10.1
+Other:     100.0:       0.0        0.0        0.0        0.0        0.0        0.0        0.0:       0.0        0.0
+     :          :                                                                            :
+     :# Traders :              Number of Traders in Each Category                            :
+All  :        22:        11          5          5          5          5         20         11:
+Old  :        22:        11          5          5          5          5         20         11:
+Other:         0:         0          0          0          0          0          0          0:
+     :----------------------------------------------------------------------------------------------------
+     :             Percent of Open Interest Held by the Indicated Number of the Largest Traders
+     :                          By Gross Position                       By Net Position
+     :               4 or Less Traders     8 or Less Traders     4 or Less Traders     8 or Less Traders
+     :                 Long:     Short       Long      Short:      Long      Short       Long      Short
+     :----------------------------------------------------------------------------------------------------
+All  :                 48.0       71.2       58.9       88.6       38.9       61.5       45.9       68.9
+Old  :                 48.0       71.2       58.9       88.6       38.9       61.5       45.9       68.9
+Other:                  0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.0
+ 
+<!--/ih:includeHTML-->
+</pre>
+<!--end content-->
+<!--begin footer-->
+<hr />
+<p style="text-align:center;font-size:14px;margin-top:0px">Updated July 6, 2009</p>
+<!--end footer-->
+</body>
+</html>

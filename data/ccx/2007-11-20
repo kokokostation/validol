@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CFTC Commitments of Traders Long Report - CCX (Futures Only)</title>
+<!--begin meta-->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="description" content="This is the viewable version of the most recent release of the CCX long form futures only commitments report." />
+<meta name="file" content="deaccxlf.htm" />
+<meta name="keywords" content="commitments, long, CFTC, CCX, Futures only" />
+<meta name="office" content="dea" />
+<!--end meta-->
+
+</head>
+<body>
+<!--begin content-->
+ <pre>
+ <!--ih:includeHTML file="deaccxlf.txt"-->SULFUR FINANCIAL INSTRUMENT - CHICAGO CLIMATE FUTURES EXCHANGE                                          Code-006261
+Commitments of Traders - Futures Only, November 20, 2007               
+-------------------------------------------------------------------------------------------------------------------
+     :   Total  :                        Reportable Positions                                :   Nonreportable
+     :----------------------------------------------------------------------------------------     Positions
+     :   Open   :           Non-Commercial       :     Commercial      :       Total         :
+     : Interest :   Long   :  Short   : Spreading:   Long   :  Short   :   Long   :  Short   :   Long   :  Short
+-------------------------------------------------------------------------------------------------------------------
+     :          : (CONTRACTS OF 25 U.S. EPA SO2 EMMISSION ALLOWANCES)                        :
+     :          :                                                                            :
+All  :    19,624:     8,678      3,108      1,026      9,903     15,459     19,607     19,593:        17         31
+Old  :    19,624:     8,678      3,108      1,026      9,903     15,459     19,607     19,593:        17         31
+Other:         0:         0          0          0          0          0          0          0:         0          0
+     :          :                                                                            :
+     :          :          Changes in Commitments from: November 13, 2007                    :
+     :       -56:       810        140        341       -774       -155        377        326:      -433       -382
+     :          :                                                                            :
+     :          :    Percent of Open Interest Represented by Each Category of Trader         :
+All  :     100.0:      44.2       15.8        5.2       50.5       78.8       99.9       99.8:       0.1        0.2
+Old  :     100.0:      44.2       15.8        5.2       50.5       78.8       99.9       99.8:       0.1        0.2
+Other:     100.0:       0.0        0.0        0.0        0.0        0.0        0.0        0.0:       0.0        0.0
+     :          :                                                                            :
+     :# Traders :              Number of Traders in Each Category                            :
+All  :        34:        12          9         10          8         10         26         25:
+Old  :        34:        12          9         10          8         10         26         25:
+Other:         0:         0          0          0          0          0          0          0:
+     :----------------------------------------------------------------------------------------------------
+     :             Percent of Open Interest Held by the Indicated Number of the Largest Traders
+     :                          By Gross Position                       By Net Position
+     :               4 or Less Traders     8 or Less Traders     4 or Less Traders     8 or Less Traders
+     :                 Long:     Short       Long      Short:      Long      Short       Long      Short
+     :----------------------------------------------------------------------------------------------------
+All  :                 64.8       69.2       84.5       83.3       41.2       41.1       56.0       52.2
+Old  :                 64.8       69.2       84.5       83.3       41.2       41.1       56.0       52.2
+Other:                  0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.0
+ 
+<!--/ih:includeHTML--> 
+</pre>
+<!--end content-->
+<!--begin footer-->
+<hr />
+<p style="text-align:center;font-size:14px;margin-top:0px">Updated November 26, 2007</p>
+<!--end footer-->
+</body>
+</html>

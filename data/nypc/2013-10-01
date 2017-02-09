@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CFTC Commitments of Traders Report - NYPC (Futures Only)</title>
+<!--begin meta-->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="description" content="This is the viewable version of the most recent release of the NYPC long form futures only commitments report." />
+<meta name="file" content="deanypclf.htm" />
+<meta name="keywords" content="commitments, long, CFTC, NYPC, Futures only" />
+<meta name="office" content="dea" />
+<!--end meta-->
+
+<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script><script type='text/javascript'>var pageTracker = _gat._getTracker("UA-21047137-1");	pageTracker._trackPageview();</script><script type="text/javascript" src="/ucm/fragments/web_header/js/gaAddons.js"></script></head>
+<body>
+<!--begin content-->
+ <pre>
+ <!--ih:includeHTML file="deanypclf.txt"-->DTCC Repo-US Treasury <30 YR - NYSE LIFFE - NYPC                                                        Code-045L2T
+Commitments of Traders - Futures Only, October 1, 2013                 
+-------------------------------------------------------------------------------------------------------------------
+     :   Total  :                        Reportable Positions                                :   Nonreportable
+     :----------------------------------------------------------------------------------------     Positions
+     :   Open   :           Non-Commercial       :     Commercial      :       Total         :
+     : Interest :   Long   :  Short   : Spreading:   Long   :  Short   :   Long   :  Short   :   Long   :  Short
+-------------------------------------------------------------------------------------------------------------------
+     :          : (CONTRACTS OF $5,000,000)                                                  :
+     :          :                                                                            :
+All  :    26,184:     3,841      3,022      2,201     19,986     20,505     26,028     25,728:       156        456
+Old  :    26,184:     3,841      3,022      2,201     19,986     20,505     26,028     25,728:       156        456
+Other:         0:         0          0          0          0          0          0          0:         0          0
+     :          :                                                                            :
+     :          :          Changes in Commitments from: September 24, 2013                   :
+     :    -8,753:     1,242     -1,124       -669     -9,420     -7,342     -8,847     -9,135:        94        382
+     :          :                                                                            :
+     :          :    Percent of Open Interest Represented by Each Category of Trader         :
+All  :     100.0:      14.7       11.5        8.4       76.3       78.3       99.4       98.3:       0.6        1.7
+Old  :     100.0:      14.7       11.5        8.4       76.3       78.3       99.4       98.3:       0.6        1.7
+Other:     100.0:       0.0        0.0        0.0        0.0        0.0        0.0        0.0:       0.0        0.0
+     :          :                                                                            :
+     :# Traders :              Number of Traders in Each Category                            :
+All  :        35:         9          6          4         15         17         24         27:
+Old  :        35:         9          6          4         15         17         24         27:
+Other:         0:         0          0          0          0          0          0          0:
+     :----------------------------------------------------------------------------------------------------
+     :             Percent of Open Interest Held by the Indicated Number of the Largest Traders
+     :                          By Gross Position                       By Net Position
+     :               4 or Less Traders     8 or Less Traders     4 or Less Traders     8 or Less Traders
+     :                 Long:     Short       Long      Short:      Long      Short       Long      Short
+     :----------------------------------------------------------------------------------------------------
+All  :                 55.6       63.4       73.0       77.2       33.0       44.2       46.0       52.8
+Old  :                 55.6       63.4       73.0       77.2       33.0       44.2       46.0       52.8
+Other:                  0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.0
+ 
+
+<!--/ih:includeHTML-->
+</pre>
+<!--end content-->
+<!--begin footer-->
+<hr />
+<p style="text-align:center;font-size:14px;margin-top:0px">Updated October 25, 2013</p>
+<!--end footer-->
+</body>
+</html>

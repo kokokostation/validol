@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CFTC Commitments of Traders Long Report - ICEU (Combined)</title>
+<!--begin meta-->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="description" content="This is the viewable version of the most recent release of the ICEU long form Futures Only commitments report." />
+<meta name="file" content="deaiceulf.htm" />
+<meta name="keywords" content="commitments, long, CFTC, ICEU, Futures Only" />
+<meta name="office" content="dea" />
+<!--end meta-->
+
+<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script><script type='text/javascript'>var pageTracker = _gat._getTracker("UA-21047137-1");	pageTracker._trackPageview();</script><script type="text/javascript" src="/ucm/fragments/web_header/js/gaAddons.js"></script></head>
+<body>
+<!--begin content-->
+ <pre>
+ <!--ih:includeHTML file="deaiceulf.txt"-->CRUDE OIL, LIGHT SWEET-WTI - ICE FUTURES EUROPE                                                         Code-067411
+Commitments of Traders - Futures Only, May 24, 2016                                                                
+-------------------------------------------------------------------------------------------------------------------
+     :   Total  :                        Reportable Positions                                :   Nonreportable
+     :----------------------------------------------------------------------------------------     Positions
+     :   Open   :           Non-Commercial       :     Commercial      :       Total         :
+     : Interest :   Long   :  Short   : Spreading:   Long   :  Short   :   Long   :  Short   :   Long   :  Short
+-------------------------------------------------------------------------------------------------------------------
+     :          : (CONTRACTS OF 1,000 BARRELS)                                               :
+     :          :                                                                            :
+All  :   411,974:    64,215     47,217     88,508    245,280    260,603    398,003    396,328:    13,971     15,646
+Old  :   411,974:    64,215     47,217     88,508    245,280    260,603    398,003    396,328:    13,971     15,646
+Other:         0:         0          0          0          0          0          0          0:         0          0
+     :          :                                                                            :
+     :          :          Changes in Commitments from: May 17, 2016                         :
+     :   -26,149:     2,909    -11,678       -405    -26,694    -13,699    -24,190    -25,782:    -1,959       -367
+     :          :                                                                            :
+     :          :    Percent of Open Interest Represented by Each Category of Trader         :
+All  :     100.0:      15.6       11.5       21.5       59.5       63.3       96.6       96.2:       3.4        3.8
+Old  :     100.0:      15.6       11.5       21.5       59.5       63.3       96.6       96.2:       3.4        3.8
+Other:     100.0:       0.0        0.0        0.0        0.0        0.0        0.0        0.0:       0.0        0.0
+     :          :                                                                            :
+     :# Traders :              Number of Traders in Each Category                            :
+All  :       119:        21         32         40         60         58        106        106:
+Old  :       119:        21         32         40         60         58        106        106:
+Other:         0:         0          0          0          0          0          0          0:
+     :----------------------------------------------------------------------------------------------------
+     :             Percent of Open Interest Held by the Indicated Number of the Largest Traders
+     :                          By Gross Position                       By Net Position
+     :               4 or Less Traders     8 or Less Traders     4 or Less Traders     8 or Less Traders
+     :                 Long:     Short       Long      Short:      Long      Short       Long      Short
+     :----------------------------------------------------------------------------------------------------
+All  :                 31.7       24.3       47.4       38.1       26.4       16.3       32.6       25.5
+Old  :                 31.7       24.3       47.4       38.1       26.4       16.3       32.6       25.5
+Other:                  0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.0
+ 
+
+<!--/ih:includeHTML-->
+</pre>
+<!--end content-->
+<!--begin footer-->
+<hr />
+<p style="text-align:center;font-size:14px;margin-top:0px">Updated May 27, 2016</p>
+<!--end footer-->
+</body>
+</html>

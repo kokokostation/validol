@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CFTC Commitments of Traders Long Report - ICEU (Futures Only)</title>
+<!--begin meta-->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="description" content="This is the viewable version of the most recent release of the ICEU long form Combined commitments report." />
+<meta name="file" content="deaiceulof.htm" />
+<meta name="keywords" content="commitments, long, CFTC, ICEU, Combined" />
+<meta name="office" content="dea" />
+<!--end meta-->
+
+</head>
+<body>
+<!--begin content-->
+ <pre>
+ <!--ih:includeHTML file="deaiceulof.txt"-->CRUDE OIL, LIGHT SWEET - ICE EUROPE                                                                     Code-067411
+Commitments of Traders - Futures Only, August 18, 2009                 
+-------------------------------------------------------------------------------------------------------------------
+     :   Total  :                        Reportable Positions                                :   Nonreportable
+     :----------------------------------------------------------------------------------------     Positions
+     :   Open   :           Non-Commercial       :     Commercial      :       Total         :
+     : Interest :   Long   :  Short   : Spreading:   Long   :  Short   :   Long   :  Short   :   Long   :  Short
+-------------------------------------------------------------------------------------------------------------------
+     :          : (CONTRACTS OF 1,000 BARRELS)                                               :
+     :          :                                                                            :
+All  :   514,059:    48,300     36,908     89,267    355,722    367,496    493,289    493,671:    20,770     20,388
+Old  :   514,059:    48,300     36,908     89,267    355,722    367,496    493,289    493,671:    20,770     20,388
+Other:         0:         0          0          0          0          0          0          0:         0          0
+     :          :                                                                            :
+     :          :          Changes in Commitments from: August 11, 2009                      :
+     :      -512:      -414       -870      6,301     -6,100     -3,720       -213      1,711:      -299     -2,223
+     :          :                                                                            :
+     :          :    Percent of Open Interest Represented by Each Category of Trader         :
+All  :     100.0:       9.4        7.2       17.4       69.2       71.5       96.0       96.0:       4.0        4.0
+Old  :     100.0:       9.4        7.2       17.4       69.2       71.5       96.0       96.0:       4.0        4.0
+Other:     100.0:       0.0        0.0        0.0        0.0        0.0        0.0        0.0:       0.0        0.0
+     :          :                                                                            :
+     :# Traders :              Number of Traders in Each Category                            :
+All  :       109:        23         19         35         57         60         99         99:
+Old  :       109:        23         19         35         57         60         99         99:
+Other:         0:         0          0          0          0          0          0          0:
+     :----------------------------------------------------------------------------------------------------
+     :             Percent of Open Interest Held by the Indicated Number of the Largest Traders
+     :                          By Gross Position                       By Net Position
+     :               4 or Less Traders     8 or Less Traders     4 or Less Traders     8 or Less Traders
+     :                 Long:     Short       Long      Short:      Long      Short       Long      Short
+     :----------------------------------------------------------------------------------------------------
+All  :                 26.9       23.1       43.5       37.1       11.8        8.9       16.8       14.7
+Old  :                 26.9       23.1       43.5       37.1       11.8        8.9       16.8       14.7
+Other:                  0.0        0.0        0.0        0.0        0.0        0.0        0.0        0.0
+ 
+<!--/ih:includeHTML--> 
+</pre>
+<!--end content-->
+<!--begin footer-->
+<hr />
+<p style="text-align:center;font-size:14px;margin-top:0px">Updated August 21, 
+2009</p>
+<!--end footer-->
+</body>
+</html>

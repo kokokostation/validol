@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CFTC Commitments of Traders Long Report - KCBT (Futures Only)</title>
+<!--begin meta-->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="description" content="This is the viewable version of the most recent release of the KCBT long form futures only commitments report." />
+<meta name="file" content="deakcbtlf.htm" />
+<meta name="keywords" content="commitments, long, CFTC, KCBT, Futures only" />
+<meta name="office" content="dea" />
+<!--end meta-->
+
+<script type="text/javascript" src="http://www.google-analytics.com/ga.js"></script><script type='text/javascript'>var pageTracker = _gat._getTracker("UA-21047137-1");	pageTracker._trackPageview();</script><script type="text/javascript" src="/ucm/fragments/web_header/js/gaAddons.js"></script></head>
+<body>
+<!--begin content-->
+ <pre>
+ <!--ih:includeHTML file="deakcbtlf.txt"-->WHEAT - KANSAS CITY BOARD OF TRADE                                                                      Code-001612
+Commitments of Traders - Futures Only, December 10, 2013               
+-------------------------------------------------------------------------------------------------------------------
+     :   Total  :                        Reportable Positions                                :   Nonreportable
+     :----------------------------------------------------------------------------------------     Positions
+     :   Open   :           Non-Commercial       :     Commercial      :       Total         :
+     : Interest :   Long   :  Short   : Spreading:   Long   :  Short   :   Long   :  Short   :   Long   :  Short
+-------------------------------------------------------------------------------------------------------------------
+     :          : (CONTRACTS OF 5,000 BUSHELS)                                               :
+     :          :                                                                            :
+All  :   148,025:    53,848     34,493     19,644     60,255     67,284    133,747    121,421:    14,278     26,604
+Old  :   113,591:    53,071     31,988      6,389     43,679     56,032    103,139     94,409:    10,452     19,182
+Other:    34,434:    11,451     13,179      2,581     16,576     11,252     30,608     27,012:     3,826      7,422
+     :          :                                                                            :
+     :          :          Changes in Commitments from: December 3, 2013                     :
+     :     1,140:    -1,011      3,040      3,116       -724     -4,918      1,381      1,238:      -241        -98
+     :          :                                                                            :
+     :          :    Percent of Open Interest Represented by Each Category of Trader         :
+All  :     100.0:      36.4       23.3       13.3       40.7       45.5       90.4       82.0:       9.6       18.0
+Old  :     100.0:      46.7       28.2        5.6       38.5       49.3       90.8       83.1:       9.2       16.9
+Other:     100.0:      33.3       38.3        7.5       48.1       32.7       88.9       78.4:      11.1       21.6
+     :          :                                                                            :
+     :# Traders :              Number of Traders in Each Category                            :
+All  :       187:        53         50         48         50         54        131        132:
+Old  :       179:        53         46         30         43         48        113        111:
+Other:       109:        18         26         13         33         41         59         74:
+     :----------------------------------------------------------------------------------------------------
+     :             Percent of Open Interest Held by the Indicated Number of the Largest Traders
+     :                          By Gross Position                       By Net Position
+     :               4 or Less Traders     8 or Less Traders     4 or Less Traders     8 or Less Traders
+     :                 Long:     Short       Long      Short:      Long      Short       Long      Short
+     :----------------------------------------------------------------------------------------------------
+All  :                 18.6       24.6       30.7       35.4       16.6       21.4       26.8       31.3
+Old  :                 23.8       27.7       36.3       39.4       21.9       27.6       34.3       39.3
+Other:                 32.9       31.3       49.4       41.9       32.9       30.1       48.9       39.4
+ 
+
+<!--/ih:includeHTML-->
+</pre>
+<!--end content-->
+<!--begin footer-->
+<hr />
+<p style="text-align:center;font-size:14px;margin-top:0px">Updated December 19, 2013</p>
+<!--end footer-->
+</body>
+</html>
