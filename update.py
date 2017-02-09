@@ -1,6 +1,7 @@
 import requests
 import zipfile
 import io
+from distutils.dir_util import copy_tree
 import os
 import shutil
 
@@ -13,18 +14,7 @@ def update_sources():
     path = zipFile.namelist()[0]
     zipFile.close()
 
-    for target in os.listdir(path):
-        try:
-            shutil.rmtree(target)
-        except NotADirectoryError:
-            try:
-                os.unlink(target)
-            except FileNotFoundError:
-                pass
-        except FileNotFoundError:
-            pass
-        shutil.move(os.path.join(path, target), target)
-
+    copy_tree(path, os.curdir)
     shutil.rmtree(path)
 
 if __name__ == '__main__':
