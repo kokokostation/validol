@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CFTC Commitments of Traders Long Report - MGE (Futures Only)</title>
+<!--begin meta-->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta name="description" content="This is the viewable version of the most recent release of the MGE long form futures only commitments report." />
+<meta name="file" content="deamgelf050906.htm" />
+<meta name="keywords" content="commitments, long, CFTC, MGE, Futures only " />
+<meta name="office" content="dea" />
+<meta http-equiv="expires" content="31 Dec 2001" />
+<!--end meta-->
+<!--begin style sheet-->
+
+<!--end style sheet-->
+</head>
+<body>
+<!--begin content-->
+ <pre>
+ <!--ih:includeHTML file="deamgelf.txt"-->WHEAT - MINNEAPOLIS GRAIN EXCHANGE                                                                      Code-001626
+Commitments of Traders - Futures Only, May 9, 2006                     
+-------------------------------------------------------------------------------------------------------------------
+     :   Total  :                        Reportable Positions                                :   Nonreportable
+     :----------------------------------------------------------------------------------------     Positions
+     :   Open   :           Non-Commercial       :     Commercial      :       Total         :
+     : Interest :   Long   :  Short   : Spreading:   Long   :  Short   :   Long   :  Short   :   Long   :  Short
+-------------------------------------------------------------------------------------------------------------------
+     :          : (CONTRACTS OF 5,000 BUSHELS)                                               :
+     :          :                                                                            :
+All  :    51,053:    13,688        622      1,392     25,151     34,030     40,231     36,044:    10,822     15,009
+Old  :    21,315:     9,489        703          0      6,512     16,219     16,001     16,922:     5,314      4,393
+Other:    29,738:     4,874        594        717     18,639     17,811     24,230     19,122:     5,508     10,616
+     :          :                                                                            :
+     :          :          Changes in Commitments from: May 2, 2006                          :
+     :     2,327:     1,357        110        -76        286        519      1,567        553:       760      1,774
+     :          :                                                                            :
+     :          :    Percent of Open Interest Represented by Each Category of Trader         :
+All  :     100.0:      26.8        1.2        2.7       49.3       66.7       78.8       70.6:      21.2       29.4
+Old  :     100.0:      44.5        3.3        0.0       30.6       76.1       75.1       79.4:      24.9       20.6
+Other:     100.0:      16.4        2.0        2.4       62.7       59.9       81.5       64.3:      18.5       35.7
+     :          :                                                                            :
+     :# Traders :              Number of Traders in Each Category                            :
+All  :        72:        25          4          7         28         27         57         36:
+Old  :        64:        22          5          0         17         21         39         26:
+Other:        50:        12          5          5         23         22         37         30:
+     :----------------------------------------------------------------------------------------------------
+     :             Percent of Open Interest Held by the Indicated Number of the Largest Traders
+     :                          By Gross Position                       By Net Position
+     :               4 or Less Traders     8 or Less Traders     4 or Less Traders     8 or Less Traders
+     :                 Long:     Short       Long      Short:      Long      Short       Long      Short
+     :----------------------------------------------------------------------------------------------------
+All  :                 29.0       41.4       42.3       52.1       21.8       28.7       29.6       36.0
+Old  :                 33.1       50.7       45.5       64.3       33.1       50.7       45.5       64.1
+Other:                 38.3       43.8       55.2       50.8       29.3       31.5       40.9       36.8
+ 
+<!--/ih:includeHTML--> 
+</pre>
+<!--end content-->
+<!--begin footer-->
+<hr />
+<p style="text-align:center;font-size:14px;margin-top:0px">Updated May 12, 2006</p>
+<!--end footer-->
+</body>
+</html>
