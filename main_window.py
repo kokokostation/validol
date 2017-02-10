@@ -235,5 +235,10 @@ class Window(QtGui.QWidget):
     def on_update(self):
         self.updateButton.setText("Wait a sec. Updating the data...")
         self.app.processEvents()
-        startup.update()
+        if not startup.update():
+            msg = QtGui.QMessageBox()
+            msg.setIcon(QtGui.QMessageBox.Critical)
+            msg.setText("Unable to update due to network error")
+            msg.setWindowTitle("Network error")
+            msg.exec_()
         self.updateButton.setText("Update")

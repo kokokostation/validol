@@ -72,7 +72,10 @@ def get_active_info(url):
             return pair_id, name, new
         pair_ids.append(pair_id)
 
-    content = read_url(url)
+    try:
+        content = read_url(url)
+    except requests.exceptions.ConnectionError:
+        return [None] * 3
 
     pair_id = re.search(r'data-pair-id="(\d*)"', content).group(1)
     name = re.search(r'<title>(.*)</title>', content).group(1).rsplit(" - ")[0]
@@ -123,28 +126,34 @@ def get_prices(dates, pair_id):
         if begin > dates[0] or dates[-1] > end:
             body = file.read()
             file.close()
-            file = open(filePath, "w")
 
-            if begin > dates[0]:
-                content += get_net_prices(dates[0], begin - dt.timedelta(1), pair_id)
-                begin = dates[0]
-            content += body
-            if dates[-1] > end:
-                content += get_net_prices(end + dt.timedelta(1), dates[-1], pair_id)
-                end = dates[-1]
+            try:
+                if begin > dates[0]:
+                    content += get_net_prices(dates[0], begin - dt.timedelta(1), pair_id)
+                    begin = dates[0]
+                content += body
+                if dates[-1] > end:
+                    content += get_net_prices(end + dt.timedelta(1), dates[-1], pair_id)
+                    end = dates[-1]
 
-            file.write(begin.isoformat() + " " + end.isoformat() + "\n")
-            file.write(content)
+                file = open(filePath, "w")
+                file.write(begin.isoformat() + " " + end.isoformat() + "\n")
+                file.write(content)
+            except requests.exceptions.ConnectionError:
+                content = body
         else:
             content = file.read()
 
         file.close()
     else:
-        file = open(filePath, "w")
-        file.write(dates[0].isoformat() + " " + dates[-1].isoformat() + "\n")
-        content = get_net_prices(dates[0], dates[-1], pair_id)
-        file.write(content)
-        file.close()
+        try:
+            content = get_net_prices(dates[0], dates[-1], pair_id)
+            file = open(filePath, "w")
+            file.write(dates[0].isoformat() + " " + dates[-1].isoformat() + "\n")
+            file.write(content)
+            file.close()
+        except requests.exceptions.ConnectionError:
+            pass
 
     result = []
     i = 0
