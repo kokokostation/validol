@@ -30,7 +30,7 @@ def update():
         written_dates = dates_file.read().splitlines()
 
         if written_dates and utils.parse_isoformat_date(written_dates[-1]) == last_net_date:
-            return
+            return True
 
         monetary_file = open(filenames.monetaryFile, "a+")
         monetary_file.seek(0)
