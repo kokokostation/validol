@@ -49,7 +49,7 @@ def update():
         for code, name in net_platforms:
             if not os.path.exists(code):
                 os.makedirs(code)
-                os.makedirs("/".join([code, filenames.parsed]))
+                os.makedirs(os.path.join(code, filenames.parsed))
             platforms_file.write(code + " " + name + "\n")
         platforms_file.close()
 

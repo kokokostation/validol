@@ -117,7 +117,7 @@ def get_net_prices(begin, end, pair_id):
     return result
 
 def get_prices(dates, pair_id):
-    filePath = "prices/" + pair_id
+    filePath = os.path.join(filenames.pricesFolder, pair_id)
     content = ""
     if os.path.isfile(filePath):
         file = open(filePath, "r")

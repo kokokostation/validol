@@ -17,7 +17,7 @@ primary_types = [float] * len(primary_labels)
 
 def reparse():
     for code, _ in get_platforms():
-        parsed = "/".join([code, filenames.parsed])
+        parsed = os.path.join(code, filenames.parsed)
         if os.path.isdir(parsed):
             shutil.rmtree(parsed)
         index = []
@@ -25,7 +25,7 @@ def reparse():
         os.mkdir(parsed)
 
         for date in dates:
-            file = open("/".join([code, date.isoformat()]), "r")
+            file = open(os.path.join(code, date.isoformat()), "r")
             parse_date(code, date, file.read(), index)
             file.close()
 
@@ -120,7 +120,7 @@ def parse_date(platform, date, content, index):
     return True
 
 def get_active(platform, active, index):
-    file = open("/".join([platform, filenames.parsed, str(index.index(active))]), "r")
+    file = open(os.path.join(platform, filenames.parsed, str(index.index(active))), "r")
 
     lines = list(map(lambda s: s.split("\t"), file.read().splitlines()))
     dates = [utils.parse_isoformat_date(line[0]) for line in lines]
@@ -132,7 +132,7 @@ def get_active(platform, active, index):
 
 def get_actives(platform):
     index = []
-    fileName = "/".join([platform, filenames.parsed, filenames.activeIndex])
+    fileName = os.path.join(platform, filenames.parsed, filenames.activeIndex)
 
     if not os.path.isfile(fileName):
         return index
