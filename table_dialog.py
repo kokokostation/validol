@@ -97,10 +97,11 @@ class TableDialog(QtGui.QWidget):
         self.mainEdit.clear()
 
     def submit(self):
+        if not self.name.text():
+            return
+
         if self.mode.checkedButton().text() == "Table":
-            text = self.mainEdit.toPlainText().replace(",\n", "\n")
-            if text[-1] == ',':
-                text = text[:-1]
+            text = self.mainEdit.toPlainText().replace(",\n", "\n").strip(",\n")
             user_structures.write_table(self.name.text(), text)
             self.new_table()
         else:
