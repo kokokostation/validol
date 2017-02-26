@@ -53,7 +53,7 @@ def get_atoms():
 
 def write_atom(atomName, presentation, atoms):
     atomFormula = presentation
-    for name, formula, _ in atoms:
+    for name, formula, _ in sorted(atoms, key=lambda x: -len(x[0])):
         atomFormula = atomFormula.replace(name, "(" + formula + ")")
 
     file = open(filenames.atomsFile, "ab")
