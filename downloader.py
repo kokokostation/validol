@@ -108,11 +108,14 @@ def get_net_prices(begin, end, pair_id):
     )
 
     parsed_dates = [dt.datetime.strptime(date, "%d.%m.%Y").date() for date in re.findall(r'class="first left bold noWrap">(.*)</td>', response.text)]
-    parsed_values = [n for n in re.findall(r'<td.*>(\d+\.\d*|\d+)</td>', response.text.replace(",", "."))]
+    raw_prices = re.findall(r'<td class="(green|red)Font">(\d+(\.\d*)*)</td>', response.text.replace(",", "."))
+    parsed_values = [row[1].replace(".", "", row[1].count(".") - 1) for row in raw_prices]
+
+    assert(len(parsed_dates) == len(parsed_values))
 
     result = ""
     for i in range(len(parsed_dates) - 1, -1, -1):
-        result += parsed_dates[i].isoformat() + " " + parsed_values[4 * i] + "\n"
+        result += parsed_dates[i].isoformat() + " " + parsed_values[i] + "\n"
 
     return result
 
