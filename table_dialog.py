@@ -3,7 +3,9 @@ import user_structures
 from pyparsing import alphas
 import data_parser
 
+
 class TableDialog(QtGui.QWidget):
+
     def __init__(self, new_table):
         QtGui.QWidget.__init__(self)
 
@@ -101,12 +103,14 @@ class TableDialog(QtGui.QWidget):
             return
 
         if self.mode.checkedButton().text() == "Table":
-            text = self.mainEdit.toPlainText().replace(",\n", "\n").strip(",\n")
+            text = self.mainEdit.toPlainText().replace(
+                ",\n", "\n").strip(",\n")
             user_structures.write_table(self.name.text(), text)
             self.new_table()
         else:
             name, presentation = self.name.text(), self.mainEdit.toPlainText()
-            user_structures.write_atom(name, presentation, user_structures.get_atoms())
+            user_structures.write_atom(
+                name, presentation, user_structures.get_atoms())
             self.add_atom(name, presentation)
 
         self.clear_edits()

@@ -1,5 +1,4 @@
 import re
-import datetime as dt
 import os
 import downloader
 import utils
@@ -9,11 +8,11 @@ from itertools import groupby
 from evaluator import NumericStringParser
 import shutil
 
-__all__ = ["table1_labels", "table2_labels", "table1_key_types", "table2_key_types", "places_num", "get_platforms", "get_cached_prices", "Grabber"]
-
 main_primary_labels = 11
-primary_labels = ["OI", "NCL", "NCS", "CL", "CS", "NRL", "NRS", "4L%", "4S%", "8L%", "8S%", "Quot", "MBase", "MBDelta"]
+primary_labels = ["OI", "NCL", "NCS", "CL", "CS", "NRL",
+                  "NRS", "4L%", "4S%", "8L%", "8S%", "Quot", "MBase", "MBDelta"]
 primary_types = [float] * len(primary_labels)
+
 
 def reparse():
     for code, _ in get_platforms():
@@ -25,14 +24,15 @@ def reparse():
         os.mkdir(parsed)
 
         for date in dates:
-            file = open(os.path.join(code, date.isoformat()), "r")
-            parse_date(code, date, file.read(), index)
-            file.close()
+            with open(os.path.join(code, date.isoformat()), "r") as file:
+                parse_date(code, date, file.read(), index)
+
 
 def parse_active(entry):
     name = entry.split("\n", 1)[0].rsplit(" - ", 1)[0].strip()
     entry = entry.replace(",", "")
-    lines = [list(map(float, re.findall(r'\d+\.\d+|\d+', s))) for s in re.findall(r'\nAll ([^\n]*)\n', entry)]
+    lines = [list(map(float, re.findall(r'\d+\.\d+|\d+', s)))
+             for s in re.findall(r'\nAll ([^\n]*)\n', entry)]
     fields = [lines[0][0],
               lines[0][1],
               lines[0][2],
@@ -46,14 +46,18 @@ def parse_active(entry):
               lines[-1][7]]
     return name, fields
 
+
 def get_actives_from_page(content):
-    start, end = re.search(r'<!--ih:includeHTML file=\".*\"-->[ \r\n]*', content), re.search(r'<!--/ih:includeHTML-->', content)
+    start, end = re.search(
+        r'<!--ih:includeHTML file=\".*\"-->[ \r\n]*', content), re.search(r'<!--/ih:includeHTML-->', content)
     if start and end:
-        activesList = list(filter(lambda s: '-' in s, re.compile(r'(?:[ \r]*\n){2,3}').split(content[start.end():end.start()])))
+        activesList = list(filter(
+            lambda s: '-' in s, re.compile(r'(?:[ \r]*\n){2,3}').split(content[start.end():end.start()])))
     else:
         return []
 
     return list(map(parse_active, activesList))
+
 
 def places_num(bars, mbars):
     places = [b[1] for b in bars] + [b[1] for b in mbars]
@@ -62,33 +66,30 @@ def places_num(bars, mbars):
     else:
         return None
 
+
 def get_cached_prices():
     result = []
 
     if not os.path.isfile(filenames.pricesFile):
         return result
 
-    file = open(filenames.pricesFile, "r")
-
-    for line in file.read().splitlines():
-        url, pair_id, name = line.split("\t", 2)
-        result.append((url, name))
-
-    file.close()
+    with open(filenames.pricesFile, "r") as file:
+        for line in file.read().splitlines():
+            url, pair_id, name = line.split("\t", 2)
+            result.append((url, name))
 
     return result
+
 
 def get_platforms():
     if not os.path.isfile(filenames.platformsFile):
         return []
 
-    platforms = open(filenames.platformsFile, "r")
-
-    result = [str.split(" ", 1) for str in platforms.read().splitlines()]
-
-    platforms.close()
+    with open(filenames.platformsFile, "r") as platforms:
+        result = [str.split(" ", 1) for str in platforms.read().splitlines()]
 
     return result
+
 
 def title(platformName, activeName, priceName):
     result = platformName + "/" + activeName
@@ -96,6 +97,7 @@ def title(platformName, activeName, priceName):
         result += "; Quot from: " + priceName
 
     return result
+
 
 def parse_date(platform, date, content, index):
     data = get_actives_from_page(content)
@@ -106,29 +108,30 @@ def parse_date(platform, date, content, index):
     for key, value in data:
         if key not in index:
             index.append(key)
-            activeIndex = open("/".join([platform, filenames.parsed, filenames.activeIndex]), "a+")
-            activeIndex.write(key + "\n")
-            activeIndex.close()
+            with open(
+                "/".join([platform, filenames.parsed, filenames.activeIndex]), "a+") as activeIndex:
+                activeIndex.write(key + "\n")
 
-        file = open("/".join([platform, filenames.parsed, str(index.index(key))]), "a+")
-        file.write(date.isoformat())
-        for i in range(len(primary_labels[:main_primary_labels])):
-            file.write("\t" + str(value[i]))
-        file.write("\n")
-        file.close()
+        with open(
+            "/".join([platform, filenames.parsed, str(index.index(key))]), "a+") as file:
+            file.write(date.isoformat())
+            for i in range(len(primary_labels[:main_primary_labels])):
+                file.write("\t" + str(value[i]))
+            file.write("\n")
 
     return True
 
+
 def get_active(platform, active, index):
-    file = open(os.path.join(platform, filenames.parsed, str(index.index(active))), "r")
-
-    lines = list(map(lambda s: s.split("\t"), file.read().splitlines()))
-    dates = [utils.parse_isoformat_date(line[0]) for line in lines]
-    fields = [list(map(lambda f, x: f(x), primary_types, line[1:])) for line in lines]
-
-    file.close()
+    with open(
+        os.path.join(platform, filenames.parsed, str(index.index(active))), "r") as file:
+        lines = list(map(lambda s: s.split("\t"), file.read().splitlines()))
+        dates = [utils.parse_isoformat_date(line[0]) for line in lines]
+        fields = [list(map(lambda f, x: f(x), primary_types, line[1:]))
+                  for line in lines]
 
     return dates, fields
+
 
 def get_actives(platform):
     index = []
@@ -137,11 +140,11 @@ def get_actives(platform):
     if not os.path.isfile(fileName):
         return index
 
-    file = open(fileName, "r")
-    index = file.read().splitlines()
-    file.close()
+    with open(fileName, "r") as file:
+        index = file.read().splitlines()
 
     return index
+
 
 def prepare_active(platform, active, prices_pair_id):
     dates, values = get_active(platform, active, get_actives(platform))
@@ -152,7 +155,8 @@ def prepare_active(platform, active, prices_pair_id):
     else:
         prices = downloader.get_prices(dates, prices_pair_id)
 
-    groupedMbase = [(mbase[0], 1)] + [(k, len(list(g))) for k, g in groupby(mbase)]
+    groupedMbase = [(mbase[0], 1)] + [(k, len(list(g)))
+                                      for k, g in groupby(mbase)]
     deltas = []
     for i in range(1, len(groupedMbase)):
         k, n = groupedMbase[i]
@@ -166,23 +170,28 @@ def prepare_active(platform, active, prices_pair_id):
 
     return dates, values
 
+
 def prepare_tables(tablePattern, info):
-    data = [prepare_active(platform, active, prices_pair_id) for platform, active, prices_pair_id in info]
+    data = [prepare_active(platform, active, prices_pair_id)
+            for platform, active, prices_pair_id in info]
 
     compiler = NumericStringParser()
 
-    allAtoms = dict([(name, compiler.compile(formula)) for name, formula, _ in user_structures.get_atoms()])
+    allAtoms = dict([(name, compiler.compile(formula))
+                     for name, formula, _ in user_structures.get_atoms()])
 
     allDates, indexes = utils.merge_lists([dates for dates, _ in data])
     newValues = []
     for table in tablePattern:
-        values = [[None for _ in range(len(table))] for _ in range(len(allDates))]
+        values = [[None for _ in range(len(table))]
+                  for _ in range(len(allDates))]
         for i in range(len(table)):
             atoms, formula = table[i]
             atoms = [(allAtoms[atom], active) for atom, active in atoms]
             func = compiler.compile(formula)
             if False not in [index < len(data) for _, index in atoms]:
-                intersection = utils.intersect_lists([indexes[index] for _, index in atoms])
+                intersection = utils.intersect_lists(
+                    [indexes[index] for _, index in atoms])
                 for j in range(len(intersection)):
                     args = [atom(data[active][1][j]) for atom, active in atoms]
                     values[intersection[j]][i] = func(args)

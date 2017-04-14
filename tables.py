@@ -4,9 +4,9 @@ import datetime as dt
 import interface_common
 from PyQt5 import QtGui
 
-__all__ = ["draw_table"]
 
 class Table(QtGui.QWidget):
+
     def __init__(self, dates, values, labels, title):
         QtGui.QWidget.__init__(self)
 
@@ -14,7 +14,8 @@ class Table(QtGui.QWidget):
 
         table = pg.TableWidget()
 
-        data = np.array([(dates[i],) + tuple(values[i]) for i in range(len(dates))], dtype=list(zip(["Date"] + labels, [dt.date] + [float] * len(labels))))
+        data = np.array([(dates[i],) + tuple(values[i]) for i in range(len(dates))],
+                        dtype=list(zip(["Date"] + labels, [dt.date] + [float] * len(labels))))
 
         table.setData(data)
 
@@ -24,4 +25,3 @@ class Table(QtGui.QWidget):
         self.mainLayout.addWidget(table, stretch=10)
 
         self.showMaximized()
-

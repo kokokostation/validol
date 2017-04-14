@@ -6,7 +6,7 @@ import data_parser
 import datetime as dt
 import requests
 
-#создать все необходимые файлы и поубирать if'ы
+
 def init():
     ifNeedsUpdate = False
     if not os.path.exists("data"):
@@ -20,6 +20,7 @@ def init():
 
     if ifNeedsUpdate:
         update()
+
 
 def update():
     try:
@@ -40,7 +41,8 @@ def update():
             last_date = content.splitlines()[-1].split(",")[0]
         else:
             last_date = ""
-        monetary_file.write(downloader.get_net_mbase(last_date, dt.date.today().isoformat()))
+        monetary_file.write(
+            downloader.get_net_mbase(last_date, dt.date.today().isoformat()))
 
         monetary_file.close()
 

@@ -6,14 +6,16 @@ import data_parser
 import interface_common
 from functools import partial
 
-__all__ = ["CheckedGraph", "colors", "qcolors"]
+colors = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255),
+          (255, 255, 0), (255, 0, 255), (0, 0, 255)]
 
-colors = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255), (255, 255, 0), (255, 0, 255), (0, 0, 255)]
 
 def negate(color):
     return [255 - rgb for rgb in color]
 
+
 class MyAxisItem(pg.AxisItem):
+
     def __init__(self, str_dates, **kargs):
         pg.AxisItem.__init__(self, **kargs)
         self.str_dates = str_dates
@@ -27,22 +29,29 @@ class MyAxisItem(pg.AxisItem):
                 result.append('')
         return result
 
+
 class MyPlot(pg.PlotItem):
+
     def fixAutoRange(self):
         self.enableAutoRange(y=True)
 
     def __init__(self, str_dates, **kargs):
-        pg.PlotItem.__init__(self, axisItems={'bottom': MyAxisItem(str_dates, orientation='bottom')}, **kargs)
+        pg.PlotItem.__init__(
+            self, axisItems={'bottom': MyAxisItem(str_dates, orientation='bottom')}, **kargs)
 
         self.vb.setAutoVisible(y=1)
 
         self.vb.sigRangeChangedManually.connect(self.fixAutoRange)
 
+
 class ItemData():
+
     def __init__(self, symbol, brush):
         self.opts = {'symbol': symbol, 'brush': brush, 'pen': None, 'size': 20}
 
+
 class Graph(pg.GraphicsWindow):
+
     def __init__(self, dates, values, pattern, tableLabels):
         pg.GraphicsWindow.__init__(self)
 
@@ -66,14 +75,16 @@ class Graph(pg.GraphicsWindow):
                 plotItem.removeItem(plot)
 
     def draw_axis(self, label, plotItem, lines, bars, mbars):
-        self.legendData.append([(ItemData(None, None), "____" + label + "____")])
+        self.legendData.append(
+            [(ItemData(None, None), "____" + label + "____")])
 
-        #code duplication
+        # code duplication
         for key, color in lines:
             plots = []
             for chain in utils.split([i if self.values[i][key] is not None else None for i in range(len(self.values))], None):
                 if chain:
-                    plots.append(pg.PlotDataItem(chain, [self.values[i][key] for i in chain], pen={'color': colors[color], 'width': 2}))
+                    plots.append(pg.PlotDataItem(chain, [self.values[i][key] for i in chain], pen={
+                                 'color': colors[color], 'width': 2}))
                     plotItem.addItem(plots[-1])
 
             self.widgets.append((plotItem, plots))
@@ -90,7 +101,8 @@ class Graph(pg.GraphicsWindow):
                     for chain in utils.split([i if self.values[i][key] is not None else None for i in range(len(self.values))], None):
                         if chain:
                             ys = [self.values[i][key] for i in chain]
-                            positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) / 2
+                            positive = list(map(lambda x: math.copysign(1, x), ys)).count(
+                                1) > len(ys) / 2
                             if (positive and sign == -1) or (not positive and sign == 1):
                                 ys = [-y for y in ys]
 
@@ -99,7 +111,8 @@ class Graph(pg.GraphicsWindow):
                             plotItem.addItem(barGraphs[-1])
 
                     self.widgets.append((plotItem, barGraphs))
-                    self.legendData[-1].append((ItemData('s', colors[color] + (200,)), key))
+                    self.legendData[-
+                                    1].append((ItemData('s', colors[color] + (200,)), key))
 
     def draw_graph(self):
         pg.setConfigOption('foreground', 'w')
@@ -132,7 +145,8 @@ class Graph(pg.GraphicsWindow):
                     twin.linkedViewChanged(plot.vb, twin.XAxis)
 
                 updateViews(twins[-1], plots[-1])
-                plots[-1].vb.sigResized.connect(partial(updateViews, twins[-1], plots[-1]))
+                plots[-
+                      1].vb.sigResized.connect(partial(updateViews, twins[-1], plots[-1]))
 
                 self.draw_axis("right", twins[-1], *right)
 
@@ -170,7 +184,8 @@ class Graph(pg.GraphicsWindow):
                     for j in range(2 * i, 2 * (i + 1)):
                         for style, key in self.legendData[j]:
                             if type(key) == int:
-                                label = self.tableLabels[key] + " " + str(utils.none_filter(round)(self.values[int(x)][key], 2))
+                                label = self.tableLabels[
+                                    key] + " " + str(utils.none_filter(round)(self.values[int(x)][key], 2))
                             else:
                                 label = key
                             legends[i].addItem(style, label)
@@ -178,7 +193,9 @@ class Graph(pg.GraphicsWindow):
 
         self.scene().sigMouseMoved.connect(mouseMoved)
 
+
 class CheckedGraph(QtGui.QWidget):
+
     def __init__(self, dates, values, pattern, tableLabels, title):
         QtGui.QWidget.__init__(self)
 
@@ -191,7 +208,8 @@ class CheckedGraph(QtGui.QWidget):
         self.mainLayout.insertLayout(1, self.graphLayout, stretch=10)
 
         self.choiceTree = QtGui.QTreeWidget()
-        interface_common.draw_pattern(self.choiceTree, pattern, tableLabels, True)
+        interface_common.draw_pattern(
+            self.choiceTree, pattern, tableLabels, True)
         self.choiceTree.itemChanged.connect(self.fix)
 
         self.graphLayout.addWidget(self.choiceTree, stretch=1)
@@ -200,4 +218,5 @@ class CheckedGraph(QtGui.QWidget):
         self.showMaximized()
 
     def fix(self, item, i):
-        self.graph.fix(int(item.toolTip(0)), item.checkState(0) == QtCore.Qt.Checked)
+        self.graph.fix(
+            int(item.toolTip(0)), item.checkState(0) == QtCore.Qt.Checked)

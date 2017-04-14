@@ -1,7 +1,5 @@
 import os
 
-__all__ = ["platformsFile", "datesFile", "pricesFile", "patternsFile", "monetaryFile"]
-
 platformsFile = "platforms"
 datesFile = "dates"
 pricesFolder = "prices"

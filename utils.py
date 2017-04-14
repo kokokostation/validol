@@ -6,7 +6,6 @@ import numpy as np
 from functools import reduce
 import pickle
 
-__all__ = ["take_closest", "add_to_dict", "flatten", "split", "my_division", "parse_isoformat_date"]
 
 def take_closest(l, date):
     pos = bisect_left(l, date)
@@ -24,20 +23,24 @@ def take_closest(l, date):
     else:
         return pos - 1
 
+
 def flatten(l):
     while type(l[0]) == list:
         l = list(itertools.chain.from_iterable(l))
 
     return l
 
+
 def split(l, value):
     return [list(group) for key, group in itertools.groupby(l, lambda x: x == value) if not key]
+
 
 def my_division(a, b):
     if b != 0:
         return a / b
     else:
         return None
+
 
 def none_filter(f):
     def func(*args):
@@ -48,11 +51,14 @@ def none_filter(f):
 
     return func
 
+
 def parse_isoformat_date(date):
     return dt.datetime.strptime(date, "%Y-%m-%d").date()
 
+
 def zip_map(funcList, values):
     return list(map(lambda f, x: f(x), funcList, values))
+
 
 def merge_lists(lists):
     heads = [(lists[i][0], i) for i in range(len(lists))]
@@ -76,8 +82,10 @@ def merge_lists(lists):
 
     return result, indexes
 
+
 def intersect_lists(lists):
     return reduce(np.intersect1d, lists)
+
 
 def pickleLoader(pklFile):
     result = []
@@ -86,6 +94,7 @@ def pickleLoader(pklFile):
             result.append(pickle.load(pklFile))
     except EOFError:
         return result
+
 
 def pickleExtend(l, pklFile):
     for item in l:

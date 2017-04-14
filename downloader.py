@@ -6,13 +6,14 @@ import utils
 import filenames
 import html
 
-__all__ = ["get_prices", "get_mbase", "init", "update"]
 
 def remove_non_ascii(text):
     return re.sub(r'[^\x00-\x7F]', '', text)
 
+
 def read_url(url):
-    temp = remove_non_ascii(requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}).text)
+    temp = remove_non_ascii(
+        requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}).text)
     content = html.unescape(temp)
     while temp != content:
         temp = content
@@ -20,71 +21,84 @@ def read_url(url):
 
     return content
 
+
 def unique(list_):
     return [list_[2 * i] for i in range(0, len(list_) // 2)]
 
 first_date = dt.date(2005, 1, 4)
 
+
 def get_dates(last_net_date):
     return [dt.date.fromordinal(d) for d in range(first_date.toordinal(), last_net_date.toordinal(), 7)]
+
 
 def get_net_dates():
     return sorted([dt.datetime.strptime(d, "%m%d%y").date() for d in unique(re.findall(r'cot(\d{6})', read_url("http://www.cftc.gov/MarketReports/CommitmentsofTraders/HistoricalViewable/index.htm")))])
 
+
 def get_platforms():
-    current_info = read_url("http://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm")
+    current_info = read_url(
+        "http://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm")
     current_info = current_info[re.search(r'<p><b>Futures-and-Options-Combined</b></p>', current_info).end():
                                 re.search(r'<p><b>Supplemental Commodity Index</b></p>', current_info).start()]
 
     return list(zip(unique(re.findall(r'dea([a-z]*)lf', current_info)), re.findall(r'<p><b>([^<>]*)</b></p>', current_info)))
 
+
 def get_actives(date, platform_code):
     content = read_url("http://www.cftc.gov/files/dea/cotarchives/" + str(date.year) +
-                 "/futures/dea" + platform_code + "lf" + date.strftime("%m%d%y") + ".htm")
+                       "/futures/dea" + platform_code + "lf" + date.strftime("%m%d%y") + ".htm")
 
     return content
+
 
 def get_current_actives(platform_code):
-    content = read_url("http://www.cftc.gov/dea/futures/dea" + platform_code + "lf.htm")
+    content = read_url(
+        "http://www.cftc.gov/dea/futures/dea" + platform_code + "lf.htm")
 
     return content
 
-def get_last_date():
-    content = read_url("http://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm")
 
-    date_match = re.search(r'Reports Dated (.*) - Current Disaggregated Reports:', content)
+def get_last_date():
+    content = read_url(
+        "http://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm")
+
+    date_match = re.search(
+        r'Reports Dated (.*) - Current Disaggregated Reports:', content)
 
     return dt.datetime.strptime(date_match.group(1), "%B %d, %Y").date()
+
 
 def normalize_url(url):
     return re.sub(r'https://[^.]*\.', r'https://www.', url)
 
+
 def get_active_info(url):
     new = False
-    file = open(filenames.pricesFile, "a+")
-    file.seek(0)
+    with open(filenames.pricesFile, "a+") as file:
+        file.seek(0)
 
-    pair_ids = []
-    for line in file.read().splitlines():
-        url_, pair_id, name = line.split("\t", 2)
-        if url_ == url:
-            file.close()
-            return pair_id, name, new
-        pair_ids.append(pair_id)
+        pair_ids = []
+        for line in file.read().splitlines():
+            url_, pair_id, name = line.split("\t", 2)
+            if url_ == url:
+                return pair_id, name, new
+            pair_ids.append(pair_id)
 
-    try:
-        content = read_url(url)
-    except requests.exceptions.ConnectionError:
-        return [None] * 3
+        try:
+            content = read_url(url)
+        except requests.exceptions.ConnectionError:
+            return [None] * 3
 
-    pair_id = re.search(r'data-pair-id="(\d*)"', content).group(1)
-    name = re.search(r'<title>(.*)</title>', content).group(1).rsplit(" - ")[0]
+        pair_id = re.search(r'data-pair-id="(\d*)"', content).group(1)
+        name = re.search(r'<title>(.*)</title>', content).group(1).rsplit(" - ")[0]
 
-    if pair_id not in pair_ids:
-        file.write("\t".join([url, pair_id, name]) + "\n")
-        new = True
+        if pair_id not in pair_ids:
+            file.write("\t".join([url, pair_id, name]) + "\n")
+            new = True
 
     return pair_id, name, new
+
 
 def get_net_prices(begin, end, pair_id):
     start_date = begin.strftime("%d/%m/%Y")
@@ -107,9 +121,12 @@ def get_net_prices(begin, end, pair_id):
         }
     )
 
-    parsed_dates = [dt.datetime.strptime(date, "%d.%m.%Y").date() for date in re.findall(r'class="first left bold noWrap">(.*)</td>', response.text)]
-    raw_prices = re.findall(r'<td class="(green|red)Font">(\d+(\.\d*)*)</td>', response.text.replace(",", "."))
-    parsed_values = [row[1].replace(".", "", row[1].count(".") - 1) for row in raw_prices]
+    parsed_dates = [dt.datetime.strptime(date, "%d.%m.%Y").date() for date in re.findall(
+        r'class="first left bold noWrap">(.*)</td>', response.text)]
+    raw_prices = re.findall(
+        r'<td class="(green|red)Font">(\d+(\.\d*)*)</td>', response.text.replace(",", "."))
+    parsed_values = [
+        row[1].replace(".", "", row[1].count(".") - 1) for row in raw_prices]
 
     assert(len(parsed_dates) == len(parsed_values))
 
@@ -119,42 +136,42 @@ def get_net_prices(begin, end, pair_id):
 
     return result
 
+
 def get_prices(dates, pair_id):
     filePath = os.path.join(filenames.pricesFolder, pair_id)
     content = ""
     if os.path.isfile(filePath):
-        file = open(filePath, "r")
-        begin, end = list(map(utils.parse_isoformat_date, file.readline().strip().split(" ")))
+        with open(filePath, "r") as file:
+            begin, end = list(
+                map(utils.parse_isoformat_date, file.readline().strip().split(" ")))
+            body = file.read()
 
         if begin > dates[0] or dates[-1] > end:
-            body = file.read()
-            file.close()
-
             try:
                 if begin > dates[0]:
-                    content += get_net_prices(dates[0], begin - dt.timedelta(1), pair_id)
+                    content += get_net_prices(dates[0],
+                                              begin - dt.timedelta(1), pair_id)
                     begin = dates[0]
                 content += body
                 if dates[-1] > end:
-                    content += get_net_prices(end + dt.timedelta(1), dates[-1], pair_id)
+                    content += get_net_prices(end +
+                                              dt.timedelta(1), dates[-1], pair_id)
                     end = dates[-1]
 
-                file = open(filePath, "w")
-                file.write(begin.isoformat() + " " + end.isoformat() + "\n")
-                file.write(content)
+                with open(filePath, "w") as file:
+                    file.write(begin.isoformat() + " " + end.isoformat() + "\n")
+                    file.write(content)
             except requests.exceptions.ConnectionError:
                 content = body
         else:
-            content = file.read()
-
-        file.close()
+            content = body
     else:
         try:
             content = get_net_prices(dates[0], dates[-1], pair_id)
-            file = open(filePath, "w")
-            file.write(dates[0].isoformat() + " " + dates[-1].isoformat() + "\n")
-            file.write(content)
-            file.close()
+            with open(filePath, "w") as file:
+                file.write(
+                    dates[0].isoformat() + " " + dates[-1].isoformat() + "\n")
+                file.write(content)
         except requests.exceptions.ConnectionError:
             pass
 
@@ -178,6 +195,7 @@ def get_prices(dates, pair_id):
     result += [None] * (len(dates) - len(result))
 
     return result
+
 
 def get_net_mbase(cosd, coed):
     if cosd:
@@ -203,10 +221,10 @@ def get_net_mbase(cosd, coed):
     else:
         return response.text[response.text.find("\n") + 1:]
 
+
 def get_mbase(requestedDates):
-    file = open(filenames.monetaryFile, "r")
-    data = [line.split(",") for line in file.read().splitlines()]
-    file.close()
+    with open(filenames.monetaryFile, "r") as file:
+        data = [line.split(",") for line in file.read().splitlines()]
 
     dates = [utils.parse_isoformat_date(date) for date, _ in data]
     values = [int(value) for _, value in data]
