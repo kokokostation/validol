@@ -7,20 +7,19 @@ import filenames
 import html
 
 
-def remove_non_ascii(text):
-    return re.sub(r'[^\x00-\x7F]', '', text)
-
-
 def read_url(url):
-    temp = remove_non_ascii(
-        requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}).text)
+    return requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
+
+def read_url_text(url):
+    r = read_url(url)
+    r.encoding = 'utf-8'
+    temp = r.text
     content = html.unescape(temp)
     while temp != content:
         temp = content
         content = html.unescape(content)
 
     return content
-
 
 def unique(list_):
     return [list_[2 * i] for i in range(0, len(list_) // 2)]
@@ -33,11 +32,11 @@ def get_dates(last_net_date):
 
 
 def get_net_dates():
-    return sorted([dt.datetime.strptime(d, "%m%d%y").date() for d in unique(re.findall(r'cot(\d{6})', read_url("http://www.cftc.gov/MarketReports/CommitmentsofTraders/HistoricalViewable/index.htm")))])
+    return sorted([dt.datetime.strptime(d, "%m%d%y").date() for d in unique(re.findall(r'cot(\d{6})', read_url_text("http://www.cftc.gov/MarketReports/CommitmentsofTraders/HistoricalViewable/index.htm")))])
 
 
 def get_platforms():
-    current_info = read_url(
+    current_info = read_url_text(
         "http://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm")
     current_info = current_info[re.search(r'<p><b>Futures-and-Options-Combined</b></p>', current_info).end():
                                 re.search(r'<p><b>Supplemental Commodity Index</b></p>', current_info).start()]
@@ -46,21 +45,21 @@ def get_platforms():
 
 
 def get_actives(date, platform_code):
-    content = read_url("http://www.cftc.gov/files/dea/cotarchives/" + str(date.year) +
+    content = read_url_text("http://www.cftc.gov/files/dea/cotarchives/" + str(date.year) +
                        "/futures/dea" + platform_code + "lf" + date.strftime("%m%d%y") + ".htm")
 
     return content
 
 
 def get_current_actives(platform_code):
-    content = read_url(
+    content = read_url_text(
         "http://www.cftc.gov/dea/futures/dea" + platform_code + "lf.htm")
 
     return content
 
 
 def get_last_date():
-    content = read_url(
+    content = read_url_text(
         "http://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm")
 
     date_match = re.search(
@@ -86,7 +85,7 @@ def get_active_info(url):
             pair_ids.append(pair_id)
 
         try:
-            content = read_url(url)
+            content = read_url_text(url)
         except requests.exceptions.ConnectionError:
             return [None] * 3
 
@@ -123,10 +122,12 @@ def get_net_prices(begin, end, pair_id):
 
     parsed_dates = [dt.datetime.strptime(date, "%d.%m.%Y").date() for date in re.findall(
         r'class="first left bold noWrap">(.*)</td>', response.text)]
+
     raw_prices = re.findall(
-        r'<td class="(green|red)Font">(\d+(\.\d*)*)</td>', response.text.replace(",", "."))
-    parsed_values = [
-        row[1].replace(".", "", row[1].count(".") - 1) for row in raw_prices]
+        r'<td.*class="(green|red)Font">(\d+(\.\d*)*(,\d*))</td>',
+        response.text)
+
+    parsed_values = [row[1].replace(".", "").replace(",", ".") for row in raw_prices]
 
     assert(len(parsed_dates) == len(parsed_values))
 
