@@ -1,11 +1,12 @@
 import os
-import filenames
-import re
-from pyparsing import alphas
-import data_parser
 import pickle
-import utils
+import re
 
+from pyparsing import alphas
+
+from model import utils
+import model.store.data_parser as data_parser
+import model.store.filenames as filenames
 
 def parse_atom(atom):
     name, index = atom[:-1].split("(")
@@ -28,15 +29,17 @@ def get_tables():
         return result
 
     with open(filenames.tablesFile, "rb") as file:
-        result = utils.pickleLoader(file)
+        result = utils.pickle_loader(file)
 
     return result
 
 
 def write_table(name, atom_groups):
     with open(filenames.tablesFile, "ab") as file:
-        pickle.dump((name, atom_groups, [list(map(parse_formula, formulas.split(
-            ","))) for formulas in atom_groups.split("\n")]), file)
+        atom_groups = [table.split(",") for table in atom_groups.split("\n")]
+        pickle.dump((name, atom_groups, [list(map(parse_formula, formulas))
+                                         for formulas in atom_groups]),
+                    file)
 
 
 def remove_table(name):
@@ -53,7 +56,7 @@ def get_atoms():
         return result
 
     with open(filenames.atomsFile, "rb") as file:
-        result.extend(utils.pickleLoader(file))
+        result.extend(utils.pickle_loader(file))
 
     return result
 
@@ -69,7 +72,7 @@ def write_atom(atomName, presentation, atoms):
 
 def remove_atom(name):
     remove_by_name(lambda a: a[0] == name, filenames.atomsFile, get_atoms()[
-                   len(data_parser.primary_labels):])
+                                                                len(data_parser.primary_labels):])
 
 
 def remove_by_name(pred, fileName, l):
@@ -86,7 +89,7 @@ def get_patterns():
         return result
 
     with open(filenames.patternsFile, "rb") as file:
-        result = utils.pickleLoader(file)
+        result = utils.pickle_loader(file)
 
     return result
 

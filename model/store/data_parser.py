@@ -1,12 +1,12 @@
-import re
 import os
-import downloader
-import utils
-import filenames
-import user_structures
-from itertools import groupby
-from evaluator import NumericStringParser
+import re
 import shutil
+from itertools import groupby
+
+
+from model import utils
+from model.mine import downloader
+import model.store.filenames as filenames
 
 main_primary_labels = 11
 primary_labels = ["OI", "NCL", "NCS", "CL", "CS", "NRL",
@@ -65,20 +65,6 @@ def places_num(bars, mbars):
         return max(places) + 1
     else:
         return None
-
-
-def get_cached_prices():
-    result = []
-
-    if not os.path.isfile(filenames.pricesFile):
-        return result
-
-    with open(filenames.pricesFile, "r") as file:
-        for line in file.read().splitlines():
-            url, pair_id, name = line.split("\t", 2)
-            result.append((url, name))
-
-    return result
 
 
 def get_platforms():
@@ -145,56 +131,3 @@ def get_actives(platform):
 
     return index
 
-
-def prepare_active(platform, active, prices_pair_id):
-    dates, values = get_active(platform, active, get_actives(platform))
-    mbase = downloader.get_mbase(dates)
-
-    if not prices_pair_id:
-        prices = [None] * len(dates)
-    else:
-        prices = downloader.get_prices(dates, prices_pair_id)
-
-    groupedMbase = [(mbase[0], 1)] + [(k, len(list(g)))
-                                      for k, g in groupby(mbase)]
-    deltas = []
-    for i in range(1, len(groupedMbase)):
-        k, n = groupedMbase[i]
-        delta = k - groupedMbase[i - 1][0]
-
-        for j in range(n):
-            deltas.append(delta / n)
-
-    for i in range(len(dates)):
-        values[i].extend([prices[i], mbase[i], deltas[i]])
-
-    return dates, values
-
-
-def prepare_tables(tablePattern, info):
-    data = [prepare_active(platform, active, prices_pair_id)
-            for platform, active, prices_pair_id in info]
-
-    compiler = NumericStringParser()
-
-    allAtoms = dict([(name, compiler.compile(formula))
-                     for name, formula, _ in user_structures.get_atoms()])
-
-    allDates, indexes = utils.merge_lists([dates for dates, _ in data])
-    newValues = []
-    for table in tablePattern:
-        values = [[None for _ in range(len(table))]
-                  for _ in range(len(allDates))]
-        for i in range(len(table)):
-            atoms, formula = table[i]
-            atoms = [(allAtoms[atom], active) for atom, active in atoms]
-            func = compiler.compile(formula)
-            if False not in [index < len(data) for _, index in atoms]:
-                intersection = utils.intersect_lists(
-                    [indexes[index] for _, index in atoms])
-                for j in range(len(intersection)):
-                    args = [atom(data[active][1][j]) for atom, active in atoms]
-                    values[intersection[j]][i] = func(args)
-        newValues.append(values)
-
-    return allDates, newValues

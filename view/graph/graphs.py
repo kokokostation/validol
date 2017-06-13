@@ -1,10 +1,12 @@
-from PyQt5 import QtGui, QtCore
-import pyqtgraph as pg
 import math
-import utils
-import data_parser
-import interface_common
 from functools import partial
+
+import pyqtgraph as pg
+from PyQt5 import QtWidgets, QtCore, QtWidgets
+
+import view.utils
+from model.store import data_parser
+from model.utils import split, none_filter
 
 colors = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255),
           (255, 255, 0), (255, 0, 255), (0, 0, 255)]
@@ -15,7 +17,6 @@ def negate(color):
 
 
 class MyAxisItem(pg.AxisItem):
-
     def __init__(self, str_dates, **kargs):
         pg.AxisItem.__init__(self, **kargs)
         self.str_dates = str_dates
@@ -31,7 +32,6 @@ class MyAxisItem(pg.AxisItem):
 
 
 class MyPlot(pg.PlotItem):
-
     def fixAutoRange(self):
         self.enableAutoRange(y=True)
 
@@ -45,13 +45,11 @@ class MyPlot(pg.PlotItem):
 
 
 class ItemData():
-
     def __init__(self, symbol, brush):
         self.opts = {'symbol': symbol, 'brush': brush, 'pen': None, 'size': 20}
 
 
 class Graph(pg.GraphicsWindow):
-
     def __init__(self, dates, values, pattern, tableLabels):
         pg.GraphicsWindow.__init__(self)
 
@@ -81,7 +79,7 @@ class Graph(pg.GraphicsWindow):
         # code duplication
         for key, color in lines:
             plots = []
-            for chain in utils.split([i if self.values[i][key] is not None else None for i in range(len(self.values))], None):
+            for chain in split([i if self.values[i][key] is not None else None for i in range(len(self.values))], None):
                 if chain:
                     plots.append(pg.PlotDataItem(chain, [self.values[i][key] for i in chain], pen={
                                  'color': colors[color], 'width': 2}))
@@ -98,11 +96,10 @@ class Graph(pg.GraphicsWindow):
                     key, place, color = bar
                     barGraphs = []
 
-                    for chain in utils.split([i if self.values[i][key] is not None else None for i in range(len(self.values))], None):
+                    for chain in split([i if self.values[i][key] is not None else None for i in range(len(self.values))], None):
                         if chain:
                             ys = [self.values[i][key] for i in chain]
-                            positive = list(map(lambda x: math.copysign(1, x), ys)).count(
-                                1) > len(ys) / 2
+                            positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) / 2
                             if (positive and sign == -1) or (not positive and sign == 1):
                                 ys = [-y for y in ys]
 
@@ -185,7 +182,8 @@ class Graph(pg.GraphicsWindow):
                         for style, key in self.legendData[j]:
                             if type(key) == int:
                                 label = self.tableLabels[
-                                    key] + " " + str(utils.none_filter(round)(self.values[int(x)][key], 2))
+                                    key] + " " + str(
+                                    none_filter(round)(self.values[int(x)][key], 2))
                             else:
                                 label = key
                             legends[i].addItem(style, label)
@@ -194,21 +192,20 @@ class Graph(pg.GraphicsWindow):
         self.scene().sigMouseMoved.connect(mouseMoved)
 
 
-class CheckedGraph(QtGui.QWidget):
-
-    def __init__(self, dates, values, pattern, tableLabels, title):
-        QtGui.QWidget.__init__(self)
+class CheckedGraph(QtWidgets.QWidget):
+    def __init__(self, parent, flags, dates, values, pattern, tableLabels, title):
+        QtWidgets.QWidget.__init__(self, parent, flags)
 
         self.setWindowTitle(title)
         self.graph = Graph(dates, values, pattern, tableLabels)
 
-        self.mainLayout = QtGui.QVBoxLayout(self)
-        interface_common.set_title(self.mainLayout, title)
-        self.graphLayout = QtGui.QHBoxLayout()
+        self.mainLayout = QtWidgets.QVBoxLayout(self)
+        view.utils.set_title(self.mainLayout, title)
+        self.graphLayout = QtWidgets.QHBoxLayout()
         self.mainLayout.insertLayout(1, self.graphLayout, stretch=10)
 
-        self.choiceTree = QtGui.QTreeWidget()
-        interface_common.draw_pattern(
+        self.choiceTree = QtWidgets.QTreeWidget()
+        view.utils.draw_pattern(
             self.choiceTree, pattern, tableLabels, True)
         self.choiceTree.itemChanged.connect(self.fix)
 

@@ -1,14 +1,15 @@
+import datetime as dt
+
 import numpy as np
 import pyqtgraph as pg
-import datetime as dt
-import interface_common
-from PyQt5 import QtGui
+from PyQt5 import QtWidgets, QtWidgets
+
+from view import utils
 
 
-class Table(QtGui.QWidget):
-
-    def __init__(self, dates, values, labels, title):
-        QtGui.QWidget.__init__(self)
+class Table(QtWidgets.QWidget):
+    def __init__(self, parent, flags, dates, values, labels, title):
+        QtWidgets.QWidget.__init__(self, parent, flags)
 
         self.setWindowTitle(title)
 
@@ -19,9 +20,9 @@ class Table(QtGui.QWidget):
 
         table.setData(data)
 
-        self.mainLayout = QtGui.QVBoxLayout(self)
+        self.mainLayout = QtWidgets.QVBoxLayout(self)
 
-        interface_common.set_title(self.mainLayout, title)
+        utils.set_title(self.mainLayout, title)
         self.mainLayout.addWidget(table, stretch=10)
 
         self.showMaximized()

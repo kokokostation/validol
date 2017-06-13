@@ -1,11 +1,4 @@
-import sys
-from PyQt5 import QtGui
-from main_window import Window
-from startup import init
+from controller.launcher import ControllerLauncher
 
-init()
-
-app = QtGui.QApplication(sys.argv)
-window = Window(app)
-window.show()
-sys.exit(app.exec_())
+if __name__ == '__main__':
+    ControllerLauncher()

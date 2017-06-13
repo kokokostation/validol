@@ -1,21 +1,21 @@
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtWidgets, QtCore, QtWidgets
 
 
 def scrollable_area(layout):
-    scroll = QtGui.QScrollArea()
+    scroll = QtWidgets.QScrollArea()
     scroll.setWidgetResizable(True)
-    inner = QtGui.QFrame(scroll)
+    inner = QtWidgets.QFrame(scroll)
     inner.setLayout(layout)
     scroll.setWidget(inner)
     return scroll
 
 
 def add_root(tree, graph, tableLabels, label, current=None, checkable=False):
-    root = QtGui.QTreeWidgetItem([label])
-    children = [QtGui.QTreeWidgetItem([label]) for label in ["left", "right"]]
+    root = QtWidgets.QTreeWidgetItem([label])
+    children = [QtWidgets.QTreeWidgetItem([label]) for label in ["left", "right"]]
 
     for j in range(2):
-        types = [QtGui.QTreeWidgetItem([label])
+        types = [QtWidgets.QTreeWidgetItem([label])
                  for label in ["line", "bar", "-bar"]]
         for k in range(3):
             for piece in graph[j][k]:
@@ -24,7 +24,7 @@ def add_root(tree, graph, tableLabels, label, current=None, checkable=False):
                 else:
                     index = piece[0]
 
-                item = QtGui.QTreeWidgetItem([tableLabels[index]])
+                item = QtWidgets.QTreeWidgetItem([tableLabels[index]])
                 if current != None:
                     item.setToolTip(0, str(current))
                     current += 1
@@ -56,14 +56,13 @@ def draw_pattern(tree, pattern, tableLabels, checkable=False):
 
 
 def set_title(layout, title):
-    denotions = QtGui.QTextEdit()
+    denotions = QtWidgets.QTextEdit()
     denotions.setText(title)
     denotions.setReadOnly(True)
     layout.addWidget(denotions, stretch=1)
 
 
 class MyButtonGroup():
-
     def __init__(self):
         self.buttons = []
         self.last = None

@@ -5,6 +5,11 @@ import heapq
 import numpy as np
 from functools import reduce
 import pickle
+from time import mktime
+
+
+def to_timestamp(date):
+    return mktime(date.timetuple())
 
 
 def take_closest(l, date):
@@ -13,7 +18,7 @@ def take_closest(l, date):
     if pos == 0:
         return 0
     elif pos == len(l):
-        return -1
+        return len(l) - 1
 
     before = l[pos - 1]
     after = l[pos]
@@ -87,15 +92,15 @@ def intersect_lists(lists):
     return reduce(np.intersect1d, lists)
 
 
-def pickleLoader(pklFile):
+def pickle_loader(pkl_file):
     result = []
     try:
         while True:
-            result.append(pickle.load(pklFile))
+            result.append(pickle.load(pkl_file))
     except EOFError:
         return result
 
 
-def pickleExtend(l, pklFile):
+def pickle_extend(l, pkl_file):
     for item in l:
-        pickle.dump(item, pklFile)
+        pickle.dump(item, pkl_file)

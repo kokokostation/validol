@@ -1,9 +1,12 @@
 from __future__ import division
-from pyparsing import (Literal, CaselessLiteral, Word, Combine, Group, Optional,
-                       ZeroOrMore, Forward, nums, alphas, oneOf)
+
 import math
 import operator
-import utils
+
+from pyparsing import (Literal, CaselessLiteral, Word, Combine, Group, Optional,
+                       ZeroOrMore, Forward, nums, alphas, oneOf)
+
+from model import utils
 
 
 class NumericStringParser(object):

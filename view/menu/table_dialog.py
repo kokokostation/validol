@@ -1,41 +1,40 @@
-from PyQt5 import QtGui, QtCore
-import user_structures
+from PyQt5 import QtWidgets, QtWidgets
 from pyparsing import alphas
-import data_parser
+
+from model.store import user_structures, data_parser
+from view.view_element import ViewElement
 
 
-class TableDialog(QtGui.QWidget):
-
-    def __init__(self, new_table):
-        QtGui.QWidget.__init__(self)
-
-        self.new_table = new_table
+class TableDialog(ViewElement, QtWidgets.QWidget):
+    def __init__(self, parent, flags, controller_launcher):
+        QtWidgets.QWidget.__init__(self, parent, flags)
+        ViewElement.__init__(self, controller_launcher)
 
         self.setWindowTitle("Table edit")
 
-        self.mainLayout = QtGui.QVBoxLayout(self)
-        self.boxesLayout = QtGui.QHBoxLayout()
-        self.buttonsLayout = QtGui.QHBoxLayout()
-        self.editLayout = QtGui.QVBoxLayout()
-        self.leftLayout = QtGui.QVBoxLayout()
+        self.mainLayout = QtWidgets.QVBoxLayout(self)
+        self.boxesLayout = QtWidgets.QHBoxLayout()
+        self.buttonsLayout = QtWidgets.QHBoxLayout()
+        self.editLayout = QtWidgets.QVBoxLayout()
+        self.leftLayout = QtWidgets.QVBoxLayout()
 
-        self.atomList = QtGui.QListWidget()
+        self.atomList = QtWidgets.QListWidget()
         for name, _, presentation in user_structures.get_atoms():
             self.add_atom(name, presentation)
         self.atomList.itemDoubleClicked.connect(self.insertAtom)
 
-        self.name = QtGui.QLineEdit()
+        self.name = QtWidgets.QLineEdit()
         self.name.setPlaceholderText("Name")
-        self.mainEdit = QtGui.QTextEdit()
+        self.mainEdit = QtWidgets.QTextEdit()
 
-        self.mode = QtGui.QButtonGroup()
+        self.mode = QtWidgets.QButtonGroup()
         checkBoxes = []
         for label in ["Table", "Atom"]:
-            checkBoxes.append(QtGui.QCheckBox(label))
+            checkBoxes.append(QtWidgets.QCheckBox(label))
             self.mode.addButton(checkBoxes[-1])
         checkBoxes[0].setChecked(True)
 
-        self.letters = QtGui.QComboBox()
+        self.letters = QtWidgets.QComboBox()
         self.letters.addItem("")
         for a in alphas[:10]:
             self.letters.addItem(a)
@@ -43,10 +42,10 @@ class TableDialog(QtGui.QWidget):
         self.leftLayout.addWidget(self.atomList)
         self.leftLayout.addWidget(self.letters)
 
-        self.submitTablePattern = QtGui.QPushButton('Submit')
+        self.submitTablePattern = QtWidgets.QPushButton('Submit')
         self.submitTablePattern.clicked.connect(self.submit)
 
-        self.removeAtom = QtGui.QPushButton('Remove Atom')
+        self.removeAtom = QtWidgets.QPushButton('Remove Atom')
         self.removeAtom.clicked.connect(self.remove_atom)
 
         self.editLayout.addWidget(self.name)
@@ -72,7 +71,7 @@ class TableDialog(QtGui.QWidget):
             user_structures.remove_atom(title)
 
     def add_atom(self, name, presentation):
-        wi = QtGui.QListWidgetItem(name)
+        wi = QtWidgets.QListWidgetItem(name)
         wi.setToolTip(presentation)
         self.atomList.addItem(wi)
 
@@ -106,7 +105,7 @@ class TableDialog(QtGui.QWidget):
             text = self.mainEdit.toPlainText().replace(
                 ",\n", "\n").strip(",\n")
             user_structures.write_table(self.name.text(), text)
-            self.new_table()
+            self.controller_launcher.refresh_tables()
         else:
             name, presentation = self.name.text(), self.mainEdit.toPlainText()
             user_structures.write_atom(
