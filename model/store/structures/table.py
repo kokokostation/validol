@@ -33,6 +33,14 @@ class Table(Item):
         formulae = [list(map(lambda formula: Table.parse_formula(formula, all_atoms), formula)) for formula in atom_groups]
         return Table(table_name, atom_groups, formulae)
 
+    def __contains__(self, item):
+        for formulae_group in self.formulae:
+            for parsed_atoms, _ in formulae_group:
+                if item in [name for name, _ in parsed_atoms]:
+                    return True
+
+        return False
+
 
 class Tables(Structure):
     def __init__(self):

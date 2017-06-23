@@ -1,4 +1,5 @@
 from model.store.structures.structure import Structure, Item
+from model.store.structures.table import Tables
 
 
 class Atom(Item):
@@ -32,5 +33,10 @@ class Atoms(Structure):
     def write_atom(self, atom_name, named_formula, existing_atoms):
         self.write(Atom.factory(atom_name, named_formula, existing_atoms))
 
-    def remove_atom(self, name): # deletion of tables connected to this atom required
+    def remove_atom(self, name):
         self.remove_by_name(name)
+
+        tables = Tables()
+        for table in tables.get_tables():
+            if name in table:
+                tables.remove_table(table.name)

@@ -10,9 +10,6 @@ from model.store.structures.pattern import Line, Bar
 from model.utils import split, none_filter
 from view.pattern_tree import PatternTree
 
-colors = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255),
-          (255, 255, 0), (255, 0, 255), (0, 0, 255)]
-
 
 def negate(color):
     return [255 - rgb for rgb in color]
@@ -93,7 +90,7 @@ class Graph(pg.GraphicsWindow):
                         chunks.append(pg.PlotDataItem(
                             chain,
                             ys,
-                            pen={'color': colors[piece.color], 'width': 2}))
+                            pen={'color': piece.color, 'width': 2}))
                     elif type(piece) == Bar:
                         positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) // 2
                         ys = piece.sign * ys
@@ -104,15 +101,15 @@ class Graph(pg.GraphicsWindow):
                             x=[c + bar_width * piece.base for c in chain],
                             height=ys,
                             width=bar_width,
-                            brush=pg.mkBrush(colors[piece.color] + (130,)),
+                            brush=pg.mkBrush(piece.color + (130,)),
                             pen=pg.mkPen('k')))
 
                     plotItem.addItem(chunks[-1])
 
             if type(piece) == Line:
-                legend_color = colors[piece.color]
+                legend_color = piece.color
             elif type(piece) == Bar:
-                legend_color = colors[piece.color] + (200,)
+                legend_color = piece.color + (200,)
 
             self.widgets[(graph_num, piece.atom_id)] = (plotItem, chunks)
             self.legendData[graph_num][lr].append((ItemData('s', legend_color), piece.atom_id))
@@ -186,11 +183,11 @@ class Graph(pg.GraphicsWindow):
                     while legends[i].layout.count() > 0:
                         legends[i].removeItem(legends[i].items[0][1].text)
 
+                    legends[i].layout.setColumnSpacing(0, 20)
                     for section in self.legendData[i]:
                             legends[i].addItem(section[0][0], section[0][1])
                             for style, key in section[1:]:
                                 legends[i].addItem(style, "{} {}".format(self.tableLabels[key], none_filter(round)(self.values[int(x)][key], 2)))
-                                legends[i].layout.setColumnSpacing(0, 20)
 
                     mouseMoved.prevxs[i] = int(x)
 

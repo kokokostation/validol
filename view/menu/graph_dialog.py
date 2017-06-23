@@ -11,6 +11,9 @@ from view.view_element import ViewElement
 
 
 class GraphDialog(ViewElement, QtWidgets.QWidget):
+    COLORS = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255), (255, 255, 0),
+              (255, 0, 255), (0, 0, 255)]
+
     def __init__(self, parent, flags, dates, values, tableName, tableLabels, title, controller_launcher, model_launcher):
         QtWidgets.QWidget.__init__(self, parent, flags)
         ViewElement.__init__(self, controller_launcher, model_launcher)
@@ -105,7 +108,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
             comboBoxes = [QtWidgets.QComboBox() for _ in range(2)]
             for comboBox in comboBoxes:
                 model = comboBox.model()
-                for color in graphs.colors:
+                for color in GraphDialog.COLORS:
                     item = QtGui.QStandardItem("")
                     item.setBackground(QtGui.QColor(*color))
                     model.appendRow(item)
@@ -147,7 +150,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
     def indexChanged(self, comboBox, color):
         comboBox.setStyleSheet(
-            "color: white; background-color: rgb" + str(graphs.colors[color]))
+            "color: white; background-color: rgb" + str(GraphDialog.COLORS[color]))
 
     def draw_graph(self):
         self.controller_launcher.draw_graph(self.dates,
@@ -165,7 +168,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
             _, button_groups, check_boxes, combo_boxes = label
             lr, type = button_groups[0].checked_button(), button_groups[1].checked_button()
             if lr and type:
-                color = combo_boxes[1].currentIndex()
+                color = GraphDialog.COLORS[combo_boxes[1].currentIndex()]
 
                 base_color = combo_boxes[0].currentIndex()
 
