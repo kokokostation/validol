@@ -1,9 +1,11 @@
-from model.store.resource import Resource, Table
-import requests
 import datetime as dt
 import re
+
 import pandas as pd
+import requests
+
 from model.mine.downloader import read_url_text
+from model.store.resource import Resource, Table
 
 
 def normalize_url(url):
@@ -19,13 +21,13 @@ class InvestingPrices(Table):
         url = normalize_url(url)
 
         c = self.dbh.cursor()
-        c.execute("""
+        c.execute('''
             SELECT
                 pair_id, name
             FROM 
-                {table}
+                "{table}"
             WHERE
-                URL = ?""".format(table=self.table), (url,))
+                URL = ?'''.format(table=self.table), (url,))
         response = c.fetchone()
 
         if response:
@@ -39,10 +41,10 @@ class InvestingPrices(Table):
             pair_id = re.search(r'data-pair-id="(\d*)"', content).group(1)
             name = re.search(r'<title>(.*)</title>', content).group(1).rsplit(" - ")[0]
 
-            self.dbh.cursor().execute("""
+            self.dbh.cursor().execute('''
                 INSERT OR IGNORE INTO
-                    {table}
-                VALUES ({qs})""".format(table=self.table,
+                    "{table}"
+                VALUES ({qs})'''.format(table=self.table,
                                         qs=",".join("?" * len(self.schema))),
                 (pair_id, name, url))
 
@@ -50,16 +52,14 @@ class InvestingPrices(Table):
 
     def get_prices(self):
         return self.dbh.cursor().execute(
-            "SELECT URL, Name FROM {table}".format(table=self.table)).fetchall()
+            'SELECT URL, Name FROM "{table}"'.format(table=self.table)).fetchall()
 
 
 class InvestingPrice(Resource):
+    SCHEMA = [("Quot", "REAL")]
+
     def __init__(self, dbh, pair_id):
-        Resource.__init__(
-            self,
-            dbh,
-            "pair_id_{pair_id}".format(pair_id=pair_id),
-            [("Price", "REAL")])
+        Resource.__init__(self, dbh, "pair_id_{pair_id}".format(pair_id=pair_id), InvestingPrice.SCHEMA)
 
         self.pair_id = pair_id
 
@@ -97,30 +97,23 @@ class InvestingPrice(Resource):
             r'<td.*class="(green|red)Font">(\d+(\.\d*)*(,\d*))</td>',
             response.text)
 
-        df["Price"] = [row[1].replace(".", "").replace(",", ".") for row in raw_prices]
+        df["Quot"] = [row[1].replace(".", "").replace(",", ".") for row in raw_prices]
 
         return df
 
-    def get_dates(self, requested_dates):
+    def read_dates(self, begin, end):
         first, last = self.range()
 
         try:
             if not first:
-                self.write(self.fill(requested_dates[0], requested_dates[-1]))
+                self.write(self.fill(begin, end))
             else:
-                if requested_dates[0] < first:
-                    self.write(self.fill(requested_dates[0], first - dt.timedelta(days=1)))
-                if last < requested_dates[-1]:
-                    self.write(self.fill(last + dt.timedelta(days=1), requested_dates[-1]))
+                if begin < first:
+                    self.write(self.fill(begin, first - dt.timedelta(days=1)))
+                if last < end:
+                    self.write(self.fill(last + dt.timedelta(days=1), end))
         except requests.exceptions.ConnectionError:
             pass
 
-        dates = self.read(
-            ["Price"],
-            requested_dates[0],
-            requested_dates[-1])
-
-        dates = dates.set_index("Date").to_dict()['Price']
-
-        return [dates.get(date, None) for date in requested_dates]
+        return Resource.read_dates(self, begin, end)
 

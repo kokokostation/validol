@@ -1,12 +1,14 @@
 import math
 from functools import partial
 
-import pyqtgraph as pg
-from PyQt5 import QtWidgets, QtCore, QtWidgets
+import numpy as np
+from PyQt5 import QtCore, QtWidgets
 
+import pyqtgraph as pg
 import view.utils
-from model.store import data_parser
+from model.store.structures.pattern import Line, Bar
 from model.utils import split, none_filter
+from view.pattern_tree import PatternTree
 
 colors = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255),
           (255, 255, 0), (255, 0, 255), (0, 0, 255)]
@@ -53,7 +55,7 @@ class Graph(pg.GraphicsWindow):
     def __init__(self, dates, values, pattern, tableLabels):
         pg.GraphicsWindow.__init__(self)
 
-        self.widgets = []
+        self.widgets = {}
         self.legendData = []
 
         self.dates = dates
@@ -63,53 +65,57 @@ class Graph(pg.GraphicsWindow):
 
         self.draw_graph()
 
-    def fix(self, index, toDo):
+    def fix(self, index, todo):
         plotItem, plots = self.widgets[index]
 
         for plot in plots:
-            if toDo == True:
+            if todo == True:
                 plotItem.addItem(plot)
             else:
                 plotItem.removeItem(plot)
 
-    def draw_axis(self, label, plotItem, lines, bars, mbars):
-        self.legendData.append(
-            [(ItemData(None, None), "____" + label + "____")])
+    def draw_axis(self, label, plotItem, graph_num, lr, pieces):
+        self.legendData[graph_num][lr].append((ItemData(None, None), "____" + label + "____"))
 
-        # code duplication
-        for key, color in lines:
-            plots = []
-            for chain in split([i if self.values[i][key] is not None else None for i in range(len(self.values))], None):
+        bases = [piece.base for piece in pieces if type(piece) == Bar]
+        if bases:
+            bases_num = max(bases) + 1
+            bar_width = 0.9 / bases_num
+
+        for piece in pieces:
+            chunks = []
+
+            for chain in split([i if self.values[i][piece.atom_id] is not None else None for i in range(len(self.values))], None):
                 if chain:
-                    plots.append(pg.PlotDataItem(chain, [self.values[i][key] for i in chain], pen={
-                                 'color': colors[color], 'width': 2}))
-                    plotItem.addItem(plots[-1])
+                    ys = np.array([self.values[i][piece.atom_id] for i in chain])
 
-            self.widgets.append((plotItem, plots))
-            self.legendData[-1].append((ItemData('s', colors[color]), key))
+                    if type(piece) == Line:
+                        chunks.append(pg.PlotDataItem(
+                            chain,
+                            ys,
+                            pen={'color': colors[piece.color], 'width': 2}))
+                    elif type(piece) == Bar:
+                        positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) // 2
+                        ys = piece.sign * ys
+                        if not positive:
+                            ys = -ys
 
-        placesNum = data_parser.places_num(bars, mbars)
-        if placesNum:
-            bar_width = 0.9 / placesNum
-            for bs, sign in [(bars, 1), (mbars, -1)]:
-                for bar in bs:
-                    key, place, color = bar
-                    barGraphs = []
+                        chunks.append(pg.BarGraphItem(
+                            x=[c + bar_width * piece.base for c in chain],
+                            height=ys,
+                            width=bar_width,
+                            brush=pg.mkBrush(colors[piece.color] + (130,)),
+                            pen=pg.mkPen('k')))
 
-                    for chain in split([i if self.values[i][key] is not None else None for i in range(len(self.values))], None):
-                        if chain:
-                            ys = [self.values[i][key] for i in chain]
-                            positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) / 2
-                            if (positive and sign == -1) or (not positive and sign == 1):
-                                ys = [-y for y in ys]
+                    plotItem.addItem(chunks[-1])
 
-                            barGraphs.append(pg.BarGraphItem(x=[c + bar_width * place for c in chain], height=ys,
-                                                             width=bar_width, brush=pg.mkBrush(colors[color] + (130,)), pen=pg.mkPen('k')))
-                            plotItem.addItem(barGraphs[-1])
+            if type(piece) == Line:
+                legend_color = colors[piece.color]
+            elif type(piece) == Bar:
+                legend_color = colors[piece.color] + (200,)
 
-                    self.widgets.append((plotItem, barGraphs))
-                    self.legendData[-
-                                    1].append((ItemData('s', colors[color] + (200,)), key))
+            self.widgets[(graph_num, piece.atom_id)] = (plotItem, chunks)
+            self.legendData[graph_num][lr].append((ItemData('s', legend_color), piece.atom_id))
 
     def draw_graph(self):
         pg.setConfigOption('foreground', 'w')
@@ -119,33 +125,34 @@ class Graph(pg.GraphicsWindow):
 
         str_dates = [date.strftime("%d/%m/%Y") for date in self.dates]
 
-        for left, right in self.pattern:
+        for i, graph in enumerate(self.pattern.graphs):
+            left, right = graph.pieces
+            self.legendData.append([[] for _ in range(2)])
+
             self.nextRow()
             plots.append(MyPlot(str_dates))
             self.addItem(item=plots[-1])
             legends.append(pg.LegendItem(offset=(100, 20)))
             legends[-1].setParentItem(plots[-1])
 
-            self.draw_axis("left", plots[-1], *left)
+            self.draw_axis("left", plots[-1], i, 0, left)
 
             twins.append(pg.ViewBox())
-            if right:
-                plots[-1].showAxis('right')
-                plots[-1].scene().addItem(twins[-1])
-                plots[-1].getAxis('right').linkToView(twins[-1])
-                twins[-1].setXLink(plots[-1])
-                twins[-1].setAutoVisible(y=1)
+            plots[-1].showAxis('right')
+            plots[-1].scene().addItem(twins[-1])
+            plots[-1].getAxis('right').linkToView(twins[-1])
+            twins[-1].setXLink(plots[-1])
+            twins[-1].setAutoVisible(y=1)
 
-                def updateViews(twin, plot):
-                    twin.enableAutoRange(y=True)
-                    twin.setGeometry(plot.vb.sceneBoundingRect())
-                    twin.linkedViewChanged(plot.vb, twin.XAxis)
+            def updateViews(twin, plot):
+                twin.enableAutoRange(y=True)
+                twin.setGeometry(plot.vb.sceneBoundingRect())
+                twin.linkedViewChanged(plot.vb, twin.XAxis)
 
-                updateViews(twins[-1], plots[-1])
-                plots[-
-                      1].vb.sigResized.connect(partial(updateViews, twins[-1], plots[-1]))
+            updateViews(twins[-1], plots[-1])
+            plots[-1].vb.sigResized.connect(partial(updateViews, twins[-1], plots[-1]))
 
-                self.draw_axis("right", twins[-1], *right)
+            self.draw_axis("right", twins[-1], i, 1, right)
 
         for i in range(len(plots)):
             for j in range(i + 1, len(plots)):
@@ -169,25 +176,25 @@ class Graph(pg.GraphicsWindow):
             for i in range(len(plots)):
                 mousePoint = plots[i].vb.mapSceneToView(evt)
                 x, y = mousePoint.x(), mousePoint.y()
+
                 vLines[i].setPos(x)
                 hLines[i].setPos(y)
-                if 0 <= int(x) < len(str_dates):
+                labels[i].setPos(x, plots[i].vb.viewRange()[1][0])
+                if 0 <= int(x) < len(str_dates) and mouseMoved.prevxs[i] != int(x):
                     labels[i].setText(str_dates[int(x)])
-                    labels[i].setPos(x, plots[i].vb.viewRange()[1][0])
 
                     while legends[i].layout.count() > 0:
                         legends[i].removeItem(legends[i].items[0][1].text)
 
-                    for j in range(2 * i, 2 * (i + 1)):
-                        for style, key in self.legendData[j]:
-                            if type(key) == int:
-                                label = self.tableLabels[
-                                    key] + " " + str(
-                                    none_filter(round)(self.values[int(x)][key], 2))
-                            else:
-                                label = key
-                            legends[i].addItem(style, label)
-                            legends[i].layout.setColumnSpacing(0, 20)
+                    for section in self.legendData[i]:
+                            legends[i].addItem(section[0][0], section[0][1])
+                            for style, key in section[1:]:
+                                legends[i].addItem(style, "{} {}".format(self.tableLabels[key], none_filter(round)(self.values[int(x)][key], 2)))
+                                legends[i].layout.setColumnSpacing(0, 20)
+
+                    mouseMoved.prevxs[i] = int(x)
+
+        mouseMoved.prevxs = [None] * len(plots)
 
         self.scene().sigMouseMoved.connect(mouseMoved)
 
@@ -204,9 +211,8 @@ class CheckedGraph(QtWidgets.QWidget):
         self.graphLayout = QtWidgets.QHBoxLayout()
         self.mainLayout.insertLayout(1, self.graphLayout, stretch=10)
 
-        self.choiceTree = QtWidgets.QTreeWidget()
-        view.utils.draw_pattern(
-            self.choiceTree, pattern, tableLabels, True)
+        self.choiceTree = PatternTree(True)
+        self.choiceTree.draw_pattern(pattern, tableLabels)
         self.choiceTree.itemChanged.connect(self.fix)
 
         self.graphLayout.addWidget(self.choiceTree, stretch=1)
@@ -215,5 +221,4 @@ class CheckedGraph(QtWidgets.QWidget):
         self.showMaximized()
 
     def fix(self, item, i):
-        self.graph.fix(
-            int(item.toolTip(0)), item.checkState(0) == QtCore.Qt.Checked)
+        self.graph.fix(item.data(0, 6), item.checkState(0) == QtCore.Qt.Checked)

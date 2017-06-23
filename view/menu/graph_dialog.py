@@ -1,29 +1,28 @@
-import itertools
 from functools import partial
 
-from PyQt5 import QtWidgets, QtWidgets, QtGui
+from PyQt5 import QtWidgets, QtGui
 
 import view.utils
-from model.store import user_structures
-from model.utils import flatten
+from model.store.structures.pattern import Graph, Line, Bar, Pattern
+from view.button_group import ButtonGroup
 from view.graph import graphs
+from view.pattern_tree import PatternTree
 from view.view_element import ViewElement
 
 
 class GraphDialog(ViewElement, QtWidgets.QWidget):
-    def __init__(self, parent, flags, dates, values, tableName, tableLabels, title, controller_launcher):
+    def __init__(self, parent, flags, dates, values, tableName, tableLabels, title, controller_launcher, model_launcher):
         QtWidgets.QWidget.__init__(self, parent, flags)
-        ViewElement.__init__(self, controller_launcher)
+        ViewElement.__init__(self, controller_launcher, model_launcher)
 
         self.setWindowTitle(tableName)
 
         self.dates = dates
 
-        self.values = [list(itertools.chain.from_iterable(
-            [value[i] for value in values])) for i in range(len(dates))]
+        self.values = values
         self.title = title
         self.tableName = tableName
-        self.tableLabels = flatten(tableLabels)
+        self.tableLabels = tableLabels
 
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.upper_layout = QtWidgets.QHBoxLayout()
@@ -38,19 +37,19 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.main_layout.insertLayout(2, self.buttons_layout)
 
         self.pattern_list = QtWidgets.QListWidget()
-        patterns = user_structures.get_patterns()
+        patterns = self.model_launcher.get_patterns(self.tableName)
         self.patterns = {}
-        for patternTableName, graphName, pattern in patterns:
-            if patternTableName == tableName:
-                self.pattern_list.addItem(graphName)
-                self.patterns[graphName] = pattern
+        for pattern in patterns:
+            if pattern.table_name == tableName:
+                self.pattern_list.addItem(pattern.name)
+                self.patterns[pattern.name] = pattern
 
         if self.pattern_list.count() > 0:
             self.pattern_list.setCurrentRow(0)
 
         self.pattern_list.itemDoubleClicked.connect(self.draw_item)
 
-        self.patternTree = QtWidgets.QTreeWidget()
+        self.patternTree = PatternTree()
 
         self.removePattern = QtWidgets.QPushButton('Remove pattern')
         self.removePattern.clicked.connect(self.remove_pattern)
@@ -59,7 +58,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.patternChoiceLayout.addWidget(self.removePattern)
         self.patternChoiceLayout.addWidget(self.patternTree)
 
-        self.graphsTree = QtWidgets.QTreeWidget()
+        self.graphsTree = PatternTree()
 
         self.patternTitle = QtWidgets.QLineEdit()
         self.patternTitle.setPlaceholderText("Pattern title")
@@ -98,7 +97,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
             buttonGroups = []
             for t in [[0, 1], [2, 3, 4]]:
-                buttonGroups.append(view.utils.MyButtonGroup())
+                buttonGroups.append(ButtonGroup())
                 for j in t:
                     buttonGroups[-1].add_item(checkBoxes[j])
                     lastLabel.addWidget(checkBoxes[j])
@@ -111,8 +110,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
                     item.setBackground(QtGui.QColor(*color))
                     model.appendRow(item)
 
-                comboBox.currentIndexChanged.connect(
-                    partial(self.indexChanged, comboBox))
+                comboBox.currentIndexChanged.connect(partial(self.indexChanged, comboBox))
                 comboBox.highlighted.connect(partial(self.activated, comboBox))
                 self.indexChanged(comboBox, 0)
 
@@ -126,7 +124,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.submitGraph.clicked.connect(self.submit_graph)
         self.labels_submit_layout.addWidget(self.submitGraph)
 
-        self.currentPattern = []
+        self.currentPattern = Pattern()
 
         self.showMaximized()
 
@@ -136,17 +134,12 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.patternTree.clear()
         self.patternTree.setHeaderLabel("")
         del self.patterns[title]
-        user_structures.remove_pattern(self.tableName, title)
-
-    def closeEvent(self, _):
-        for graph in self.graphs:
-            graph.close()
+        self.model_launcher.remove_pattern(self.tableName, title)
 
     def draw_item(self, item):
         pattern = self.patterns[item.text()]
         self.patternTree.clear()
-        view.utils.draw_pattern(
-            self.patternTree, pattern, self.tableLabels)
+        self.patternTree.draw_pattern(pattern, self.tableLabels)
         self.patternTree.setHeaderLabel(item.text())
 
     def activated(self, comboBox, _=None):
@@ -164,31 +157,36 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
                                             self.title)
 
     def submit_graph(self):
-        places = []
+        base_colors = []
 
-        graph = [[[] for _ in range(3)] for _ in range(2)]
+        graph = Graph()
+
         for i, label in enumerate(self.labels):
-            textBox, buttonGroups, checkBoxes, comboBoxes = label
-            lr, t = buttonGroups[
-                0].checked_button(), buttonGroups[1].checked_button()
-            if lr and t:
-                color = comboBoxes[0].currentIndex()
-                toAppend = [i]
-                if t[0] != 0:
-                    if color in places:
-                        toAppend.append(places.index(color))
+            _, button_groups, check_boxes, combo_boxes = label
+            lr, type = button_groups[0].checked_button(), button_groups[1].checked_button()
+            if lr and type:
+                color = combo_boxes[1].currentIndex()
+
+                base_color = combo_boxes[0].currentIndex()
+
+                if type[1] == "line":
+                    graph.add_piece(lr[0], Line(i, color))
+                else:
+                    if base_color in base_colors:
+                        base = base_colors.index(base_color)
                     else:
-                        toAppend.append(len(places))
-                        places.append(color)
+                        base = len(base_colors)
+                        base_colors.append(base_color)
 
-                toAppend.append(comboBoxes[1].currentIndex())
+                    sign = 1
+                    if type[1] == "-bar":
+                        sign = -1
 
-                graph[lr[0]][t[0]].append(toAppend)
+                    graph.add_piece(lr[0], Bar(i, color, base, sign))
 
-        self.currentPattern.append(graph)
+        self.currentPattern.add_graph(graph)
 
-        view.utils.add_root(
-            self.graphsTree, self.currentPattern[-1], self.tableLabels, str(len(self.currentPattern)))
+        self.graphsTree.add_root(self.currentPattern.graphs[-1], self.tableLabels, str(len(self.currentPattern.graphs)))
 
         self.clear_comboboxes()
         self.clear_checkboxes()
@@ -208,11 +206,12 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         if not patternTitle:
             return
 
+        self.currentPattern.set_name(self.tableName, patternTitle)
+
         self.pattern_list.addItem(patternTitle)
         self.pattern_list.setCurrentRow(self.pattern_list.count() - 1)
 
-        user_structures.add_pattern(
-            self.tableName, patternTitle, self.currentPattern)
+        self.model_launcher.write_pattern(self.currentPattern)
         self.patterns[patternTitle] = self.currentPattern
 
         self.clear_checkboxes()

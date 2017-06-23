@@ -1,9 +1,9 @@
 import datetime as dt
 
 import numpy as np
-import pyqtgraph as pg
-from PyQt5 import QtWidgets, QtWidgets
+from PyQt5 import QtWidgets
 
+import pyqtgraph as pg
 from view import utils
 
 

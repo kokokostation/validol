@@ -1,15 +1,15 @@
-from bisect import bisect_left
 import datetime as dt
-import itertools
 import heapq
-import numpy as np
+import itertools
+from bisect import bisect_left
 from functools import reduce
-import pickle
 from time import mktime
+
+import numpy as np
 
 
 def to_timestamp(date):
-    return mktime(date.timetuple())
+    return int(mktime(date.timetuple()))
 
 
 def take_closest(l, date):
@@ -92,15 +92,5 @@ def intersect_lists(lists):
     return reduce(np.intersect1d, lists)
 
 
-def pickle_loader(pkl_file):
-    result = []
-    try:
-        while True:
-            result.append(pickle.load(pkl_file))
-    except EOFError:
-        return result
-
-
-def pickle_extend(l, pkl_file):
-    for item in l:
-        pickle.dump(item, pkl_file)
+def group_by(df, columns):
+    return df.groupby(columns, sort=False)[[col for col in df.columns if col not in columns]]

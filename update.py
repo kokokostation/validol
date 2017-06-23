@@ -1,14 +1,14 @@
-import requests
-import zipfile
 import io
-from distutils.dir_util import copy_tree
 import os
 import shutil
+import zipfile
+from distutils.dir_util import copy_tree
+
+import requests
 
 
 def update_sources():
-    archive = requests.get(
-        "https://github.com/kokokostation/COTs/archive/master.zip").content
+    archive = requests.get("https://github.com/kokokostation/COTs/archive/master.zip").content
     file = io.BytesIO(archive)
 
     with zipfile.ZipFile(file, "r") as zip_file:

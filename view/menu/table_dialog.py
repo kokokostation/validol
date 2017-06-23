@@ -1,14 +1,13 @@
-from PyQt5 import QtWidgets, QtWidgets
+from PyQt5 import QtWidgets, QtGui
 from pyparsing import alphas
 
-from model.store import user_structures, data_parser
 from view.view_element import ViewElement
 
 
 class TableDialog(ViewElement, QtWidgets.QWidget):
-    def __init__(self, parent, flags, controller_launcher):
+    def __init__(self, parent, flags, controller_launcher, model_launcher):
         QtWidgets.QWidget.__init__(self, parent, flags)
-        ViewElement.__init__(self, controller_launcher)
+        ViewElement.__init__(self, controller_launcher, model_launcher)
 
         self.setWindowTitle("Table edit")
 
@@ -18,10 +17,9 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         self.editLayout = QtWidgets.QVBoxLayout()
         self.leftLayout = QtWidgets.QVBoxLayout()
 
-        self.atomList = QtWidgets.QListWidget()
-        for name, _, presentation in user_structures.get_atoms():
-            self.add_atom(name, presentation)
-        self.atomList.itemDoubleClicked.connect(self.insertAtom)
+        self.atom_list = QtWidgets.QListWidget()
+        self.atom_list.itemDoubleClicked.connect(self.insert_atom)
+        self.refresh_atoms()
 
         self.name = QtWidgets.QLineEdit()
         self.name.setPlaceholderText("Name")
@@ -39,7 +37,7 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         for a in alphas[:10]:
             self.letters.addItem(a)
 
-        self.leftLayout.addWidget(self.atomList)
+        self.leftLayout.addWidget(self.atom_list)
         self.leftLayout.addWidget(self.letters)
 
         self.submitTablePattern = QtWidgets.QPushButton('Submit')
@@ -65,18 +63,20 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         self.show()
 
     def remove_atom(self):
-        title = self.atomList.currentItem().text()
-        if title not in data_parser.primary_labels:
-            self.atomList.takeItem(self.atomList.currentRow())
-            user_structures.remove_atom(title)
+        atom_name = self.atom_list.currentItem().text()
+        self.model_launcher.remove_atom(atom_name)
+        self.refresh_atoms()
 
-    def add_atom(self, name, presentation):
-        wi = QtWidgets.QListWidgetItem(name)
-        wi.setToolTip(presentation)
-        self.atomList.addItem(wi)
+    def refresh_atoms(self):
+        self.atom_list.clear()
 
-    def insertAtom(self):
-        atom = self.atomList.currentItem().text()
+        for atom in self.model_launcher.get_atoms():
+            wi = QtWidgets.QListWidgetItem(atom.name)
+            wi.setToolTip(atom.named_formula)
+            self.atom_list.addItem(wi)
+
+    def insert_atom(self):
+        atom = self.atom_list.currentItem().text()
         mode = self.mode.checkedButton().text()
         letter = self.letters.currentText()
 
@@ -102,14 +102,12 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
             return
 
         if self.mode.checkedButton().text() == "Table":
-            text = self.mainEdit.toPlainText().replace(
-                ",\n", "\n").strip(",\n")
-            user_structures.write_table(self.name.text(), text)
+            text = self.mainEdit.toPlainText().replace(",\n", "\n").strip(",\n")
+            self.model_launcher.write_table(self.name.text(), text)
             self.controller_launcher.refresh_tables()
         else:
-            name, presentation = self.name.text(), self.mainEdit.toPlainText()
-            user_structures.write_atom(
-                name, presentation, user_structures.get_atoms())
-            self.add_atom(name, presentation)
+            atom_name, named_formula = self.name.text(), self.mainEdit.toPlainText()
+            self.model_launcher.write_atom(atom_name, named_formula)
+            self.refresh_atoms()
 
         self.clear_edits()

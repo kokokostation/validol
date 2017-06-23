@@ -1,14 +1,13 @@
-from PyQt5 import QtWidgets, QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
-from model.store import user_structures, data_parser
 from view import utils
 from view.view_element import ViewElement
 
 
 class Window(ViewElement, QtWidgets.QWidget):
-    def __init__(self, app, controller_launcher):
+    def __init__(self, app, controller_launcher, model_launcher):
         QtWidgets.QWidget.__init__(self)
-        ViewElement.__init__(self, controller_launcher)
+        ViewElement.__init__(self, controller_launcher, model_launcher)
 
         self.app = app
 
@@ -29,7 +28,7 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.platforms = QtWidgets.QListWidget()
         self.platforms.currentItemChanged.connect(self.platform_chosen)
 
-        for code, name in data_parser.get_platforms():
+        for code, name in self.model_launcher.get_platforms().values:
             wi = QtWidgets.QListWidgetItem(name)
             wi.setToolTip(code)
             self.platforms.addItem(wi)
@@ -99,7 +98,7 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.showMaximized()
 
     def remove_table(self):
-        user_structures.remove_table(self.tables_list.currentItem().text())
+        self.model_launcher.remove_table(self.tables_list.currentItem().text())
         self.set_tables()
 
     def closeEvent(self, _):
@@ -124,15 +123,15 @@ class Window(ViewElement, QtWidgets.QWidget):
             self.searchResult[2] += 1
 
     def table_chosen(self):
-        name, presentation, _ = self.available_tables[self.tables_list.currentRow()]
-        self.tableView.setText(name + ":\n" + "\n".join(",".join(line) for line in presentation))
+        table_pattern = self.available_tables[self.tables_list.currentRow()]
+        self.tableView.setText("{}:\n{}".format(table_pattern.name, "\n".join(",".join(line) for line in table_pattern.atom_groups)))
 
     def set_tables(self):
         self.tables_list.clear()
-        self.available_tables = user_structures.get_tables()
+        self.available_tables = self.model_launcher.get_tables()
 
-        for name, presentation, tablePattern in self.available_tables:
-            wi = QtWidgets.QListWidgetItem(name)
+        for table_pattern in self.available_tables:
+            wi = QtWidgets.QListWidgetItem(table_pattern.name)
             self.tables_list.addItem(wi)
 
         self.tables_list.setCurrentRow(self.tables_list.count() - 1)
@@ -140,7 +139,7 @@ class Window(ViewElement, QtWidgets.QWidget):
     def set_cached_prices(self):
         self.cached_prices.clear()
 
-        for url, name in self.controller_launcher.get_cached_prices():
+        for url, name in self.model_launcher.get_cached_prices():
             wi = QtWidgets.QListWidgetItem(name)
             wi.setToolTip(url)
             self.cached_prices.addItem(wi)
@@ -180,7 +179,7 @@ class Window(ViewElement, QtWidgets.QWidget):
     def platform_chosen(self):
         self.actives.clear()
 
-        for active in data_parser.get_actives(self.platforms.currentItem().toolTip()):
+        for active in self.model_launcher.get_actives(self.platforms.currentItem().toolTip()):
             self.actives.addItem(active)
 
     def clear_active(self, vbox):
@@ -205,10 +204,10 @@ class Window(ViewElement, QtWidgets.QWidget):
             self.remove_line(i)
 
     def draw_table(self):
-        table_name, table_labels, table_pattern = self.available_tables[self.tables_list.currentRow()]
+        table_pattern = self.available_tables[self.tables_list.currentRow()]
         actives = [(active[0], active[2], self.actives_layout_widgets[i][1].text())
                    for i, active in enumerate(self.chosen_actives)]
-        self.controller_launcher.draw_table(table_name, table_labels, table_pattern, actives)
+        self.controller_launcher.draw_table(table_pattern, actives)
 
     def create_table(self):
         self.controller_launcher.show_table_dialog()

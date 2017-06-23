@@ -1,33 +1,40 @@
-from model.utils import to_timestamp
 from datetime import date
+
 import pandas as pd
+
+from model.utils import to_timestamp
 
 
 class Table:
-    def __init__(self, dbh, table, schema):
-        self.schema = schema
+    def __init__(self, dbh, table, schema, modifier=""):
+        self.schema = [(name, data_type) for name, data_type in schema]
         self.table = table
         self.dbh = dbh
 
-        self.__create_table()
+        self.__create_table(modifier)
 
-    def __create_table(self):
-        columns = [" ".join([name, data_type]) for name, data_type in self.schema]
+    def __create_table(self, modifier):
+        columns = [" ".join(['"{}"'.format(name), data_type]) for name, data_type in self.schema]
+
+        if modifier:
+            modifier = ", " + modifier
 
         self.dbh.cursor().execute(
-            "CREATE TABLE IF NOT EXISTS {table} ({columns})".format(
+            'CREATE TABLE IF NOT EXISTS "{table}" ({columns}{modifier})'.format(
                 table=self.table,
-                columns=",".join(columns)))
+                columns=",".join(columns),
+                modifier=modifier))
 
     def write(self, df):
-        if not df.empty:
-            df.Date = df.apply(lambda row: to_timestamp(row['Date']), axis=1)
-            df.to_sql(self.table, self.dbh, if_exists='append', index=False)
+        df.to_sql(self.table, self.dbh, if_exists='append', index=False)
+
+    def read(self):
+        return pd.read_sql('SELECT * FROM "{table}"'.format(table=self.table), self.dbh)
 
 
 class Resource(Table):
     def __init__(self, dbh, table, schema):
-        Table.__init__(self, dbh, table, [("Date", "INTEGER PRIMARY KEY")] + schema)
+        Table.__init__(self, dbh, table, [("Date", "INTEGER PRIMARY KEY ON CONFLICT IGNORE")] + schema)
 
     def update(self):
         first, last = self.range()
@@ -44,12 +51,12 @@ class Resource(Table):
 
     def range(self):
         c = self.dbh.cursor()
-        c.execute("""
+        c.execute('''
         SELECT
             MIN(Date),
             MAX(Date)
         FROM
-            {table}""".format(table=self.table))
+            "{table}"'''.format(table=self.table))
 
         item = c.fetchone()
 
@@ -58,32 +65,34 @@ class Resource(Table):
         else:
             return item
 
-    def read(self, columns, begin, end=date.today()):
-        columns += ['Date']
-
-        c = self.dbh.cursor()
-        c.execute("""
+    def read_dates(self, begin=None, end=date.today()):
+        query = '''
             SELECT 
-                {columns} 
+                * 
             FROM 
-                {table}
+                "{table}"'''.format(table=self.table)
+        params = None
+
+        if begin:
+            query += '''
             WHERE
                 Date >= ? AND
-                Date <= ?""".format(columns=",".join(columns), table=self.table),
-            (
-                to_timestamp(begin),
-                to_timestamp(end)
-            )
-        )
+                Date <= ?'''
 
-        df = pd.DataFrame(c.fetchall(), columns=columns)
+            params = to_timestamp(begin), to_timestamp(end)
+
+        df = pd.read_sql(query, self.dbh, params=params)
+
         if not df.empty:
             df.Date = df.apply(lambda row: date.fromtimestamp(row['Date']), axis=1)
 
         return df
 
-    def get_atoms(self):
-        return [atom[0] for atom in self.schema]
+    def write(self, df):
+        if not df.empty:
+            df.Date = df.apply(lambda row: to_timestamp(row['Date']), axis=1)
+            Table.write(self, df)
 
-    def get_dates(self, requested_dates):
-        pass
+    @staticmethod
+    def get_atoms(cls):
+        return [atom[0] for atom in cls.SCHEMA]
