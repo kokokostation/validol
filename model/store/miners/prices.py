@@ -59,7 +59,8 @@ class InvestingPrice(Resource):
     SCHEMA = [("Quot", "REAL")]
 
     def __init__(self, dbh, pair_id):
-        Resource.__init__(self, dbh, "pair_id_{pair_id}".format(pair_id=pair_id), InvestingPrice.SCHEMA)
+        Resource.__init__(self, dbh, "pair_id_{pair_id}".format(pair_id=pair_id),
+                          InvestingPrice.SCHEMA)
 
         self.pair_id = pair_id
 

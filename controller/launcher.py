@@ -38,8 +38,14 @@ class ControllerLauncher:
         for i, labels in enumerate(table_pattern.atom_groups):
             self.view_launcher.show_table(dates, values[i], labels, title)
 
-        flattened_values = [list(chain.from_iterable([value[i] for value in values])) for i in range(len(dates))]
-        self.view_launcher.show_graph_dialog(dates, flattened_values, table_pattern.name, flatten(table_pattern.atom_groups), title)
+        flattened_values = [list(chain.from_iterable([value[i] for value in values]))
+                            for i in range(len(dates))]
+        self.view_launcher.show_graph_dialog(
+            dates,
+            flattened_values,
+            table_pattern.name,
+            flatten(table_pattern.atom_groups),
+            title)
 
     def draw_graph(self, dates, values, pattern, table_labels, title):
         self.view_launcher.show_graph(dates, values, pattern, table_labels, title)

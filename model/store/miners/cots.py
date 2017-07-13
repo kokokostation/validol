@@ -33,10 +33,12 @@ class Cots:
     def update(self):
         platforms_table = Platforms(self.dbh)
 
-        sources = ["http://www.cftc.gov/files/dea/history/deacot{curr_year}.zip".format(curr_year=date.today().year)]
+        sources = ["http://www.cftc.gov/files/dea/history/deacot{curr_year}.zip"
+            .format(curr_year=date.today().year)]
 
         if platforms_table.read().empty:
-            sources.append("http://www.cftc.gov/files/dea/history/deacot1986_{prev_year}.zip".format(prev_year=date.today().year - 1))
+            sources.append("http://www.cftc.gov/files/dea/history/deacot1986_{prev_year}.zip"
+                           .format(prev_year=date.today().year - 1))
 
         cols = Cots.CODE_ACTIVE_NAME + list(Cots.CSV_NAMES.keys())
         df = pd.DataFrame()
@@ -48,7 +50,9 @@ class Cots:
                 parse_dates=["As of Date in Form YYYY-MM-DD"])[cols])
 
         df = df.rename(str, Cots.CSV_NAMES)
-        df["CFTC Market Code in Initials"] = df.apply(lambda row: row["CFTC Market Code in Initials"].strip(), axis=1)
+        df["CFTC Market Code in Initials"] = df.apply(lambda row:
+                                                      row["CFTC Market Code in Initials"].strip(),
+                                                      axis=1)
 
         info = group_by(df, Cots.CODE_ACTIVE_NAME)
 
@@ -62,8 +66,9 @@ class Cots:
             platforms.add((code, platform_name))
             actives.add((code, active_name))
 
-        for table, columns, values in ((platforms_table, ("PlatformCode", "PlatformName"), platforms),
-                                       (actives_table, ("PlatformCode", "ActiveName"), actives)):
+        for table, columns, values in (
+                (platforms_table, ("PlatformCode", "PlatformName"), platforms),
+                (actives_table, ("PlatformCode", "ActiveName"), actives)):
             table.write(pd.DataFrame(list(values), columns=columns))
 
         for code, name in info.groups.keys():
@@ -117,7 +122,8 @@ class Actives(Table):
                 "{table}" 
             WHERE 
                 PlatformCode = ? AND 
-                ActiveName = ?'''.format(table=self.table), (platform_code, active_name)).fetchone()[0]
+                ActiveName = ?'''.format(table=self.table),
+            (platform_code, active_name)).fetchone()[0]
 
 
 class Active(Resource):
@@ -152,4 +158,5 @@ class Active(Resource):
         return self.update_info
 
     def fill(self, first, last):
-        return self.update_info[(first < self.update_info.Date) & (self.update_info.Date <= last)]
+        return self.update_info[(first < self.update_info.Date) &
+                                (self.update_info.Date <= last)]

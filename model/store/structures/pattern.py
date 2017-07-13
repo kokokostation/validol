@@ -61,7 +61,9 @@ class Patterns(Structure):
         self.write(pattern)
 
     def remove_pattern(self, table_name, pattern_name):
-        self.remove_by_pred(lambda pattern: pattern.table_name == table_name and pattern.name == pattern_name)
+        self.remove_by_pred(
+            lambda pattern: pattern.table_name == table_name and
+                            pattern.name == pattern_name)
 
     def remove_table_patterns(self, table_name):
         self.remove_by_pred(lambda pattern: pattern.table_name == table_name)

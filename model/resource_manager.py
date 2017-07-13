@@ -63,7 +63,8 @@ class ResourceManager:
     def prepare_active(self, platform, active, args):
         dates, values = self.get_active(platform, active)
 
-        cls_values = [self.obtain_values(dates, cls, *args) for cls, args in zip(ResourceManager.RESOURCES, args)]
+        cls_values = [self.obtain_values(dates, cls, *args)
+                      for cls, args in zip(ResourceManager.RESOURCES, args)]
 
         for i, value in enumerate(values):
             value.extend(sum([values[i] for values in cls_values], []))
@@ -76,7 +77,8 @@ class ResourceManager:
 
         compiler = NumericStringParser()
 
-        all_atoms = dict((atom.name, compiler.compile(atom.formula_to_compile)) for atom in self.model_launcher.get_atoms())
+        all_atoms = dict((atom.name, compiler.compile(atom.formula_to_compile))
+                         for atom in self.model_launcher.get_atoms())
 
         all_dates, indexes = merge_lists([dates for dates, _ in data])
         new_values = []

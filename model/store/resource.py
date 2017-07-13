@@ -34,7 +34,8 @@ class Table:
 
 class Resource(Table):
     def __init__(self, dbh, table, schema):
-        Table.__init__(self, dbh, table, [("Date", "INTEGER PRIMARY KEY ON CONFLICT IGNORE")] + schema)
+        Table.__init__(self, dbh, table,
+                       [("Date", "INTEGER PRIMARY KEY ON CONFLICT IGNORE")] + schema)
 
     def update(self):
         first, last = self.range()

@@ -124,7 +124,9 @@ class Window(ViewElement, QtWidgets.QWidget):
 
     def table_chosen(self):
         table_pattern = self.available_tables[self.tables_list.currentRow()]
-        self.tableView.setText("{}:\n{}".format(table_pattern.name, "\n".join(",".join(line) for line in table_pattern.atom_groups)))
+        self.tableView.setText("{}:\n{}".format(
+            table_pattern.name,
+            "\n".join(",".join(line) for line in table_pattern.atom_groups)))
 
     def set_tables(self):
         self.tables_list.clear()

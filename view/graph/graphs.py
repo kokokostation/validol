@@ -82,7 +82,8 @@ class Graph(pg.GraphicsWindow):
         for piece in pieces:
             chunks = []
 
-            for chain in split([i if self.values[i][piece.atom_id] is not None else None for i in range(len(self.values))], None):
+            for chain in split([i if self.values[i][piece.atom_id] is not None else None
+                                for i in range(len(self.values))], None):
                 if chain:
                     ys = np.array([self.values[i][piece.atom_id] for i in chain])
 
@@ -92,7 +93,8 @@ class Graph(pg.GraphicsWindow):
                             ys,
                             pen={'color': piece.color, 'width': 2}))
                     elif type(piece) == Bar:
-                        positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) // 2
+                        positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > \
+                                   len(ys) // 2
                         ys = piece.sign * ys
                         if not positive:
                             ys = -ys
@@ -187,7 +189,11 @@ class Graph(pg.GraphicsWindow):
                     for section in self.legendData[i]:
                             legends[i].addItem(section[0][0], section[0][1])
                             for style, key in section[1:]:
-                                legends[i].addItem(style, "{} {}".format(self.tableLabels[key], none_filter(round)(self.values[int(x)][key], 2)))
+                                legends[i].addItem(
+                                    style,
+                                    "{} {}".format(
+                                        self.tableLabels[key],
+                                        none_filter(round)(self.values[int(x)][key], 2)))
 
                     mouseMoved.prevxs[i] = int(x)
 

@@ -10,7 +10,8 @@ class PatternTree(QtWidgets.QTreeWidget):
     def add_root(self, graph, table_labels, label):
         root = QtWidgets.QTreeWidgetItem([label])
         children = [QtWidgets.QTreeWidgetItem([label]) for label in ["left", "right"]]
-        types = dict((label, QtWidgets.QTreeWidgetItem([label])) for label in ("line", "bar", "-bar"))
+        types = dict((label, QtWidgets.QTreeWidgetItem([label]))
+                     for label in ("line", "bar", "-bar"))
 
         for i in range(2):
             for piece in graph.pieces[i]:

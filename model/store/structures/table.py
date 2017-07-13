@@ -30,7 +30,8 @@ class Table(Item):
     @staticmethod
     def factory(table_name, atom_groups, all_atoms):
         atom_groups = [table.split(",") for table in atom_groups.split("\n")]
-        formulae = [list(map(lambda formula: Table.parse_formula(formula, all_atoms), formula)) for formula in atom_groups]
+        formulae = [list(map(lambda formula: Table.parse_formula(formula, all_atoms), formula))
+                    for formula in atom_groups]
         return Table(table_name, atom_groups, formulae)
 
     def __contains__(self, item):

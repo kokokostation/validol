@@ -28,17 +28,26 @@ class ViewLauncher(ViewElement):
         self.main_window.set_cached_prices()
 
     def show_table(self, dates, values, labels, title):
-        self.tables.append(Table(self.main_window, QtCore.Qt.Window, dates, values, labels, title))
+        self.tables.append(
+            Table(self.main_window, QtCore.Qt.Window,
+                  dates, values, labels, title))
 
     def show_graph_dialog(self, dates, values, table_name, table_labels, title):
-        self.graph_dialogs.append(GraphDialog(self.main_window, QtCore.Qt.Window, dates, values, table_name, table_labels, title,
-                                              self.controller_launcher, self.model_launcher))
+        self.graph_dialogs.append(
+            GraphDialog(
+                self.main_window, QtCore.Qt.Window, dates,
+                values, table_name, table_labels, title,
+                self.controller_launcher, self.model_launcher))
 
     def show_graph(self, dates, values, pattern, table_labels, title):
-        self.graphs.append(CheckedGraph(self.main_window, QtCore.Qt.Window, dates, values, pattern, table_labels, title))
+        self.graphs.append(
+            CheckedGraph(self.main_window, QtCore.Qt.Window, dates,
+                         values, pattern, table_labels, title))
 
     def refresh_tables(self):
         self.main_window.set_tables()
 
     def show_table_dialog(self):
-        self.table_dialogs.append(TableDialog(self.main_window, QtCore.Qt.Window, self.controller_launcher, self.model_launcher))
+        self.table_dialogs.append(
+            TableDialog(self.main_window, QtCore.Qt.Window, self.controller_launcher,
+                        self.model_launcher))

@@ -14,7 +14,8 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
     COLORS = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255), (255, 255, 0),
               (255, 0, 255), (0, 0, 255)]
 
-    def __init__(self, parent, flags, dates, values, tableName, tableLabels, title, controller_launcher, model_launcher):
+    def __init__(self, parent, flags, dates, values, tableName,
+                 tableLabels, title, controller_launcher, model_launcher):
         QtWidgets.QWidget.__init__(self, parent, flags)
         ViewElement.__init__(self, controller_launcher, model_launcher)
 
@@ -189,7 +190,10 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
         self.currentPattern.add_graph(graph)
 
-        self.graphsTree.add_root(self.currentPattern.graphs[-1], self.tableLabels, str(len(self.currentPattern.graphs)))
+        self.graphsTree.add_root(
+            self.currentPattern.graphs[-1],
+            self.tableLabels,
+            str(len(self.currentPattern.graphs)))
 
         self.clear_comboboxes()
         self.clear_checkboxes()
