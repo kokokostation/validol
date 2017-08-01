@@ -8,6 +8,7 @@ import requests
 def read_url(url):
     return requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
 
+
 def read_url_text(url):
     r = read_url(url)
     r.encoding = 'utf-8'

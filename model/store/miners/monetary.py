@@ -12,6 +12,7 @@ class Monetary(Resource):
         'DATE': 'Date',
         'BOGMBASEW': 'MBase'}
     SCHEMA = [("MBase", "INTEGER")]
+    INDEPENDENT = True
 
     def __init__(self, dbh):
         Resource.__init__(self, dbh, "Monetary", Monetary.SCHEMA)

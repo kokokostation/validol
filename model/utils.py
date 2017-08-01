@@ -78,12 +78,12 @@ def merge_lists(lists):
             heapq.heappush(heads, (lists[index][pos], index))
             poses[index] += 1
 
-        indexPos = len(result) - 1
+        index_pos = len(result) - 1
         if not result or val != result[-1]:
             result.append(val)
-            indexPos += 1
+            index_pos += 1
 
-        indexes[index].append(indexPos)
+        indexes[index].append(index_pos)
 
     return result, indexes
 
@@ -94,3 +94,11 @@ def intersect_lists(lists):
 
 def group_by(df, columns):
     return df.groupby(columns, sort=False)[[col for col in df.columns if col not in columns]]
+
+def date_to_timestamp(df):
+    df.Date = df.apply(lambda row: to_timestamp(row['Date']), axis=1)
+    return df
+
+def date_from_timestamp(df):
+    df.Date = df.apply(lambda row: dt.date.fromtimestamp(row['Date']), axis=1)
+    return df

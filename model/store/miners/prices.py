@@ -57,6 +57,7 @@ class InvestingPrices(Table):
 
 class InvestingPrice(Resource):
     SCHEMA = [("Quot", "REAL")]
+    INDEPENDENT = False
 
     def __init__(self, dbh, pair_id):
         Resource.__init__(self, dbh, "pair_id_{pair_id}".format(pair_id=pair_id),

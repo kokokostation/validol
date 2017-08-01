@@ -2,7 +2,7 @@ from datetime import date
 
 import pandas as pd
 
-from model.utils import to_timestamp
+from model.utils import date_from_timestamp, date_to_timestamp, to_timestamp
 
 
 class Table:
@@ -84,16 +84,13 @@ class Resource(Table):
 
         df = pd.read_sql(query, self.dbh, params=params)
 
-        if not df.empty:
-            df.Date = df.apply(lambda row: date.fromtimestamp(row['Date']), axis=1)
-
         return df
 
     def write(self, df):
         if not df.empty:
-            df.Date = df.apply(lambda row: to_timestamp(row['Date']), axis=1)
+            df = date_to_timestamp(df)
             Table.write(self, df)
 
     @staticmethod
-    def get_atoms(cls):
-        return [atom[0] for atom in cls.SCHEMA]
+    def get_atoms(schema):
+        return [atom[0] for atom in schema]

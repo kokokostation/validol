@@ -2,10 +2,11 @@ from functools import partial
 
 from PyQt5 import QtWidgets, QtGui
 
+from pyparsing import alphas
+
 import view.utils
 from model.store.structures.pattern import Graph, Line, Bar, Pattern
 from view.button_group import ButtonGroup
-from view.graph import graphs
 from view.pattern_tree import PatternTree
 from view.view_element import ViewElement
 
@@ -14,19 +15,18 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
     COLORS = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255), (255, 255, 0),
               (255, 0, 255), (0, 0, 255)]
 
-    def __init__(self, parent, flags, dates, values, tableName,
-                 tableLabels, title, controller_launcher, model_launcher):
+    def __init__(self, parent, flags, df, table_pattern, title_info,
+                 controller_launcher, model_launcher):
         QtWidgets.QWidget.__init__(self, parent, flags)
         ViewElement.__init__(self, controller_launcher, model_launcher)
 
-        self.setWindowTitle(tableName)
+        self.setWindowTitle(table_pattern.name)
 
-        self.dates = dates
+        self.df = df
 
-        self.values = values
-        self.title = title
-        self.tableName = tableName
-        self.tableLabels = tableLabels
+        self.title = GraphDialog.make_title(title_info)
+        self.table_name = table_pattern.name
+        self.table_labels = table_pattern.all_formulas()
 
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.upper_layout = QtWidgets.QHBoxLayout()
@@ -35,18 +35,17 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.labels_submit_layout = QtWidgets.QVBoxLayout()
         self.patternChoiceLayout = QtWidgets.QVBoxLayout()
 
-        view.utils.set_title(self.main_layout, title)
+        view.utils.set_title(self.main_layout, self.title)
 
         self.main_layout.insertLayout(1, self.upper_layout, stretch=10)
         self.main_layout.insertLayout(2, self.buttons_layout)
 
         self.pattern_list = QtWidgets.QListWidget()
-        patterns = self.model_launcher.get_patterns(self.tableName)
+        patterns = self.model_launcher.get_patterns(self.table_name)
         self.patterns = {}
         for pattern in patterns:
-            if pattern.table_name == tableName:
-                self.pattern_list.addItem(pattern.name)
-                self.patterns[pattern.name] = pattern
+            self.pattern_list.addItem(pattern.name)
+            self.patterns[pattern.name] = pattern
 
         if self.pattern_list.count() > 0:
             self.pattern_list.setCurrentRow(0)
@@ -88,7 +87,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
         self.labels = []
 
-        for i, label in enumerate(self.tableLabels):
+        for i, label in enumerate(self.table_labels):
             lastLabel = QtWidgets.QHBoxLayout()
 
             textBox = QtWidgets.QLineEdit()
@@ -132,18 +131,30 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
         self.showMaximized()
 
+    @staticmethod
+    def make_title(title_info):
+        title = ""
+        for i, (flavor, platform, active, price_name) in enumerate(title_info):
+            active_title = "{}/{}/{}".format(flavor, platform, active)
+            if price_name:
+                active_title += "; Quot from: {}".format(price_name)
+
+            title += "{}: {}\n".format(alphas[i], active_title)
+
+        return title
+
     def remove_pattern(self):
         title = self.pattern_list.currentItem().text()
         self.pattern_list.takeItem(self.pattern_list.currentRow())
         self.patternTree.clear()
         self.patternTree.setHeaderLabel("")
         del self.patterns[title]
-        self.model_launcher.remove_pattern(self.tableName, title)
+        self.model_launcher.remove_pattern(self.table_name, title)
 
     def draw_item(self, item):
         pattern = self.patterns[item.text()]
         self.patternTree.clear()
-        self.patternTree.draw_pattern(pattern, self.tableLabels)
+        self.patternTree.draw_pattern(pattern, self.table_labels)
         self.patternTree.setHeaderLabel(item.text())
 
     def activated(self, comboBox, _=None):
@@ -154,10 +165,9 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
             "color: white; background-color: rgb" + str(GraphDialog.COLORS[color]))
 
     def draw_graph(self):
-        self.controller_launcher.draw_graph(self.dates,
-                                            self.values,
+        self.controller_launcher.draw_graph(self.df,
                                             self.patterns[self.pattern_list.currentItem().text()],
-                                            self.tableLabels,
+                                            self.table_labels,
                                             self.title)
 
     def submit_graph(self):
@@ -166,7 +176,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         graph = Graph()
 
         for i, label in enumerate(self.labels):
-            _, button_groups, check_boxes, combo_boxes = label
+            name, button_groups, check_boxes, combo_boxes = label
             lr, type = button_groups[0].checked_button(), button_groups[1].checked_button()
             if lr and type:
                 color = GraphDialog.COLORS[combo_boxes[1].currentIndex()]
@@ -174,7 +184,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
                 base_color = combo_boxes[0].currentIndex()
 
                 if type[1] == "line":
-                    graph.add_piece(lr[0], Line(i, color))
+                    graph.add_piece(lr[0], Line(name.text(), color))
                 else:
                     if base_color in base_colors:
                         base = base_colors.index(base_color)
@@ -186,13 +196,12 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
                     if type[1] == "-bar":
                         sign = -1
 
-                    graph.add_piece(lr[0], Bar(i, color, base, sign))
+                    graph.add_piece(lr[0], Bar(name.text(), color, base, sign))
 
         self.currentPattern.add_graph(graph)
 
         self.graphsTree.add_root(
             self.currentPattern.graphs[-1],
-            self.tableLabels,
             str(len(self.currentPattern.graphs)))
 
         self.clear_comboboxes()
@@ -213,7 +222,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         if not patternTitle:
             return
 
-        self.currentPattern.set_name(self.tableName, patternTitle)
+        self.currentPattern.set_name(self.table_name, patternTitle)
 
         self.pattern_list.addItem(patternTitle)
         self.pattern_list.setCurrentRow(self.pattern_list.count() - 1)

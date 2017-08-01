@@ -9,6 +9,8 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         QtWidgets.QWidget.__init__(self, parent, flags)
         ViewElement.__init__(self, controller_launcher, model_launcher)
 
+        self.atoms_map = {}
+
         self.setWindowTitle("Table edit")
 
         self.mainLayout = QtWidgets.QVBoxLayout(self)
@@ -36,6 +38,7 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         self.letters.addItem("")
         for a in alphas[:10]:
             self.letters.addItem(a)
+        self.letters.setCurrentIndex(1)
 
         self.leftLayout.addWidget(self.atom_list)
         self.leftLayout.addWidget(self.letters)
@@ -69,10 +72,12 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
 
     def refresh_atoms(self):
         self.atom_list.clear()
+        atoms = self.model_launcher.get_atoms()
+        self.atoms_map = {atom.name: atom for atom in atoms}
 
-        for atom in self.model_launcher.get_atoms():
+        for atom in atoms:
             wi = QtWidgets.QListWidgetItem(atom.name)
-            wi.setToolTip(atom.named_formula)
+            wi.setToolTip(atom.formula)
             self.atom_list.addItem(wi)
 
     def insert_atom(self):
@@ -80,10 +85,11 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         mode = self.mode.checkedButton().text()
         letter = self.letters.currentText()
 
+        text = atom
         if mode == "Table":
-            text = atom + "(" + letter + "),"
-        else:
-            text = atom
+            if not self.atoms_map[atom].independent:
+                text += "(" + letter + ")"
+            text += ","
 
         self.mainEdit.insertPlainText(text)
 

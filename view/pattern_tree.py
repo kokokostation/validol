@@ -7,7 +7,7 @@ class PatternTree(QtWidgets.QTreeWidget):
 
         self.checkable = checkable
 
-    def add_root(self, graph, table_labels, label):
+    def add_root(self, graph, label):
         root = QtWidgets.QTreeWidgetItem([label])
         children = [QtWidgets.QTreeWidgetItem([label]) for label in ["left", "right"]]
         types = dict((label, QtWidgets.QTreeWidgetItem([label]))
@@ -15,7 +15,7 @@ class PatternTree(QtWidgets.QTreeWidget):
 
         for i in range(2):
             for piece in graph.pieces[i]:
-                item = QtWidgets.QTreeWidgetItem([table_labels[piece.atom_id]])
+                item = QtWidgets.QTreeWidgetItem([piece.atom_id])
 
                 if self.checkable:
                     item.setCheckState(0, QtCore.Qt.Checked)
@@ -34,6 +34,6 @@ class PatternTree(QtWidgets.QTreeWidget):
             for j in range(root.child(i).childCount()):
                 root.child(i).child(j).setExpanded(True)
 
-    def draw_pattern(self, pattern, table_labels):
+    def draw_pattern(self, pattern):
         for i, graph in enumerate(pattern.graphs):
-            self.add_root(graph, table_labels, str(i))
+            self.add_root(graph, str(i))

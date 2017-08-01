@@ -3,14 +3,16 @@ import sqlite3
 
 import requests
 
-from model.resource_manager import ResourceManager
+from model.resource_manager.resource_manager import ResourceManager
 from model.store.collectors.monetary_delta import MonetaryDelta
-from model.store.miners.cots import Cots, Platforms, Actives
+from model.store.miners.flavors import Cftc, Ice
+from model.store.miners.flavor import Platforms, Actives
 from model.store.miners.monetary import Monetary
 from model.store.miners.prices import InvestingPrices
 from model.store.structures.atom import Atoms
 from model.store.structures.pattern import Patterns
 from model.store.structures.table import Tables
+from model.store.miners.flavors import FLAVORS_MAP
 
 
 class ModelLauncher:
@@ -35,7 +37,7 @@ class ModelLauncher:
 
     def update(self):
         try:
-            for cls in (Monetary, Cots, MonetaryDelta):
+            for cls in (Monetary, MonetaryDelta, Cftc, Ice):
                 cls(self.dbh).update()
             return True
         except requests.exceptions.ConnectionError:
@@ -47,11 +49,11 @@ class ModelLauncher:
     def get_cached_prices(self):
         return InvestingPrices(self.dbh).get_prices()
 
-    def get_platforms(self):
-        return Platforms(self.dbh).get_platforms()
+    def get_platforms(self, flavor):
+        return Platforms(self.dbh, FLAVORS_MAP[flavor]).get_platforms()
 
-    def get_actives(self, platform):
-        return Actives(self.dbh).get_actives(platform)
+    def get_actives(self, platform, flavor):
+        return Actives(self.dbh, FLAVORS_MAP[flavor]).get_actives(platform)
 
     def get_atoms(self):
         return Atoms().get_atoms(self.resource_manager.get_primary_atoms())
@@ -65,14 +67,17 @@ class ModelLauncher:
     def get_tables(self):
         return Tables().get_tables()
 
-    def write_table(self, table_name, atom_groups):
-        Tables().write_table(table_name, atom_groups, self.get_atoms())
+    def write_table(self, table_name, formula_groups):
+        Tables().write_table(table_name, formula_groups)
 
     def remove_table(self, name):
         Tables().remove_by_name(name)
 
     def get_patterns(self, table_name):
         return Patterns().get_patterns(table_name)
+
+    def get_flavors(self):
+        return list(FLAVORS_MAP.values())
 
     def write_pattern(self, pattern):
         Patterns().write_pattern(pattern)

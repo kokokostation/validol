@@ -2,10 +2,12 @@ from itertools import groupby
 
 from model.store.miners.monetary import Monetary
 from model.store.resource import Resource
+from model.utils import date_from_timestamp
 
 
 class MonetaryDelta(Resource):
     SCHEMA = [("MBDelta", "REAL")]
+    INDEPENDENT = True
 
     def __init__(self, dbh):
         Resource.__init__(self, dbh, "MonetaryDelta", MonetaryDelta.SCHEMA)
@@ -28,7 +30,7 @@ class MonetaryDelta(Resource):
         return self.initial_fill()
 
     def initial_fill(self):
-        df = self.source.read_dates().rename(str, {"MBase": "MBDelta"})
+        df = date_from_timestamp(self.source.read_dates().rename(str, {"MBase": "MBDelta"}))
         df.MBDelta = self.deltas(df.MBDelta)
         return df
 

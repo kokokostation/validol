@@ -1,46 +1,19 @@
-import re
-
-from pyparsing import alphas
-
 from model.store.structures.pattern import Patterns
 from model.store.structures.structure import Structure, Item
+from model.utils import flatten
 
 
 class Table(Item):
-    def __init__(self, name, atom_groups, formulae):
+    def __init__(self, name, formula_groups):
         Item.__init__(self, name)
-        self.atom_groups = atom_groups
-        self.formulae = formulae
+        self.formula_groups = [table.split(",") for table in formula_groups.split("\n")]
 
-    @staticmethod
-    def parse_atom(atom):
-        name, index = atom[:-1].split("(")
-        return name, alphas.index(index)
+    def all_formulas(self):
+        return flatten(self.formula_groups)
 
-    @staticmethod
-    def parse_formula(formula, all_atoms):
-        pure_atoms = "(?:" + "|".join([re.escape(a.name) for a in all_atoms]) + ")"
-        atoms = list(set(re.findall(pure_atoms + '\([A-Z]\)', formula)))
-        parsed_atoms = list(map(Table.parse_atom, atoms))
-        for i, atom in enumerate(atoms):
-            formula = formula.replace(atom, "~" + str(i))
-
-        return parsed_atoms, formula
-
-    @staticmethod
-    def factory(table_name, atom_groups, all_atoms):
-        atom_groups = [table.split(",") for table in atom_groups.split("\n")]
-        formulae = [list(map(lambda formula: Table.parse_formula(formula, all_atoms), formula))
-                    for formula in atom_groups]
-        return Table(table_name, atom_groups, formulae)
-
-    def __contains__(self, item):
-        for formulae_group in self.formulae:
-            for parsed_atoms, _ in formulae_group:
-                if item in [name for name, _ in parsed_atoms]:
-                    return True
-
-        return False
+    def __str__(self):
+        return "{}:\n{}".format(self.name,
+                                "\n".join(",".join(line) for line in self.formula_groups))
 
 
 class Tables(Structure):
@@ -50,8 +23,8 @@ class Tables(Structure):
     def get_tables(self):
         return self.read()
 
-    def write_table(self, table_name, atom_groups, all_atoms):
-        self.write(Table.factory(table_name, atom_groups, all_atoms))
+    def write_table(self, table_name, formula_groups):
+        self.write(Table(table_name, formula_groups))
 
     def remove_table(self, name):
         self.remove_by_name(name)

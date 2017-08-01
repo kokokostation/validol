@@ -12,8 +12,8 @@ def map_atoms(atoms, model_launcher):
 
 
 def map_tables(tables, model_launcher):
-    for name, atom_groups, _ in tables:
-        model_launcher.write_table(name, atom_groups)
+    for name, formula_groups, _ in tables:
+        model_launcher.write_table(name, formula_groups)
 
 
 def map_pieces(pieces):

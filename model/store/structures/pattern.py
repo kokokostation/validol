@@ -49,6 +49,9 @@ class Pattern(Item):
         self.table_name = table_name
         self.name = pattern_name
 
+    def get_formulas(self):
+        return [piece.atom_id for graph in self.graphs for lr in graph.pieces for piece in lr]
+
 
 class Patterns(Structure):
     def __init__(self):

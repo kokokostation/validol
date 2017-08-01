@@ -28,12 +28,13 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.platforms = QtWidgets.QListWidget()
         self.platforms.currentItemChanged.connect(self.platform_chosen)
 
-        for code, name in self.model_launcher.get_platforms().values:
-            wi = QtWidgets.QListWidgetItem(name)
-            wi.setToolTip(code)
-            self.platforms.addItem(wi)
+        self.flavors = QtWidgets.QListWidget()
+        self.flavors.currentItemChanged.connect(self.flavor_chosen)
 
-        self.platforms.setCurrentRow(0)
+        for flavor in self.model_launcher.get_flavors():
+            self.flavors.addItem(flavor["name"])
+
+        self.flavors.setCurrentRow(0)
 
         self.drawTable = QtWidgets.QPushButton('Draw table')
         self.drawTable.clicked.connect(self.draw_table)
@@ -51,7 +52,7 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.removeTable.clicked.connect(self.remove_table)
 
         self.leftLayout = QtWidgets.QVBoxLayout()
-        self.leftLayout.addWidget(self.platforms)
+        self.leftLayout.addWidget(self.flavors)
         self.leftLayout.addWidget(self.updateButton)
 
         self.cached_prices = QtWidgets.QListWidget()
@@ -83,10 +84,11 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.chosen_actives = []
 
         self.lists_layout.insertLayout(0, self.leftLayout)
-        self.lists_layout.insertLayout(1, self.activesListLayout)
+        self.lists_layout.addWidget(self.platforms)
+        self.lists_layout.insertLayout(2, self.activesListLayout)
         self.lists_layout.addWidget(
             utils.scrollable_area(self.actives_layout))
-        self.lists_layout.insertLayout(3, self.rightLayout)
+        self.lists_layout.insertLayout(4, self.rightLayout)
 
         self.main_layout.insertLayout(0, self.lists_layout)
         self.main_layout.addWidget(self.drawTable)
@@ -124,9 +126,7 @@ class Window(ViewElement, QtWidgets.QWidget):
 
     def table_chosen(self):
         table_pattern = self.available_tables[self.tables_list.currentRow()]
-        self.tableView.setText("{}:\n{}".format(
-            table_pattern.name,
-            "\n".join(",".join(line) for line in table_pattern.atom_groups)))
+        self.tableView.setText(str(table_pattern))
 
     def set_tables(self):
         self.tables_list.clear()
@@ -147,9 +147,9 @@ class Window(ViewElement, QtWidgets.QWidget):
             self.cached_prices.addItem(wi)
 
     def submit_active(self):
-        self.chosen_actives.append((self.platforms.currentItem().toolTip(),
-                                    self.platforms.currentItem().text(),
-                                    self.actives.currentItem().text()))
+        self.chosen_actives.append([self.current_flavor(),
+                                    self.platforms.currentItem().toolTip(),
+                                    self.actives.currentItem().text()])
 
         self.actives_layout_widgets.append((QtWidgets.QLineEdit(),
                                             QtWidgets.QLineEdit(),
@@ -178,10 +178,28 @@ class Window(ViewElement, QtWidgets.QWidget):
     def submit_cached(self, lineEdit, listWidget):
         lineEdit.setText(listWidget.currentItem().toolTip())
 
+    def current_flavor(self):
+        return self.flavors.currentItem().text()
+
+    def flavor_chosen(self):
+        self.platforms.clear()
+
+        for code, name in \
+                self.model_launcher.get_platforms(self.current_flavor()).values:
+            wi = QtWidgets.QListWidgetItem(name)
+            wi.setToolTip(code)
+            self.platforms.addItem(wi)
+
+        self.platforms.setCurrentRow(0)
+
     def platform_chosen(self):
+        if self.platforms.currentItem() is None:
+            return
+
         self.actives.clear()
 
-        for active in self.model_launcher.get_actives(self.platforms.currentItem().toolTip()):
+        for active in self.model_launcher.get_actives(self.platforms.currentItem().toolTip(),
+                                                      self.current_flavor()):
             self.actives.addItem(active)
 
     def clear_active(self, vbox):
@@ -207,7 +225,7 @@ class Window(ViewElement, QtWidgets.QWidget):
 
     def draw_table(self):
         table_pattern = self.available_tables[self.tables_list.currentRow()]
-        actives = [(active[0], active[2], self.actives_layout_widgets[i][1].text())
+        actives = [(active + [self.actives_layout_widgets[i][1].text()])
                    for i, active in enumerate(self.chosen_actives)]
         self.controller_launcher.draw_table(table_pattern, actives)
 
