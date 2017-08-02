@@ -235,4 +235,4 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.patternTitle.clear()
 
         self.graphsTree.clear()
-        self.currentPattern = []
+        self.currentPattern = Pattern()

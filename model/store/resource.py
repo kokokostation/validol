@@ -25,10 +25,21 @@ class Table:
                 columns=",".join(columns),
                 modifier=modifier))
 
-    def write(self, df):
+    def read_all(self, query):
+        return self.dbh.cursor().execute(query).fetch_all()
+
+    def write(self, values):
+        self.dbh.cursor().executemany('''
+            INSERT INTO
+                {table}
+            VALUES
+                ({values_num})
+        '''.format(table=self.table, values_num=",".join('?' * len(self.schema))), values)
+
+    def write_df(self, df):
         df.to_sql(self.table, self.dbh, if_exists='append', index=False)
 
-    def read(self):
+    def read_df(self):
         return pd.read_sql('SELECT * FROM "{table}"'.format(table=self.table), self.dbh)
 
 
@@ -40,9 +51,9 @@ class Resource(Table):
     def update(self):
         first, last = self.range()
         if last:
-            self.write(self.fill(last, date.today()))
+            self.write_df(self.fill(last, date.today()))
         else:
-            self.write(self.initial_fill())
+            self.write_df(self.initial_fill())
 
     def initial_fill(self):
         raise NotImplementedError
@@ -86,10 +97,10 @@ class Resource(Table):
 
         return df
 
-    def write(self, df):
+    def write_df(self, df):
         if not df.empty:
             df = date_to_timestamp(df)
-            Table.write(self, df)
+            Table.write_df(self, df)
 
     @staticmethod
     def get_atoms(schema):

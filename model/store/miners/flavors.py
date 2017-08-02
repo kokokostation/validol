@@ -216,5 +216,8 @@ class Ice(Flavor):
         for flavor in Ice.FLAVORS:
             self.update_flavor(grouped_df.get_group(flavor["ice_flavor"]), flavor)
 
+GLUED_ACTIVE = {"name": "glued_active"}
+
 FLAVORS_MAP = OrderedDict((flavor["name"], flavor)
-                          for flavor in sum([exchange.FLAVORS for exchange in (Cftc, Ice)], []))
+                          for flavor in sum([exchange.FLAVORS for exchange in (Cftc, Ice)],
+                                            [GLUED_ACTIVE]))

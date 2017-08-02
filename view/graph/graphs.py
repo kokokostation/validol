@@ -57,7 +57,7 @@ class DaysMap:
         for col in self.days_map:
             for i, val in enumerate(self.df[col]):
                 if not np.isnan(val):
-                    self.days_map[col][(self.df.Date[i] - self.start) // DaysMap.DAY_SECS] = val
+                    self.days_map.loc[(self.df.Date[i] - self.start) // DaysMap.DAY_SECS, col] = val
 
             curr = np.nan
             for i, val in enumerate(self.days_map[col]):

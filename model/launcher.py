@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import pandas as pd
 
 import requests
 
@@ -12,7 +13,8 @@ from model.store.miners.prices import InvestingPrices
 from model.store.structures.atom import Atoms
 from model.store.structures.pattern import Patterns
 from model.store.structures.table import Tables
-from model.store.miners.flavors import FLAVORS_MAP
+from model.store.miners.flavors import FLAVORS_MAP, GLUED_ACTIVE
+from model.store.structures.glued_active import GluedActives
 
 
 class ModelLauncher:
@@ -27,7 +29,7 @@ class ModelLauncher:
         self.dbh = sqlite3.connect("main.db")
 
         if initial:
-            for cls in (Atoms, Tables, Patterns):
+            for cls in (Atoms, Tables, Patterns, GluedActives):
                 with open(cls().file_name, "a+"):
                     pass
 
@@ -50,10 +52,16 @@ class ModelLauncher:
         return InvestingPrices(self.dbh).get_prices()
 
     def get_platforms(self, flavor):
-        return Platforms(self.dbh, FLAVORS_MAP[flavor]).get_platforms()
+        if flavor == GLUED_ACTIVE["name"]:
+            return pd.DataFrame([["GA", "Glued actives"]], columns=["PlatformCode", "PlatformName"])
+        else:
+            return Platforms(self.dbh, FLAVORS_MAP[flavor]).get_platforms()
 
     def get_actives(self, platform, flavor):
-        return Actives(self.dbh, FLAVORS_MAP[flavor]).get_actives(platform)
+        if flavor == GLUED_ACTIVE["name"]:
+            return GluedActives().get_actives()
+        else:
+            return Actives(self.dbh, FLAVORS_MAP[flavor]).get_actives(platform)
 
     def get_atoms(self):
         return Atoms().get_atoms(self.resource_manager.get_primary_atoms())
@@ -85,5 +93,11 @@ class ModelLauncher:
     def remove_pattern(self, table_name, pattern_name):
         Patterns().remove_pattern(table_name, pattern_name)
 
-    def prepare_tables(self, table_pattern, info):
-        return self.resource_manager.prepare_tables(table_pattern, info)
+    def prepare_tables(self, table_pattern, actives_info, prices_info):
+        return self.resource_manager.prepare_tables(table_pattern, actives_info, prices_info)
+
+    def write_glued_active(self, name, actives):
+        GluedActives().write_active(name, actives)
+
+    def remove_glued_active(self, name):
+        GluedActives().remove_by_name(name)

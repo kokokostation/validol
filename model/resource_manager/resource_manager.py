@@ -5,13 +5,15 @@ from pyparsing import alphas
 
 from model.store.collectors.monetary_delta import MonetaryDelta
 from model.store.miners.flavor import Active
+from model.store.miners.flavors import GLUED_ACTIVE
 from model.store.miners.monetary import Monetary
 from model.store.miners.prices import InvestingPrice
 from model.store.resource import Resource
-from model.utils import flatten
 from model.store.miners.flavors import FLAVORS_MAP
 from model.store.structures import atom
 from model.resource_manager import evaluator
+from model.store.structures.glued_active import GluedActive
+
 
 class ResourceManager:
     def __init__(self, model_launcher):
@@ -23,19 +25,36 @@ class ResourceManager:
         return df.rename(str, {name: evaluator.Atom(name, letter).full_name
                                for name in df.columns if name != "Date"})
 
-    def prepare_tables(self, table_pattern, info):
+    @staticmethod
+    def merge_dfs(dfs):
+        complete_df = dfs[0]
+        for df in dfs[1:]:
+            complete_df = complete_df.merge(df, 'outer', 'Date', sort=True)
+
+        return complete_df
+
+    def prepare_actives(self, actives_info, prices_info=None):
         dfs = []
-        global_begin, global_end = (date.today(),) * 2
 
-        for i, (flavor, platform, active, prices_pair_id) in enumerate(info):
-            letter = alphas[i]
+        for letter, (flavor, platform, active) in zip(alphas, actives_info):
+            if flavor == GLUED_ACTIVE["name"]:
+                active_df = GluedActive.get_df(self.model_launcher, active)
+            else:
+                active_df = Active(self.dbh, FLAVORS_MAP[flavor], platform, active).read_dates()
 
-            dfs.append(ResourceManager.add_letter(
-                Active(self.dbh, FLAVORS_MAP[flavor], platform, active).read_dates(), letter))
+            if prices_info is not None:
+                active_df = ResourceManager.add_letter(active_df, letter)
 
-            begin, end = map(lambda row: date.fromtimestamp(dfs[-1].Date.iloc[row]), (0, -1))
-            global_begin = min(global_begin, begin)
-            global_end = max(global_end, end)
+            dfs.append(active_df)
+
+        if prices_info is not None:
+            self.add_prices(prices_info, dfs)
+
+        return dfs
+
+    def add_prices(self, prices_info, dfs):
+        for letter, df, prices_pair_id in zip(alphas, dfs, prices_info):
+            begin, end = map(lambda row: date.fromtimestamp(df.Date.iloc[row]), (0, -1))
 
             prices = InvestingPrice(self.dbh, prices_pair_id)
             if prices_pair_id is None:
@@ -44,12 +63,16 @@ class ResourceManager:
                 prices_df = prices.read_dates(begin, end)
             dfs.append(ResourceManager.add_letter(prices_df, letter))
 
+    def prepare_tables(self, table_pattern, actives_info, prices_info):
+        dfs = self.prepare_actives(actives_info, prices_info)
+
+        global_begin = date.fromtimestamp(min([df.Date[0] for df in dfs if not df.empty]))
+        global_end = date.fromtimestamp(max([df.Date.iloc[-1] for df in dfs if not df.empty]))
+
         for resource in (Monetary(self.dbh), MonetaryDelta(self.dbh)):
             dfs.append(resource.read_dates(global_begin, global_end))
 
-        complete_df = dfs[0]
-        for df in dfs[1:]:
-            complete_df = complete_df.merge(df, 'outer', 'Date', sort=True)
+        complete_df = ResourceManager.merge_dfs(dfs)
 
         evaluator_ = evaluator.Evaluator(complete_df, self.model_launcher.get_atoms())
 
@@ -66,7 +89,7 @@ class ResourceManager:
 
         flavor_atom_names = [name
                              for flavor in self.model_launcher.get_flavors()
-                             for name in Resource.get_atoms(flavor["schema"])]
+                             for name in Resource.get_atoms(flavor.get("schema", []))]
 
         result.extend([atom.Atom(name, name, False) for name in sorted(set(flavor_atom_names))])
 

@@ -16,7 +16,7 @@ class Flavor:
         return [name.strip() for name in market_and_exchange_names.rsplit("-", 1)]
 
     def if_initial(self, flavor):
-        return Platforms(self.dbh, flavor).read().empty
+        return Platforms(self.dbh, flavor).read_df().empty
 
     def get_df(self, flavor):
         cols = list(flavor["keys"].values()) + \
@@ -56,7 +56,7 @@ class Flavor:
         for table, columns, values in (
                 (platforms_table, ("PlatformCode", "PlatformName"), platforms),
                 (actives_table, ("PlatformCode", "ActiveName"), actives)):
-            table.write(pd.DataFrame(list(values), columns=columns))
+            table.write_df(pd.DataFrame(list(values), columns=columns))
 
         for code, name in info.groups.keys():
             active_name, _ = Flavor.get_active_platform_name(name)
@@ -81,7 +81,7 @@ class Platforms(Table):
             "UNIQUE (PlatformCode) ON CONFLICT IGNORE")
 
     def get_platforms(self):
-        return self.read().drop("id", axis=1)
+        return self.read_df()
 
     def get_platform_id(self, platform_code):
         return self.dbh.cursor().execute('''
@@ -105,13 +105,13 @@ class Actives(Table):
             "UNIQUE (PlatformCode, ActiveName) ON CONFLICT IGNORE")
 
     def get_actives(self, platform):
-        return [a for (a,) in self.dbh.cursor().execute('''
+        return pd.read_sql('''
             SELECT
                 ActiveName
             FROM
                 "{table}"
             WHERE
-                PlatformCode = ?'''.format(table=self.table), (platform,)).fetchall()]
+                PlatformCode = "{code}"'''.format(table=self.table, code=platform), self.dbh)
 
     def get_active_id(self, platform_code, active_name):
         return self.dbh.cursor().execute('''

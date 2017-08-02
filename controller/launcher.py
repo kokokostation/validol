@@ -16,19 +16,18 @@ class ControllerLauncher:
     def update_data(self):
         return self.model_launcher.update()
 
-    def draw_table(self, table_pattern, actives):
-        info = []
+    def draw_table(self, table_pattern, actives_info, prices_info):
         title_info = []
-        for i, (flavor, platform, active, price_url) in enumerate(actives):
+        for i, (active_info, price_url) in enumerate(zip(actives_info, prices_info)):
             price_name, pair_id = [None] * 2
             if price_url:
                 pair_id, price_name = self.model_launcher.get_prices_info(price_url)
                 self.view_launcher.refresh_prices()
 
-            info.append((flavor, platform, active, pair_id))
-            title_info.append((flavor, platform, active, price_name))
+            prices_info[i] = pair_id
+            title_info.append(active_info + [price_name])
 
-        df = self.model_launcher.prepare_tables(table_pattern, info)
+        df = self.model_launcher.prepare_tables(table_pattern, actives_info, prices_info)
 
         for i, labels in enumerate(table_pattern.formula_groups):
             self.view_launcher.show_table(df, labels, title_info)

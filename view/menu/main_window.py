@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from view import utils
 from view.view_element import ViewElement
+from model.store.miners.flavors import GLUED_ACTIVE
 
 
 class Window(ViewElement, QtWidgets.QWidget):
@@ -58,36 +59,47 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.cached_prices = QtWidgets.QListWidget()
         self.set_cached_prices()
 
+        self.tableView = QtWidgets.QTextEdit()
+        self.tableView.setReadOnly(True)
+
         self.tables_list = QtWidgets.QListWidget()
         self.available_tables = []
         self.set_tables()
-        self.tables_list.itemDoubleClicked.connect(self.table_chosen)
-
-        self.tableView = QtWidgets.QTextEdit()
-        self.tableView.setReadOnly(True)
+        self.table_chosen()
+        self.tables_list.currentItemChanged.connect(self.table_chosen)
 
         self.main_layout = QtWidgets.QVBoxLayout(self)
 
         self.lists_layout = QtWidgets.QHBoxLayout()
 
+        self.glue_layout = QtWidgets.QVBoxLayout()
+        self.glue_name = QtWidgets.QLineEdit()
+        self.glue_button = QtWidgets.QPushButton('Glue actives')
+        self.glue_button.clicked.connect(self.glue)
+        self.remove_glue = QtWidgets.QPushButton('Remove glued active')
+        self.remove_glue.clicked.connect(self.remove_glued_active)
+
         self.rightLayout = QtWidgets.QVBoxLayout()
         self.rightLayout.addWidget(self.cached_prices)
-        self.rightLayout.addWidget(self.tables_list)
         self.rightLayout.addWidget(self.removeTable)
+        self.rightLayout.addWidget(self.remove_glue)
+        self.rightLayout.addWidget(self.tables_list)
         self.rightLayout.addWidget(self.tableView)
         self.rightLayout.addWidget(self.createTable)
 
         self.actives_layout = QtWidgets.QVBoxLayout()
-        self.actives_layout.addWidget(self.clear)
         self.actives_layout_widgets = []
         self.actives_layout_lines = []
         self.chosen_actives = []
 
+        self.actives_layout.addWidget(self.clear, alignment=QtCore.Qt.AlignTop)
+        self.actives_layout.addWidget(self.glue_name, alignment=QtCore.Qt.AlignBottom)
+        self.actives_layout.addWidget(self.glue_button)
+
         self.lists_layout.insertLayout(0, self.leftLayout)
         self.lists_layout.addWidget(self.platforms)
         self.lists_layout.insertLayout(2, self.activesListLayout)
-        self.lists_layout.addWidget(
-            utils.scrollable_area(self.actives_layout))
+        self.lists_layout.addWidget(utils.scrollable_area(self.actives_layout))
         self.lists_layout.insertLayout(4, self.rightLayout)
 
         self.main_layout.insertLayout(0, self.lists_layout)
@@ -98,6 +110,20 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.tableDialogs = []
 
         self.showMaximized()
+
+    def glue(self):
+        if self.glue_name.text():
+            self.model_launcher.write_glued_active(self.glue_name.text(), self.chosen_actives)
+            self.glue_name.clear()
+
+            self.platform_chosen()
+
+    def remove_glued_active(self):
+        active = self.actives.currentItem()
+        if self.current_flavor() == GLUED_ACTIVE["name"] and active is not None:
+            self.model_launcher.remove_glued_active(active.text())
+
+            self.platform_chosen()
 
     def remove_table(self):
         self.model_launcher.remove_table(self.tables_list.currentItem().text())
@@ -184,10 +210,9 @@ class Window(ViewElement, QtWidgets.QWidget):
     def flavor_chosen(self):
         self.platforms.clear()
 
-        for code, name in \
-                self.model_launcher.get_platforms(self.current_flavor()).values:
-            wi = QtWidgets.QListWidgetItem(name)
-            wi.setToolTip(code)
+        for _, platform in self.model_launcher.get_platforms(self.current_flavor()).iterrows():
+            wi = QtWidgets.QListWidgetItem(platform.PlatformName)
+            wi.setToolTip(platform.PlatformCode)
             self.platforms.addItem(wi)
 
         self.platforms.setCurrentRow(0)
@@ -198,9 +223,9 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.actives.clear()
 
-        for active in self.model_launcher.get_actives(self.platforms.currentItem().toolTip(),
-                                                      self.current_flavor()):
-            self.actives.addItem(active)
+        for _, active in self.model_launcher.get_actives(self.platforms.currentItem().toolTip(),
+                                                      self.current_flavor()).iterrows():
+            self.actives.addItem(active.ActiveName)
 
     def clear_active(self, vbox):
         i = self.actives_layout_lines.index(vbox)
@@ -225,9 +250,8 @@ class Window(ViewElement, QtWidgets.QWidget):
 
     def draw_table(self):
         table_pattern = self.available_tables[self.tables_list.currentRow()]
-        actives = [(active + [self.actives_layout_widgets[i][1].text()])
-                   for i, active in enumerate(self.chosen_actives)]
-        self.controller_launcher.draw_table(table_pattern, actives)
+        prices_info = [bunch[1].text() for bunch in self.actives_layout_widgets]
+        self.controller_launcher.draw_table(table_pattern, self.chosen_actives, prices_info)
 
     def create_table(self):
         self.controller_launcher.show_table_dialog()
