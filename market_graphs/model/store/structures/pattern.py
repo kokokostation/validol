@@ -1,4 +1,5 @@
-from market_graphs.model.store.structures.structure import Structure, Item
+from market_graphs.model.store.structures.structure import Structure, Base
+from sqlalchemy import Column, String, PickleType
 
 
 class Piece:
@@ -36,26 +37,35 @@ class Graph:
         self.pieces[lr].append(piece)
 
 
-class Pattern(Item):
-    def __init__(self, table_name=None, pattern_name=None):
-        Item.__init__(self, pattern_name)
+class Pattern(Base):
+    __tablename__ = "patterns"
+    graphs = Column(PickleType)
+    table_name = Column(String, primary_key=True)
+    name = Column(String, primary_key=True)
+
+    def __init__(self, table_name=None, name=None):
         self.graphs = []
         self.table_name = table_name
+        self.name = name
 
     def add_graph(self, graph):
         self.graphs.append(graph)
 
-    def set_name(self, table_name, pattern_name):
+    def set_name(self, table_name, name):
         self.table_name = table_name
-        self.name = pattern_name
+        self.name = name
 
     def get_formulas(self):
         return [piece.atom_id for graph in self.graphs for lr in graph.pieces for piece in lr]
 
+    @staticmethod
+    def name_pred(table_name, name):
+        return (Pattern.table_name == table_name) & (Pattern.name == name)
+
 
 class Patterns(Structure):
-    def __init__(self):
-        Structure.__init__(self, "patterns")
+    def __init__(self, model_launcher):
+        Structure.__init__(self, Pattern, model_launcher)
 
     def get_patterns(self, table_name):
         return [pattern for pattern in self.read() if pattern.table_name == table_name]
@@ -63,10 +73,11 @@ class Patterns(Structure):
     def write_pattern(self, pattern):
         self.write(pattern)
 
-    def remove_pattern(self, table_name, pattern_name):
-        self.remove_by_pred(
-            lambda pattern: pattern.table_name == table_name and
-                            pattern.name == pattern_name)
+    def remove_pattern(self, table_name, name):
+        self.remove_by_pred(Pattern.name_pred(table_name, name))
+
+    def read_pattern(self, table_name, name):
+        self.read(Pattern.name_pred(table_name, name))
 
     def remove_table_patterns(self, table_name):
-        self.remove_by_pred(lambda pattern: pattern.table_name == table_name)
+        self.remove_by_pred(Pattern.table_name == table_name)

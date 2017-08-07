@@ -130,8 +130,8 @@ class Cftc(Flavor):
         CFTC_DISAGGREGATED_FUTURES_ONLY,
         CFTC_DISAGGREGATED_FUTURES_AND_OPTIONS_COMBINED]
 
-    def __init__(self, dbh):
-        Flavor.__init__(self, dbh)
+    def __init__(self, model_launcher):
+        Flavor.__init__(self, model_launcher)
 
     def load_csvs(self, flavor):
         sources = ["{year_prefix}{curr_year}.zip"
@@ -198,8 +198,8 @@ class Ice(Flavor):
         ICE_FUTURES_ONLY,
         ICE_COMBINED]
 
-    def __init__(self, dbh):
-        Flavor.__init__(self, dbh)
+    def __init__(self, model_launcher):
+        Flavor.__init__(self, model_launcher)
 
     def load_csvs(self, flavor):
         if self.if_initial(flavor):

@@ -1,35 +1,59 @@
-import pickle
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from functools import wraps
 
 
-class Item:
-    def __init__(self, name):
-        self.name = name
+def with_session(f):
+    @wraps(f)
+    def wrapper(self, *args, **kwargs):
+        session = self.session
+
+        result = f(self, session, *args, **kwargs)
+
+        session.commit()
+
+        return result
+
+    return wrapper
+
+
+Base = declarative_base()
 
 
 class Structure:
-    def __init__(self, file_name):
-        self.file_name = file_name
+    def __init__(self, klass, model_launcher):
+        self.klass = klass
+        self.model_launcher = model_launcher
 
-    def write(self, item):
-        with open(self.file_name, "ab") as file:
-            pickle.dump(item, file)
+        self.klass.__table__.create(bind=self.model_launcher.user_dbh, checkfirst=True)
+        self.Session = sessionmaker(bind=self.model_launcher.user_dbh, expire_on_commit=False)
 
-    def read(self):
-        with open(self.file_name, "rb") as file:
-            result = []
-            try:
-                while True:
-                    result.append(pickle.load(file))
-            except EOFError:
-                return result
+    @with_session
+    def write(self, session, item):
+        session.add(item)
 
-    def remove_by_pred(self, pred):
-        items = self.read()
+    @with_session
+    def read(self, session, pred=None):
+        result = session.query(self.klass)
 
-        with open(self.file_name, "wb") as file:
-            for item in items:
-                if not pred(item):
-                    pickle.dump(item, file)
+        if pred is not None:
+            result = result.filter(pred)
+
+        return result.all()
+
+    def read_by_name(self, name):
+        return self.read(self.klass.name == name)
+
+    @with_session
+    def remove_by_pred(self, session, pred):
+        session\
+            .query(self.klass)\
+            .filter(pred)\
+            .delete(synchronize_session=False)
 
     def remove_by_name(self, name):
-        self.remove_by_pred(lambda item: item.name == name)
+        self.remove_by_pred(self.klass.name == name)
+
+    @property
+    def session(self):
+        return self.Session()

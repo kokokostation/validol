@@ -41,7 +41,7 @@ class ViewLauncher(ViewElement):
             CheckedGraph(self.main_window, QtCore.Qt.Window, df, pattern, table_labels, title))
 
     def refresh_tables(self):
-        self.main_window.set_tables()
+        self.main_window.tipped_list.refresh()
 
     def show_table_dialog(self):
         self.table_dialogs.append(

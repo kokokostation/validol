@@ -1,12 +1,16 @@
 import pandas as pd
 
-from market_graphs.model.store.structures.structure import Structure, Item
+from market_graphs.model.store.structures.structure import Structure, Base
+from sqlalchemy import Column, String, PickleType
 
 
-class GluedActive(Item):
+class GluedActive(Base):
+    __tablename__ = "glued_actives"
+    name = Column(String, primary_key=True)
+    info = Column(PickleType)
+
     def __init__(self, name, info):
-        Item.__init__(self, name)
-
+        self.name = name
         self.info = info
 
     def prepare_df(self, model_launcher):
@@ -42,8 +46,8 @@ class GluedActive(Item):
 
 
 class GluedActives(Structure):
-    def __init__(self):
-        Structure.__init__(self, "glued_actives")
+    def __init__(self, model_launcher):
+        Structure.__init__(self, GluedActive, model_launcher)
 
     def get_actives(self):
         return pd.DataFrame([active.name for active in self.read()], columns=["ActiveName"])

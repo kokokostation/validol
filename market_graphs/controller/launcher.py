@@ -4,7 +4,7 @@ from market_graphs.view.launcher import ViewLauncher
 
 class ControllerLauncher:
     def __init__(self):
-        self.model_launcher = ModelLauncher()
+        self.model_launcher = ModelLauncher().init_data()
 
         self.view_launcher = ViewLauncher(self, self.model_launcher)
         self.view_launcher.show_main_window()

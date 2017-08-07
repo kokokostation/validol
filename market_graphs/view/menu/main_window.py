@@ -1,7 +1,8 @@
 from PyQt5 import QtCore, QtWidgets
 from market_graphs.model.store.miners.flavors import GLUED_ACTIVE
 
-from market_graphs.view import utils
+from market_graphs.view.utils.utils import scrollable_area
+from market_graphs.view.utils.tipped_list import TippedList
 from market_graphs.view.view_element import ViewElement
 
 
@@ -59,13 +60,14 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.cached_prices = QtWidgets.QListWidget()
         self.set_cached_prices()
 
-        self.tableView = QtWidgets.QTextEdit()
-        self.tableView.setReadOnly(True)
+        def view_setter(view, table_pattern):
+            view.setText(str(table_pattern))
 
-        self.tables_list = QtWidgets.QListWidget()
-        self.available_tables = []
-        self.set_tables()
-        self.tables_list.currentItemChanged.connect(self.table_chosen)
+        ro_text_edit = QtWidgets.QTextEdit()
+        ro_text_edit.setReadOnly(True)
+
+        self.tipped_list = TippedList(lambda: model_launcher.get_tables(),
+                                      view_setter, ro_text_edit)
 
         self.main_layout = QtWidgets.QVBoxLayout(self)
 
@@ -80,10 +82,10 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.rightLayout = QtWidgets.QVBoxLayout()
         self.rightLayout.addWidget(self.cached_prices)
-        self.rightLayout.addWidget(self.tables_list)
+        self.rightLayout.addWidget(self.tipped_list.list)
         self.rightLayout.addWidget(self.removeTable)
         self.rightLayout.addWidget(self.remove_glue)
-        self.rightLayout.addWidget(self.tableView)
+        self.rightLayout.addWidget(self.tipped_list.view)
         self.rightLayout.addWidget(self.createTable)
 
         self.actives_layout = QtWidgets.QVBoxLayout()
@@ -98,7 +100,7 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.lists_layout.insertLayout(0, self.leftLayout)
         self.lists_layout.addWidget(self.platforms)
         self.lists_layout.insertLayout(2, self.activesListLayout)
-        self.lists_layout.addWidget(utils.scrollable_area(self.actives_layout))
+        self.lists_layout.addWidget(scrollable_area(self.actives_layout))
         self.lists_layout.insertLayout(4, self.rightLayout)
 
         self.main_layout.insertLayout(0, self.lists_layout)
@@ -125,8 +127,8 @@ class Window(ViewElement, QtWidgets.QWidget):
             self.platform_chosen()
 
     def remove_table(self):
-        self.model_launcher.remove_table(self.tables_list.currentItem().text())
-        self.set_tables()
+        self.model_launcher.remove_table(self.tipped_list.list.currentItem().text())
+        self.tipped_list.refresh()
 
     def closeEvent(self, _):
         for graph in self.graphs:
@@ -149,28 +151,12 @@ class Window(ViewElement, QtWidgets.QWidget):
             self.actives.setCurrentItem(items[index % len(items)])
             self.searchResult[2] += 1
 
-    def table_chosen(self):
-        if self.tables_list.currentRow() is not None:
-            table_pattern = self.available_tables[self.tables_list.currentRow()]
-            self.tableView.setText(str(table_pattern))
-
-    def set_tables(self):
-        self.tables_list.clear()
-        self.available_tables = self.model_launcher.get_tables()
-
-        for table_pattern in self.available_tables:
-            wi = QtWidgets.QListWidgetItem(table_pattern.name)
-            self.tables_list.addItem(wi)
-
-        if self.available_tables:
-            self.tables_list.setCurrentRow(self.tables_list.count() - 1)
-
     def set_cached_prices(self):
         self.cached_prices.clear()
 
-        for url, name in self.model_launcher.get_cached_prices():
-            wi = QtWidgets.QListWidgetItem(name)
-            wi.setToolTip(url)
+        for index, value in self.model_launcher.get_cached_prices().iterrows():
+            wi = QtWidgets.QListWidgetItem(value["name"])
+            wi.setToolTip(value["url"])
             self.cached_prices.addItem(wi)
 
     def submit_active(self):
@@ -252,7 +238,7 @@ class Window(ViewElement, QtWidgets.QWidget):
             self.remove_line(i)
 
     def draw_table(self):
-        table_pattern = self.available_tables[self.tables_list.currentRow()]
+        table_pattern = self.tipped_list.current_item()
         prices_info = [bunch[1].text() for bunch in self.actives_layout_widgets]
         self.controller_launcher.draw_table(table_pattern, self.chosen_actives, prices_info)
 

@@ -13,8 +13,8 @@ class Monetary(Resource):
     SCHEMA = [("MBase", "INTEGER")]
     INDEPENDENT = True
 
-    def __init__(self, dbh):
-        Resource.__init__(self, dbh, "Monetary", Monetary.SCHEMA)
+    def __init__(self, model_launcher):
+        Resource.__init__(self, model_launcher.main_dbh, "Monetary", Monetary.SCHEMA)
 
     def initial_fill(self):
         session = requests.Session()

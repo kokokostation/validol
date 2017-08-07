@@ -5,13 +5,13 @@ from functools import partial
 import numpy as np
 import pandas as pd
 from PyQt5 import QtCore, QtWidgets
-from market_graphs.model.store.structures.pattern import Line, Bar
-from market_graphs.model.utils import to_timestamp
-from market_graphs.view.pattern_tree import PatternTree
-from market_graphs.view import utils
-from market_graphs.model.utils import remove_duplications
 
 import market_graphs.pyqtgraph as pg
+from market_graphs.model.store.structures.pattern import Line, Bar
+from market_graphs.model.utils import remove_duplications
+from market_graphs.model.utils import to_timestamp
+from market_graphs.view import utils
+from market_graphs.view.utils.pattern_tree import PatternTree
 
 
 def negate(color):
@@ -85,18 +85,29 @@ class Graph(pg.GraphicsWindow):
         self.days_map = DaysMap(df, pattern)
         self.pattern = pattern
         self.table_labels = table_labels
+        self.scatter_on = False
 
         self.draw_graph()
 
-    def fix(self, index, todo):
+    @staticmethod
+    def switch_items(plot_item, items, add=True):
+        for item in items:
+            if add:
+                plot_item.addItem(item)
+            else:
+                plot_item.removeItem(item)
+
+    def fix(self, index, add):
         plot_item, chunk = self.widgets[index]
 
-        if todo:
-            for item in chunk:
-                plot_item.addItem(item)
-        else:
-            for item in chunk:
-                plot_item.removeItem(item)
+        Graph.switch_chunk(plot_item, chunk.values(), add)
+
+    def switch_scatter(self):
+        self.scatter_on = not self.scatter_on
+
+        for plot_item, chunk in self.widgets.values():
+            if "scatter" in chunk:
+                Graph.switch_items(plot_item, [chunk["scatter"]], self.scatter_on)
 
     def draw_axis(self, label, plot_item, graph_num, lr, pieces):
         self.legendData[graph_num][lr].append((ItemData(None, None), "____" + label + "____"))
@@ -113,24 +124,24 @@ class Graph(pg.GraphicsWindow):
 
             if type(piece) == Line:
                 pen = {'color': piece.color, 'width': 2}
-                chunk = (pg.PlotDataItem(xs, ys, pen=pen),
-                         pg.ScatterPlotItem(xs, ys, pen=pen,
-                                            brush=pg.mkBrush(color=negate(piece.color)), size=4))
+                chunk = {"plot": pg.PlotDataItem(xs, ys, pen=pen),
+                         "scatter": pg.ScatterPlotItem(xs, ys, pen=pen, size=5,
+                                                       brush=pg.mkBrush(color=negate(piece.color)))}
+                plot_item.addItem(chunk["plot"])
             elif type(piece) == Bar:
                 positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) // 2
                 ys = piece.sign * ys
                 if not positive:
                     ys = -ys
 
-                chunk = (pg.BarGraphItem(
+                chunk = {"bar_graph": pg.BarGraphItem(
                     x=[c + bar_width * piece.base for c in xs],
                     height=ys,
                     width=bar_width,
                     brush=pg.mkBrush(piece.color + (130,)),
-                    pen=pg.mkPen('k')),)
+                    pen=pg.mkPen('k'))}
 
-            for item in chunk:
-                plot_item.addItem(item)
+                plot_item.addItem(chunk["bar_graph"])
 
             if type(piece) == Line:
                 legend_color = piece.color
@@ -239,11 +250,19 @@ class CheckedGraph(QtWidgets.QWidget):
         self.graphLayout = QtWidgets.QHBoxLayout()
         self.mainLayout.insertLayout(1, self.graphLayout, stretch=10)
 
+        self.left_layout = QtWidgets.QVBoxLayout(self)
+
         self.choiceTree = PatternTree(True)
         self.choiceTree.draw_pattern(pattern)
         self.choiceTree.itemChanged.connect(self.fix)
 
-        self.graphLayout.addWidget(self.choiceTree, stretch=1)
+        self.switch_scatter_button = QtWidgets.QPushButton('Switch scatter')
+        self.switch_scatter_button.clicked.connect(self.graph.switch_scatter)
+
+        self.left_layout.addWidget(self.choiceTree)
+        self.left_layout.addWidget(self.switch_scatter_button)
+
+        self.graphLayout.insertLayout(0, self.left_layout, stretch=1)
         self.graphLayout.addWidget(self.graph, stretch=8)
 
         self.showMaximized()

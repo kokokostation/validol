@@ -39,7 +39,7 @@ class ResourceManager:
             if flavor == GLUED_ACTIVE["name"]:
                 active_df = GluedActive.get_df(self.model_launcher, active)
             else:
-                active_df = Active(self.model_launcher.dbh, FLAVORS_MAP[flavor], platform, active)\
+                active_df = Active(self.model_launcher, FLAVORS_MAP[flavor], platform, active)\
                     .read_dates()
 
             if prices_info is not None:
@@ -56,7 +56,7 @@ class ResourceManager:
         for letter, df, prices_pair_id in zip(alphas, dfs, prices_info):
             begin, end = map(lambda row: date.fromtimestamp(df.Date.iloc[row]), (0, -1))
 
-            prices = InvestingPrice(self.model_launcher.dbh, prices_pair_id)
+            prices = InvestingPrice(self.model_launcher, prices_pair_id)
             if prices_pair_id is None:
                 prices_df = pd.DataFrame(columns=[name for name, _ in prices.schema],
                                          dtype=np.float64)
@@ -70,8 +70,8 @@ class ResourceManager:
         global_begin = date.fromtimestamp(min([df.Date[0] for df in dfs if not df.empty]))
         global_end = date.fromtimestamp(max([df.Date.iloc[-1] for df in dfs if not df.empty]))
 
-        for resource in (Monetary(self.model_launcher.dbh),
-                         MonetaryDelta(self.model_launcher.dbh)):
+        for resource in (Monetary(self.model_launcher),
+                         MonetaryDelta(self.model_launcher)):
             dfs.append(resource.read_dates(global_begin, global_end))
 
         complete_df = ResourceManager.merge_dfs(dfs)

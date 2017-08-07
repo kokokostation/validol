@@ -1,13 +1,15 @@
 from functools import partial
 
-from market_graphs.view import utils
 from PyQt5 import QtWidgets, QtGui
-from market_graphs.model.store.structures.pattern import Graph, Line, Bar, Pattern
 from pyparsing import alphas
-from market_graphs.view.button_group import ButtonGroup
-from market_graphs.view.pattern_tree import PatternTree
-from market_graphs.view.view_element import ViewElement
+
+from market_graphs.model.store.structures.pattern import Graph, Line, Bar, Pattern
 from market_graphs.model.utils import remove_duplications
+from market_graphs.view.utils.utils import scrollable_area, set_title
+from market_graphs.view.utils.tipped_list import TippedList
+from market_graphs.view.utils.button_group import ButtonGroup
+from market_graphs.view.utils.pattern_tree import PatternTree
+from market_graphs.view.view_element import ViewElement
 
 
 class GraphDialog(ViewElement, QtWidgets.QWidget):
@@ -34,31 +36,23 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.labels_submit_layout = QtWidgets.QVBoxLayout()
         self.patternChoiceLayout = QtWidgets.QVBoxLayout()
 
-        utils.set_title(self.main_layout, self.title)
+        set_title(self.main_layout, self.title)
 
         self.main_layout.insertLayout(1, self.upper_layout, stretch=10)
         self.main_layout.insertLayout(2, self.buttons_layout)
 
-        self.pattern_list = QtWidgets.QListWidget()
-        patterns = self.model_launcher.get_patterns(self.table_name)
-        self.patterns = {}
-        for pattern in patterns:
-            self.pattern_list.addItem(pattern.name)
-            self.patterns[pattern.name] = pattern
+        def view_setter(view, pattern):
+            view.draw_pattern(pattern)
 
-        if self.pattern_list.count() > 0:
-            self.pattern_list.setCurrentRow(0)
-
-        self.pattern_list.itemDoubleClicked.connect(self.draw_item)
-
-        self.patternTree = PatternTree()
+        self.tipped_list = TippedList(lambda: self.model_launcher.get_patterns(self.table_name),
+                                      view_setter, PatternTree())
 
         self.removePattern = QtWidgets.QPushButton('Remove pattern')
         self.removePattern.clicked.connect(self.remove_pattern)
 
-        self.patternChoiceLayout.addWidget(self.pattern_list)
+        self.patternChoiceLayout.addWidget(self.tipped_list.list)
         self.patternChoiceLayout.addWidget(self.removePattern)
-        self.patternChoiceLayout.addWidget(self.patternTree)
+        self.patternChoiceLayout.addWidget(self.tipped_list.view)
 
         self.graphsTree = PatternTree()
 
@@ -67,7 +61,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.labels_submit_layout.addWidget(self.patternTitle)
 
         self.labels_submit_layout.addWidget(
-            utils.scrollable_area(self.labels_layout))
+            scrollable_area(self.labels_layout))
 
         self.upper_layout.insertLayout(0, self.labels_submit_layout)
         self.upper_layout.addWidget(self.graphsTree)
@@ -143,18 +137,9 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         return title
 
     def remove_pattern(self):
-        title = self.pattern_list.currentItem().text()
-        self.pattern_list.takeItem(self.pattern_list.currentRow())
-        self.patternTree.clear()
-        self.patternTree.setHeaderLabel("")
-        del self.patterns[title]
+        title = self.tipped_list.list.currentItem().text()
         self.model_launcher.remove_pattern(self.table_name, title)
-
-    def draw_item(self, item):
-        pattern = self.patterns[item.text()]
-        self.patternTree.clear()
-        self.patternTree.draw_pattern(pattern)
-        self.patternTree.setHeaderLabel(item.text())
+        self.tipped_list.refresh()
 
     def activated(self, comboBox, _=None):
         comboBox.setStyleSheet("color: white; background-color: transparent")
@@ -165,7 +150,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
     def draw_graph(self):
         self.controller_launcher.draw_graph(self.df,
-                                            self.patterns[self.pattern_list.currentItem().text()],
+                                            self.tipped_list.current_item(),
                                             self.table_labels,
                                             self.title)
 
@@ -223,11 +208,8 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
         self.currentPattern.set_name(self.table_name, patternTitle)
 
-        self.pattern_list.addItem(patternTitle)
-        self.pattern_list.setCurrentRow(self.pattern_list.count() - 1)
-
         self.model_launcher.write_pattern(self.currentPattern)
-        self.patterns[patternTitle] = self.currentPattern
+        self.tipped_list.refresh()
 
         self.clear_checkboxes()
         self.clear_comboboxes()

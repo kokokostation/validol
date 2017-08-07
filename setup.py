@@ -5,7 +5,7 @@ setup(
     version='0.0.7',
     license='MIT',
     packages=find_packages(),
-    install_requires=['pyparsing', 'numpy', 'pandas', 'requests', 'PyQt5'],
+    install_requires=['pyparsing', 'numpy', 'pandas', 'requests', 'PyQt5', 'sqlalchemy'],
     entry_points={
         'console_scripts': [
             'market-graphs=market_graphs.main:main',

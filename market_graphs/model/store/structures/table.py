@@ -1,11 +1,16 @@
 from market_graphs.model.store.structures.pattern import Patterns
-from market_graphs.model.store.structures.structure import Structure, Item
+from market_graphs.model.store.structures.structure import Structure, Base
 from market_graphs.model.utils import flatten
+from sqlalchemy import Column, String, PickleType
 
 
-class Table(Item):
+class Table(Base):
+    __tablename__ = 'tables'
+    name = Column(String, primary_key=True)
+    formula_groups = Column(PickleType)
+
     def __init__(self, name, formula_groups):
-        Item.__init__(self, name)
+        self.name = name
         self.formula_groups = [table.split(",") for table in formula_groups.split("\n")]
 
     def all_formulas(self):
@@ -17,8 +22,8 @@ class Table(Item):
 
 
 class Tables(Structure):
-    def __init__(self):
-        Structure.__init__(self, "tables")
+    def __init__(self, model_launcher):
+        Structure.__init__(self, Table, model_launcher)
 
     def get_tables(self):
         return self.read()
@@ -28,4 +33,7 @@ class Tables(Structure):
 
     def remove_table(self, name):
         self.remove_by_name(name)
-        Patterns().remove_table_patterns(name)
+        Patterns(self.model_launcher).remove_table_patterns(name)
+
+    def get_table(self, name):
+        return self.read_by_name(name)

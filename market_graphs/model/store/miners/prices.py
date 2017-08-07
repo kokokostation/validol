@@ -4,30 +4,37 @@ import re
 import pandas as pd
 import requests
 from market_graphs.model.mine.downloader import read_url_text
-from market_graphs.model.store.resource import Resource, Table
+from market_graphs.model.store.resource import Resource
+from market_graphs.model.store.structures.structure import Structure, Base
+from sqlalchemy import Column, String
+from sqlalchemy.sql import select
 
 
 def normalize_url(url):
     return re.sub(r'https://[^.]*\.', r'https://www.', url)
 
 
-class InvestingPrices(Table):
-    def __init__(self, dbh):
-        Table.__init__(self, dbh, "Prices",
-                       [("pair_id", "TEXT PRIMARY KEY"), ("Name", "TEXT"), ("URL", "TEXT")])
+class InvestingPriceInfo(Base):
+    __tablename__ = 'prices'
+    pair_id = Column(String, primary_key=True)
+    name = Column(String)
+    url = Column(String)
+
+    def __init__(self, pair_id, name, url):
+        self.pair_id = pair_id
+        self.name = name
+        self.url = url
+
+
+class InvestingPrices(Structure):
+    def __init__(self, model_launcher):
+        Structure.__init__(self, InvestingPriceInfo, model_launcher)
 
     def get_info_through_url(self, url):
         url = normalize_url(url)
 
-        c = self.dbh.cursor()
-        c.execute('''
-            SELECT
-                pair_id, name
-            FROM 
-                "{table}"
-            WHERE
-                URL = ?'''.format(table=self.table), (url,))
-        response = c.fetchone()
+        response = self.session.query(InvestingPriceInfo.pair_id, InvestingPriceInfo.name)\
+            .filter(InvestingPriceInfo.url == url).first()
 
         if response:
             return response
@@ -40,26 +47,20 @@ class InvestingPrices(Table):
             pair_id = re.search(r'data-pair-id="(\d*)"', content).group(1)
             name = re.search(r'<title>(.*)</title>', content).group(1).rsplit(" - ")[0]
 
-            self.dbh.cursor().execute('''
-                INSERT OR IGNORE INTO
-                    "{table}"
-                VALUES ({qs})'''.format(table=self.table,
-                                        qs=",".join("?" * len(self.schema))),
-                (pair_id, name, url))
+            self.write(InvestingPriceInfo(pair_id, name, url))
 
         return pair_id, name
 
     def get_prices(self):
-        return self.dbh.cursor().execute(
-            'SELECT URL, Name FROM "{table}"'.format(table=self.table)).fetchall()
+        return pd.DataFrame(r.__dict__ for r in self.read())
 
 
 class InvestingPrice(Resource):
     SCHEMA = [("Quot", "REAL")]
     INDEPENDENT = False
 
-    def __init__(self, dbh, pair_id):
-        Resource.__init__(self, dbh, "pair_id_{pair_id}".format(pair_id=pair_id),
+    def __init__(self, model_launcher, pair_id):
+        Resource.__init__(self, model_launcher.main_dbh, "pair_id_{pair_id}".format(pair_id=pair_id),
                           InvestingPrice.SCHEMA)
 
         self.pair_id = pair_id

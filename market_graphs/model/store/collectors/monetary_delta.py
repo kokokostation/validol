@@ -9,10 +9,10 @@ class MonetaryDelta(Resource):
     SCHEMA = [("MBDelta", "REAL")]
     INDEPENDENT = True
 
-    def __init__(self, dbh):
-        Resource.__init__(self, dbh, "MonetaryDelta", MonetaryDelta.SCHEMA)
+    def __init__(self, model_launcher):
+        Resource.__init__(self, model_launcher.main_dbh, "MonetaryDelta", MonetaryDelta.SCHEMA)
 
-        self.source = Monetary(dbh)
+        self.source = Monetary(model_launcher)
 
     def deltas(self, mbase):
         grouped_mbase = [(mbase[0], 1)] + [(k, len(list(g))) for k, g in groupby(mbase)]
@@ -34,4 +34,4 @@ class MonetaryDelta(Resource):
         df.MBDelta = self.deltas(df.MBDelta)
         return df
 
-    # not optimal, but who cares
+    # not optimal, but who cares, todo: remove this atom and come up with common scheme to add runtime atom

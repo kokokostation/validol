@@ -7,15 +7,15 @@ from market_graphs.model.utils import group_by
 
 
 class Flavor:
-    def __init__(self, dbh):
-        self.dbh = dbh
+    def __init__(self, model_launcher):
+        self.model_launcher = model_launcher
 
     @staticmethod
     def get_active_platform_name(market_and_exchange_names):
         return [name.strip() for name in market_and_exchange_names.rsplit("-", 1)]
 
     def if_initial(self, flavor):
-        return Platforms(self.dbh, flavor).read_df().empty
+        return Platforms(self.model_launcher, flavor).read_df().empty
 
     def get_df(self, flavor):
         cols = list(flavor["keys"].values()) + \
@@ -42,8 +42,8 @@ class Flavor:
         info = group_by(df, [flavor["keys"]["platform_code"],
                              flavor["keys"]["platform_active"]])
 
-        actives_table = Actives(self.dbh, flavor)
-        platforms_table = Platforms(self.dbh, flavor)
+        actives_table = Actives(self.model_launcher, flavor)
+        platforms_table = Platforms(self.model_launcher, flavor)
 
         platforms = set()
         actives = set()
@@ -60,7 +60,7 @@ class Flavor:
 
         for code, name in info.groups.keys():
             active_name, _ = Flavor.get_active_platform_name(name)
-            Active(self.dbh, flavor, code, active_name, info.get_group((code, name))).update()
+            Active(self.model_launcher, flavor, code, active_name, info.get_group((code, name))).update()
 
     def load_csvs(self, flavor):
         raise NotImplementedError
@@ -70,10 +70,10 @@ class Flavor:
 
 
 class Platforms(Table):
-    def __init__(self, dbh, flavor):
+    def __init__(self, model_launcher, flavor):
         Table.__init__(
             self,
-            dbh,
+            model_launcher.main_dbh,
             "Platforms_{flavor}".format(flavor=flavor["name"]), [
             ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
             ("PlatformCode", "TEXT"),
@@ -94,10 +94,10 @@ class Platforms(Table):
 
 
 class Actives(Table):
-    def __init__(self, dbh, flavor):
+    def __init__(self, model_launcher, flavor):
         Table.__init__(
             self,
-            dbh,
+            model_launcher.main_dbh,
             "Actives_{flavor}".format(flavor=flavor["name"]), [
             ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
             ("PlatformCode", "TEXT"),
@@ -126,13 +126,13 @@ class Actives(Table):
 
 
 class Active(Resource):
-    def __init__(self, dbh, flavor, platform_code, active_name, update_info=pd.DataFrame()):
-        active_id = Actives(dbh, flavor).get_active_id(platform_code, active_name)
-        platform_id = Platforms(dbh, flavor).get_platform_id(platform_code)
+    def __init__(self, model_launcher, flavor, platform_code, active_name, update_info=pd.DataFrame()):
+        active_id = Actives(model_launcher, flavor).get_active_id(platform_code, active_name)
+        platform_id = Platforms(model_launcher, flavor).get_platform_id(platform_code)
 
         Resource.__init__(
             self,
-            dbh,
+            model_launcher.main_dbh,
             "Active_platform_{platform_id}_active_{active_id}_{flavor}".format(
                 platform_id=platform_id,
                 active_id=active_id,
