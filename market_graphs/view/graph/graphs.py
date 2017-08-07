@@ -10,7 +10,7 @@ import market_graphs.pyqtgraph as pg
 from market_graphs.model.store.structures.pattern import Line, Bar
 from market_graphs.model.utils import remove_duplications
 from market_graphs.model.utils import to_timestamp
-from market_graphs.view import utils
+from market_graphs.view.utils.utils import set_title
 from market_graphs.view.utils.pattern_tree import PatternTree
 
 
@@ -246,7 +246,7 @@ class CheckedGraph(QtWidgets.QWidget):
         self.graph = Graph(df, pattern, tableLabels)
 
         self.mainLayout = QtWidgets.QVBoxLayout(self)
-        utils.set_title(self.mainLayout, title)
+        set_title(self.mainLayout, title)
         self.graphLayout = QtWidgets.QHBoxLayout()
         self.mainLayout.insertLayout(1, self.graphLayout, stretch=10)
 

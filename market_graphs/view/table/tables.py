@@ -3,7 +3,7 @@ import datetime as dt
 import numpy as np
 from PyQt5 import QtWidgets
 from market_graphs.model.utils import date_from_timestamp, date_to_timestamp
-from market_graphs.view import utils
+from market_graphs.view.utils.utils import set_title
 from market_graphs.view.menu.graph_dialog import GraphDialog
 
 import market_graphs.pyqtgraph as pg
@@ -32,7 +32,7 @@ class Table(QtWidgets.QWidget):
 
         self.mainLayout = QtWidgets.QVBoxLayout(self)
 
-        utils.set_title(self.mainLayout, title)
+        set_title(self.mainLayout, title)
         self.mainLayout.addWidget(table, stretch=10)
 
         self.showMaximized()

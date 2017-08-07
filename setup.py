@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='market-graphs',
-    version='0.0.7',
+    version='0.0.8',
     license='MIT',
     packages=find_packages(),
     install_requires=['pyparsing', 'numpy', 'pandas', 'requests', 'PyQt5', 'sqlalchemy'],
