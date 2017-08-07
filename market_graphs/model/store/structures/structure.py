@@ -42,7 +42,7 @@ class Structure:
         return result.all()
 
     def read_by_name(self, name):
-        return self.read(self.klass.name == name)
+        return self.read(self.klass.name == name)[0]
 
     @with_session
     def remove_by_pred(self, session, pred):

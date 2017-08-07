@@ -40,7 +40,7 @@ class GluedActive(Base):
 
     @staticmethod
     def get_df(model_launcher, active):
-        obj = [item for item in GluedActives().read() if item.name == active][0]
+        obj = GluedActives(model_launcher).read_by_name(active)
 
         return obj.prepare_df(model_launcher)
 
