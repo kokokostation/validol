@@ -7,10 +7,10 @@ from market_graphs.model.utils import group_by
 
 
 def fix_atoms(df):
-    df["NCL"] = df["PMPL"] + df["SDPL"]
-    df["NCS"] = df["PMPS"] + df["SDPS"]
-    df["CL"] = df["MMPL"] + df["ORPL"]
-    df["CS"] = df["MMPS"] + df["ORPS"]
+    df["CL"] = df["PMPL"] + df["SDPL"]
+    df["CS"] = df["PMPS"] + df["SDPS"]
+    df["NCL"] = df["MMPL"] + df["ORPL"]
+    df["NCS"] = df["MMPS"] + df["ORPS"]
 
 
 DISAGGREGATED_SCHEMA = [
@@ -39,7 +39,8 @@ DISAGGREGATED_SCHEMA = [
     ("8S%", "REAL"),
     ("SDPSpr", "INTEGER"),
     ("MMPSpr", "INTEGER"),
-    ("ORPSpr", "INTEGER")]
+    ("ORPSpr", "INTEGER")
+]
 
 CFTC_DATE_FMT = "%Y-%m-%d"
 
@@ -109,7 +110,8 @@ def cftc_disaggregated(initial_prefix, year_prefix, name):
             "Conc_Net_LE_8_TDR_Short_All": "8S%",
             "Swap__Positions_Spread_All": "SDPSpr",
             "M_Money_Positions_Spread_All": "MMPSpr",
-            "Other_Rept_Positions_Spread_All": "ORPSpr"},
+            "Other_Rept_Positions_Spread_All": "ORPSpr"
+        },
         "schema": DISAGGREGATED_SCHEMA,
         "name": name,
         "initial_prefix": initial_prefix,
@@ -140,16 +142,20 @@ class Cftc(Flavor):
         Flavor.__init__(self, model_launcher)
 
     def load_csvs(self, flavor):
-        sources = ["{year_prefix}{curr_year}.zip"
-                       .format(year_prefix=flavor["year_prefix"],
-                               curr_year=date.today().year)]
+        sources = [(
+            "{year_prefix}{curr_year}.zip"
+                .format(year_prefix=flavor["year_prefix"],
+                        curr_year=date.today().year),
+            False)]
 
         if self.if_initial(flavor):
-            sources.append("{initial_prefix}{prev_year}.zip"
-                           .format(initial_prefix=flavor["initial_prefix"],
-                                   prev_year=date.today().year - 1))
+            sources.append((
+                "{initial_prefix}{prev_year}.zip"
+                    .format(initial_prefix=flavor["initial_prefix"],
+                            prev_year=date.today().year - 1),
+                True))
 
-        return [read_url_one_filed_zip(source) for source in sources]
+        return [read_url_one_filed_zip(source, cache_enabled) for source, cache_enabled in sources]
 
     def update(self):
         for flavor in Cftc.FLAVORS:
@@ -217,7 +223,7 @@ class Ice(Flavor):
             years = [date.today().year]
 
         return [read_url_text("https://www.theice.com/publicdocs/futures/COTHist{year}.csv"
-                              .format(year=year)) for year in years]
+                              .format(year=year), year != years[-1]) for year in years]
 
     def update(self):
         df = self.get_df(Ice.FLAVORS[0])

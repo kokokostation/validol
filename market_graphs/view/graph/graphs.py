@@ -47,12 +47,54 @@ class ItemData():
         self.opts = {'symbol': symbol, 'brush': brush, 'pen': None, 'size': 20}
 
 
+class Showable:
+    def __init__(self, plot_item, chunk, showed):
+        self.plot_item = plot_item
+        self.chunk = chunk
+        self.showed = False
+
+        self.set(showed)
+
+    def set(self, showed):
+        if self.showed != showed:
+            if showed:
+                self.plot_item.addItem(self.chunk)
+            else:
+                self.plot_item.removeItem(self.chunk)
+
+            self.showed = showed
+
+    def toogle(self):
+        self.set(not self.showed)
+
+
+class ScatteredPlot:
+    def __init__(self, plot_item, plot, scatter):
+        self.plot = Showable(plot_item, plot, True)
+        self.scatter = Showable(plot_item, scatter, False)
+        self.scatter_state = False
+
+    def set(self, showed):
+        self.plot.set(showed)
+
+        if self.scatter_state:
+            self.scatter.set(showed)
+
+    def toogle(self):
+        self.set(not self.plot.showed)
+
+    def toogle_scatter(self):
+        self.scatter_state = not self.scatter_state
+
+        if self.plot.showed:
+            self.scatter.set(self.scatter_state)
+
+
 class DaysMap:
     def __init__(self, df, pattern):
-        self.df = df
-        self.start = dt.date.fromtimestamp(self.df.Date.iloc[0])
+        self.start = dt.date.fromtimestamp(df.Date.iloc[0])
 
-        days_num = (dt.date.fromtimestamp(self.df.Date.iloc[-1]) - self.start).days + 1
+        days_num = (dt.date.fromtimestamp(df.Date.iloc[-1]) - self.start).days + 1 + 10
         all_dates = [to_timestamp(self.start + dt.timedelta(days=i)) for i in range(0, days_num)]
 
         self.days_map = pd.DataFrame(all_dates, columns=["Date"])
@@ -89,25 +131,13 @@ class Graph(pg.GraphicsWindow):
 
         self.draw_graph()
 
-    @staticmethod
-    def switch_items(plot_item, items, add=True):
-        for item in items:
-            if add:
-                plot_item.addItem(item)
-            else:
-                plot_item.removeItem(item)
+    def fix(self, index):
+        self.widgets[index].toogle()
 
-    def fix(self, index, add):
-        plot_item, chunk = self.widgets[index]
-
-        Graph.switch_chunk(plot_item, chunk.values(), add)
-
-    def switch_scatter(self):
-        self.scatter_on = not self.scatter_on
-
-        for plot_item, chunk in self.widgets.values():
-            if "scatter" in chunk:
-                Graph.switch_items(plot_item, [chunk["scatter"]], self.scatter_on)
+    def toogle_scatter(self):
+        for chunk in self.widgets.values():
+            if isinstance(chunk, ScatteredPlot):
+                chunk.toogle_scatter()
 
     def draw_axis(self, label, plot_item, graph_num, lr, pieces):
         self.legendData[graph_num][lr].append((ItemData(None, None), "____" + label + "____"))
@@ -122,33 +152,35 @@ class Graph(pg.GraphicsWindow):
             xs = self.df["Date"].tolist()
             ys = np.array(self.df[piece.atom_id].tolist())
 
-            if type(piece) == Line:
+            if isinstance(piece, Line):
                 pen = {'color': piece.color, 'width': 2}
-                chunk = {"plot": pg.PlotDataItem(xs, ys, pen=pen),
-                         "scatter": pg.ScatterPlotItem(xs, ys, pen=pen, size=5,
-                                                       brush=pg.mkBrush(color=negate(piece.color)))}
-                plot_item.addItem(chunk["plot"])
-            elif type(piece) == Bar:
+                chunk = ScatteredPlot(
+                    plot_item,
+                    pg.PlotDataItem(xs, ys, pen=pen),
+                    pg.ScatterPlotItem(xs, ys, pen=pen, size=5,
+                                       brush=pg.mkBrush(color=negate(piece.color))))
+            elif isinstance(piece, Bar):
                 positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) // 2
                 ys = piece.sign * ys
                 if not positive:
                     ys = -ys
 
-                chunk = {"bar_graph": pg.BarGraphItem(
-                    x=[c + bar_width * piece.base for c in xs],
-                    height=ys,
-                    width=bar_width,
-                    brush=pg.mkBrush(piece.color + (130,)),
-                    pen=pg.mkPen('k'))}
+                chunk = Showable(
+                    plot_item,
+                    pg.BarGraphItem(
+                        x=[c + bar_width * piece.base for c in xs],
+                        height=ys,
+                        width=bar_width,
+                        brush=pg.mkBrush(piece.color + (130,)),
+                        pen=pg.mkPen('k')),
+                    True)
 
-                plot_item.addItem(chunk["bar_graph"])
-
-            if type(piece) == Line:
+            if isinstance(piece, Line):
                 legend_color = piece.color
-            elif type(piece) == Bar:
+            elif isinstance(piece, Bar):
                 legend_color = piece.color + (200,)
 
-            self.widgets[(graph_num, piece.atom_id)] = (plot_item, chunk)
+            self.widgets[(graph_num, piece.atom_id)] = chunk
             self.legendData[graph_num][lr].append((ItemData('s', legend_color), piece.atom_id))
 
     def draw_graph(self):
@@ -257,7 +289,7 @@ class CheckedGraph(QtWidgets.QWidget):
         self.choiceTree.itemChanged.connect(self.fix)
 
         self.switch_scatter_button = QtWidgets.QPushButton('Switch scatter')
-        self.switch_scatter_button.clicked.connect(self.graph.switch_scatter)
+        self.switch_scatter_button.clicked.connect(self.graph.toogle_scatter)
 
         self.left_layout.addWidget(self.choiceTree)
         self.left_layout.addWidget(self.switch_scatter_button)
@@ -268,4 +300,4 @@ class CheckedGraph(QtWidgets.QWidget):
         self.showMaximized()
 
     def fix(self, item, i):
-        self.graph.fix(item.data(0, 6), item.checkState(0) == QtCore.Qt.Checked)
+        self.graph.fix(item.data(0, 6))
