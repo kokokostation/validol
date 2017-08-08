@@ -23,7 +23,9 @@ class Table(QtWidgets.QWidget):
 
         cols = ["Date"] + labels
 
-        data = np.array(list(map(tuple, df[cols].values.tolist())),
+        show_df = df[cols].dropna(axis=0, thresh=2)
+
+        data = np.array(list(map(tuple, show_df.values.tolist())),
                         dtype=list(zip(cols, [dt.date] + [float] * len(labels))))
 
         date_to_timestamp(df)

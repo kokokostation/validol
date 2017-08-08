@@ -36,7 +36,10 @@ DISAGGREGATED_SCHEMA = [
     ("4L%", "REAL"),
     ("4S%", "REAL"),
     ("8L%", "REAL"),
-    ("8S%", "REAL")]
+    ("8S%", "REAL"),
+    ("SDPSpr", "INTEGER"),
+    ("MMPSpr", "INTEGER"),
+    ("ORPSpr", "INTEGER")]
 
 CFTC_DATE_FMT = "%Y-%m-%d"
 
@@ -103,7 +106,10 @@ def cftc_disaggregated(initial_prefix, year_prefix, name):
             "Conc_Net_LE_4_TDR_Long_All": "4L%",
             "Conc_Net_LE_4_TDR_Short_All": "4S%",
             "Conc_Net_LE_8_TDR_Long_All": "8L%",
-            "Conc_Net_LE_8_TDR_Short_All": "8S%"},
+            "Conc_Net_LE_8_TDR_Short_All": "8S%",
+            "Swap__Positions_Spread_All": "SDPSpr",
+            "M_Money_Positions_Spread_All": "MMPSpr",
+            "Other_Rept_Positions_Spread_All": "ORPSpr"},
         "schema": DISAGGREGATED_SCHEMA,
         "name": name,
         "initial_prefix": initial_prefix,
@@ -180,7 +186,10 @@ def ice(name, ice_flavor):
             "Conc_Net_LE_4_TDR_Long_All": "4L%",
             "Conc_Net_LE_4_TDR_Short_All": "4S%",
             "Conc_Net_LE_8_TDR_Long_All": "8L%",
-            "Conc_Net_LE_8_TDR_Short_All": "8S%"
+            "Conc_Net_LE_8_TDR_Short_All": "8S%",
+            "Swap__Positions_Spread_All": "SDPSpr",
+            "M_Money_Positions_Spread_All": "MMPSpr",
+            "Other_Rept_Positions_Spread_All": "ORPSpr"
         },
         "schema": DISAGGREGATED_SCHEMA,
         "name": name,

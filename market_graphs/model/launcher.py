@@ -26,12 +26,12 @@ class ModelLauncher:
         return self
 
     def init_data(self):
-        initial = False
         if not os.path.exists("data"):
             os.makedirs("data")
-            initial = True
 
         os.chdir("data")
+
+        initial = not os.path.isfile("main.db")
 
         self.main_dbh = sqlite3.connect("main.db")
         self.init_user()
