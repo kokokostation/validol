@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='validol',
-    version='0.0.1',
+    version='0.0.3',
     license='MIT',
     packages=find_packages(),
     install_requires=[
@@ -12,12 +12,14 @@ setup(
         'requests',
         'PyQt5',
         'sqlalchemy',
-        'requests-cache'
+        'requests-cache',
+        'lxml',
+        'beautifulsoup4'
     ],
     entry_points={
         'console_scripts': [
-            'validol=market_graphs.main:main',
-            'validol-conf=market_graphs.migration_scripts.user_structures:main'
+            'validol=validol.main:main',
+            'validol-conf=validol.migration_scripts.user_structures:main'
         ],
     },
 )
