@@ -1,5 +1,6 @@
-from validol.model.store.structures.structure import Structure, Base
-from sqlalchemy import Column, String, PickleType
+from validol.model.store.structures.structure import Structure, Base, JSONCodec
+from sqlalchemy import Column, String
+from marshmallow import Schema, fields, post_load, pre_dump
 
 
 class Piece:
@@ -11,9 +12,24 @@ class Piece:
         raise NotImplementedError
 
 
+class PieceSchema(Schema):
+    atom_id = fields.String()
+    color = fields.List(fields.Integer())
+
+    @post_load
+    def make(self, data):
+        return Piece(**data)
+
+
 class Line(Piece):
     def name(self):
         return "line"
+
+
+class LineSchema(PieceSchema):
+    @post_load
+    def make(self, data):
+        return Line(**data)
 
 
 class Bar(Piece):
@@ -29,17 +45,55 @@ class Bar(Piece):
             return "-bar"
 
 
+class BarSchema(PieceSchema):
+    base = fields.Integer()
+    sign = fields.Integer()
+
+    @post_load
+    def make(self, data):
+        return Bar(**data)
+
+
 class Graph:
-    def __init__(self):
-        self.pieces = [[] for _ in range(2)]
+    def __init__(self, pieces=None):
+        self.pieces = pieces
+        if self.pieces is None:
+            self.pieces = [[] for _ in range(2)]
 
     def add_piece(self, lr, piece):
         self.pieces[lr].append(piece)
 
 
+class SideSchema(Schema):
+    lines = fields.Nested(LineSchema, many=True)
+    bars = fields.Nested(BarSchema, many=True)
+
+    @post_load
+    def make(self, data):
+        return data['lines'] + data['bars']
+
+    @pre_dump
+    def primitive(self, pieces):
+        return {'lines': [piece for piece in pieces if isinstance(piece, Line)],
+                'bars': [piece for piece in pieces if isinstance(piece, Bar)]}
+
+
+class GraphSchema(Schema):
+    left = fields.Nested(SideSchema)
+    right = fields.Nested(SideSchema)
+
+    @post_load
+    def make(self, data):
+        return Graph([data['left'], data['right']])
+
+    @pre_dump
+    def primitive(self, graph):
+        return dict(zip(('left', 'right'), graph.pieces))
+
+
 class Pattern(Base):
     __tablename__ = "patterns"
-    graphs = Column(PickleType)
+    graphs = Column(JSONCodec(GraphSchema(many=True)))
     table_name = Column(String, primary_key=True)
     name = Column(String, primary_key=True)
 

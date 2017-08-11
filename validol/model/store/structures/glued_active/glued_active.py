@@ -1,28 +1,23 @@
 import pandas as pd
 
-from validol.model.store.structures.structure import Structure, Base
-from sqlalchemy import Column, String, PickleType
-from validol.model.store.view.view_flavor import ViewFlavor
+from validol.model.store.structures.structure import Structure, Base, JSONCodec
+from sqlalchemy import Column, String
 
 
-class GluedActiveView(ViewFlavor):
-    def name(self):
-        return "GLUED_ACTIVE"
+def pre_dump(info):
+    return [[x[0].name()] + x[1:] for x in info]
 
-    def platforms(self):
-        return pd.DataFrame([["GA", "Glued actives"]], columns=["PlatformCode", "PlatformName"])
 
-    def actives(self, platform):
-        return GluedActives(self.model_launcher).get_actives()
+def post_load(info):
+    from validol.model.store.view.view_flavors import VIEW_FLAVORS_MAP
 
-    def get_df(self, platform, active):
-        return GluedActive.get_df(self.model_launcher, active)
+    return [[VIEW_FLAVORS_MAP[x[0]]] + x[1:] for x in info]
 
 
 class GluedActive(Base):
     __tablename__ = "glued_actives"
     name = Column(String, primary_key=True)
-    info = Column(PickleType)
+    info = Column(JSONCodec(pre_dump=pre_dump, post_load=post_load))
 
     def __init__(self, name, info):
         self.name = name

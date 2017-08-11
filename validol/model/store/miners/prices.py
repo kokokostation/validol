@@ -32,8 +32,11 @@ class InvestingPrices(Structure):
     def get_info_through_url(self, url):
         url = normalize_url(url)
 
-        response = self.session.query(InvestingPriceInfo.pair_id, InvestingPriceInfo.name)\
+        session = self.session
+        response = session.query(InvestingPriceInfo.pair_id, InvestingPriceInfo.name)\
             .filter(InvestingPriceInfo.url == url).first()
+
+        session.close()
 
         if response:
             return response

@@ -1,44 +1,45 @@
 import os
 import sqlite3
-
-import pandas as pd
 import requests
 from sqlalchemy import create_engine
 from validol.model.store.miners.weekly_reports.flavors import Cftc, Ice
-from validol.model.store.view.view_flavor import all_view_flavors
+from validol.model.store.view.view_flavors import ALL_VIEW_FLAVORS
 
 from validol.model.resource_manager.resource_manager import ResourceManager
 from validol.model.store.collectors.monetary_delta import MonetaryDelta
 from validol.model.store.miners.monetary import Monetary
 from validol.model.store.miners.prices import InvestingPrices
-from validol.model.store.miners.weekly_reports.flavor import Platforms, Actives
 from validol.model.store.structures.atom import Atoms
-from validol.model.store.structures.glued_active import GluedActives
+from validol.model.store.structures.glued_active.glued_active import GluedActives
 from validol.model.store.structures.pattern import Patterns
 from validol.model.store.structures.table import Tables
 
 
 class ModelLauncher:
-    def init_user(self):
-        self.user_dbh = create_engine('sqlite:///user.db')
+    def init_user(self, user_dbh='user.db'):
+        self.user_dbh = create_engine('sqlite:///{}'.format(user_dbh))
 
         self.resource_manager = ResourceManager(self)
 
         return self
 
-    def init_data(self):
+    def init_data(self, main_dbh="main.db"):
         if not os.path.exists("data"):
             os.makedirs("data")
 
         os.chdir("data")
 
-        initial = not os.path.isfile("main.db")
-
-        self.main_dbh = sqlite3.connect("main.db")
         self.init_user()
 
-        if initial:
+        if not os.path.isfile(main_dbh):
+            self.main_dbh = sqlite3.connect(":memory:")
+
             self.update()
+
+            with sqlite3.connect(main_dbh) as new_db:
+                new_db.executescript("".join(self.main_dbh.iterdump()))
+
+        self.main_dbh = sqlite3.connect(main_dbh)
 
         return self
 
@@ -81,7 +82,7 @@ class ModelLauncher:
         return Patterns(self).get_patterns(table_name)
 
     def get_flavors(self):
-        return all_view_flavors(self)
+        return ALL_VIEW_FLAVORS
 
     def write_pattern(self, pattern):
         Patterns(self).write_pattern(pattern)

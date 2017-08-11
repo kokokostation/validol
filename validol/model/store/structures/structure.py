@@ -1,6 +1,41 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.types import TypeDecorator
+from sqlalchemy import String
 from functools import wraps
+import json
+
+
+class JSONCodec(TypeDecorator):
+    impl = String
+
+    def __init__(self, schema=None, post_load=None, pre_dump=None, *args, **kwargs):
+        TypeDecorator.__init__(self, *args, **kwargs)
+        self.schema = schema
+        self.post_load = post_load
+        self.pre_dump = pre_dump
+
+    def process_bind_param(self, value, dialect):
+        if self.pre_dump is not None:
+            value = self.pre_dump(value)
+
+        if self.schema is None:
+            value = json.dumps(value)
+        else:
+            value = self.schema.dumps(value).data
+
+        return value
+
+    def process_result_value(self, value, dialect):
+        if self.schema is None:
+            value = json.loads(value)
+        else:
+            value = self.schema.loads(value).data
+
+        if self.post_load is not None:
+            value = self.post_load(value)
+
+        return value
 
 
 def with_session(f):
@@ -11,6 +46,7 @@ def with_session(f):
         result = f(self, session, *args, **kwargs)
 
         session.commit()
+        session.close()
 
         return result
 

@@ -129,7 +129,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
     def make_title(title_info):
         title = ""
         for i, (flavor, platform, active, price_name) in enumerate(title_info):
-            active_title = "{}/{}/{}".format(flavor, platform, active)
+            active_title = "{}/{}/{}".format(flavor.name(), platform, active)
             if price_name:
                 active_title += "; Quot from: {}".format(price_name)
 

@@ -1,13 +1,13 @@
 from validol.model.store.structures.pattern import Patterns
-from validol.model.store.structures.structure import Structure, Base
+from validol.model.store.structures.structure import Structure, Base, JSONCodec
 from validol.model.utils import flatten
-from sqlalchemy import Column, String, PickleType
+from sqlalchemy import Column, String
 
 
 class Table(Base):
     __tablename__ = 'tables'
     name = Column(String, primary_key=True)
-    formula_groups = Column(PickleType)
+    formula_groups = Column(JSONCodec())
 
     def __init__(self, name, formula_groups):
         self.name = name

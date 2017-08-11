@@ -34,7 +34,7 @@ class ResourceManager:
         dfs = []
 
         for letter, (flavor, platform, active) in zip(alphas, actives_info):
-            active_df = flavor.get_df(platform, active)
+            active_df = flavor.get_df(platform, active, self.model_launcher)
 
             if prices_info is not None:
                 active_df = ResourceManager.add_letter(active_df, letter)

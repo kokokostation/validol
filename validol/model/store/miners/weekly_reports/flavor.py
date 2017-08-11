@@ -4,25 +4,7 @@ from io import StringIO
 import pandas as pd
 from validol.model.store.resource import Resource, Table
 from validol.model.utils import group_by
-from validol.model.store.view.view_flavor import ViewFlavor
 
-
-class WeeklyReportView(ViewFlavor):
-    def __init__(self, flavor, model_launcher):
-        ViewFlavor.__init__(self, model_launcher)
-        self.flavor = flavor
-
-    def name(self):
-        return self.flavor['name'].upper()
-
-    def platforms(self):
-        return Platforms(self.model_launcher, self.flavor).get_platforms()
-
-    def actives(self, platform):
-        return Actives(self.model_launcher, self.flavor).get_actives(platform)
-
-    def get_df(self, platform, active):
-        return Active(self.model_launcher, self.flavor, platform, active).read_dates()
 
 
 class Flavor:

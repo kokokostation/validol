@@ -159,6 +159,7 @@ class Graph(pg.GraphicsWindow):
                     pg.PlotDataItem(xs, ys, pen=pen),
                     pg.ScatterPlotItem(xs, ys, pen=pen, size=5,
                                        brush=pg.mkBrush(color=negate(piece.color))))
+                legend_color = piece.color
             elif isinstance(piece, Bar):
                 positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) // 2
                 ys = piece.sign * ys
@@ -171,14 +172,10 @@ class Graph(pg.GraphicsWindow):
                         x=[c + bar_width * piece.base for c in xs],
                         height=ys,
                         width=bar_width,
-                        brush=pg.mkBrush(piece.color + (130,)),
+                        brush=pg.mkBrush(piece.color + [130]),
                         pen=pg.mkPen('k')),
                     True)
-
-            if isinstance(piece, Line):
-                legend_color = piece.color
-            elif isinstance(piece, Bar):
-                legend_color = piece.color + (200,)
+                legend_color = piece.color + [200]
 
             self.widgets[(graph_num, piece.atom_id)] = chunk
             self.legendData[graph_num][lr].append((ItemData('s', legend_color), piece.atom_id))

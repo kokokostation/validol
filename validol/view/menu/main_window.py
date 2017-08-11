@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtWidgets
 from collections import OrderedDict
 
-from validol.model.store.structures.glued_active import GluedActiveView
+from validol.model.store.structures.glued_active.glued_active_view import GluedActiveView
 from validol.view.utils.tipped_list import TippedList
 from validol.view.utils.utils import scrollable_area
 from validol.view.view_element import ViewElement
@@ -201,7 +201,8 @@ class Window(ViewElement, QtWidgets.QWidget):
     def flavor_chosen(self):
         self.platforms.clear()
 
-        platforms = [value for index, value in self.current_flavor().platforms().iterrows()]
+        platforms = [value for index, value in
+                     self.current_flavor().platforms(self.model_launcher).iterrows()]
         for platform in sorted(platforms, key=lambda x: x.PlatformName):
             wi = QtWidgets.QListWidgetItem(platform.PlatformName)
             wi.setToolTip(platform.PlatformCode)
@@ -216,7 +217,7 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.actives.clear()
 
         for _, active in self.current_flavor()\
-                .actives(self.platforms.currentItem().toolTip()).iterrows():
+                .actives(self.platforms.currentItem().toolTip(), self.model_launcher).iterrows():
             self.actives.addItem(active.ActiveName)
 
     def clear_active(self, vbox):
