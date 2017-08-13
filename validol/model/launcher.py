@@ -13,6 +13,7 @@ from validol.model.store.structures.atom import Atoms
 from validol.model.store.structures.glued_active.glued_active import GluedActives
 from validol.model.store.structures.pattern import Patterns
 from validol.model.store.structures.table import Tables
+from validol.model.store.miners.daily_reports.ice import IceDaily
 
 
 class ModelLauncher:
@@ -45,7 +46,7 @@ class ModelLauncher:
 
     def update(self):
         try:
-            for cls in (Monetary, MonetaryDelta, Cftc, Ice):
+            for cls in (Monetary, MonetaryDelta, Cftc, Ice, IceDaily):
                 cls(self).update()
             return True
         except requests.exceptions.ConnectionError:

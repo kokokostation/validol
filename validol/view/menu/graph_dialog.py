@@ -128,9 +128,13 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
     @staticmethod
     def make_title(title_info):
         title = ""
-        for i, (flavor, platform, active, price_name) in enumerate(title_info):
+        for i, (flavor, platform, active, active_flavor, price_name) in enumerate(title_info):
             active_title = "{}/{}/{}".format(flavor.name(), platform, active)
-            if price_name:
+
+            if active_flavor is not None:
+                active_title += "/{}".format(active_flavor)
+
+            if price_name is not None:
                 active_title += "; Quot from: {}".format(price_name)
 
             title += "{}: {}\n".format(alphas[i], active_title)

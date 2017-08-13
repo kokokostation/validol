@@ -11,6 +11,7 @@ from validol.model.store.miners.prices import InvestingPrice
 from validol.model.store.resource import Resource
 from validol.model.store.structures import atom
 from validol.model.store.miners.weekly_reports.flavors import WEEKLY_REPORT_FLAVORS
+import validol.model.store.miners.daily_reports.ice as ice
 
 
 class ResourceManager:
@@ -33,8 +34,8 @@ class ResourceManager:
     def prepare_actives(self, actives_info, prices_info=None):
         dfs = []
 
-        for letter, (flavor, platform, active) in zip(alphas, actives_info):
-            active_df = flavor.get_df(platform, active, self.model_launcher)
+        for letter, (flavor, platform, active, active_flavor) in zip(alphas, actives_info):
+            active_df = flavor.get_df(platform, active, active_flavor, self.model_launcher)
 
             if prices_info is not None:
                 active_df = ResourceManager.add_letter(active_df, letter)
@@ -76,6 +77,7 @@ class ResourceManager:
 
         return evaluator_.get_result()
 
+# ToDo: вынести атомы в сами классы
     def get_primary_atoms(self):
         result = []
 
@@ -88,5 +90,8 @@ class ResourceManager:
                              for name in Resource.get_atoms(flavor.get("schema", []))]
 
         result.extend([atom.Atom(name, name, False) for name in sorted(set(flavor_atom_names))])
+
+        result.extend([atom.Atom(name, name, ice.Active.INDEPENDENT)
+                       for name, _ in ice.Active.SCHEMA[1:]])
 
         return result

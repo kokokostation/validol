@@ -1,4 +1,4 @@
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from collections import OrderedDict
 
 from validol.model.store.structures.glued_active.glued_active_view import GluedActiveView
@@ -20,16 +20,25 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.actives = QtWidgets.QListWidget()
         self.actives.itemDoubleClicked.connect(self.submit_active)
+        self.actives.currentItemChanged.connect(self.active_flavor_chosen)
+
         self.searchLine = QtWidgets.QLineEdit()
         self.searchLine.setPlaceholderText("Search")
         self.searchLine.textChanged.connect(self.search)
         self.searchLine.returnPressed.connect(self.search)
+
+        self.switch_update_button = QtWidgets.QPushButton('Switch update')
+        self.switch_update_button.clicked.connect(self.switch_update)
+
         self.activesListLayout = QtWidgets.QVBoxLayout()
         self.activesListLayout.addWidget(self.searchLine)
         self.activesListLayout.addWidget(self.actives)
+        self.activesListLayout.addWidget(self.switch_update_button)
 
         self.platforms = QtWidgets.QListWidget()
         self.platforms.currentItemChanged.connect(self.platform_chosen)
+
+        self.active_flavors = QtWidgets.QListWidget()
 
         self.flavors = QtWidgets.QListWidget()
         self.flavors.currentItemChanged.connect(self.flavor_chosen)
@@ -59,6 +68,7 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.leftLayout = QtWidgets.QVBoxLayout()
         self.leftLayout.addWidget(self.flavors)
+        self.leftLayout.addWidget(self.active_flavors)
         self.leftLayout.addWidget(self.updateButton)
 
         self.cached_prices = QtWidgets.QListWidget()
@@ -110,11 +120,32 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.main_layout.insertLayout(0, self.lists_layout)
         self.main_layout.addWidget(self.drawTable)
 
-        self.tables = []
-        self.graphs = []
-        self.tableDialogs = []
-
         self.showMaximized()
+
+    def switch_update(self):
+        self.current_flavor().switch_update(
+            self.platforms.currentItem().toolTip(),
+            self.actives.currentItem().text(),
+            self.model_launcher)
+
+        self.platform_chosen()
+
+    def active_flavor_chosen(self):
+        if self.actives.currentItem() is None:
+            return
+
+        self.active_flavors.clear()
+
+        active_flavors = self.current_flavor().active_flavors(
+                self.platforms.currentItem().toolTip(),
+                self.actives.currentItem().text(),
+                self.model_launcher)
+
+        for index, active_flavor in active_flavors.iterrows():
+            self.active_flavors.addItem(active_flavor.active_flavor)
+
+        if not active_flavors.empty:
+            self.active_flavors.setCurrentRow(0)
 
     def glue(self):
         if self.glue_name.text():
@@ -133,16 +164,6 @@ class Window(ViewElement, QtWidgets.QWidget):
     def remove_table(self):
         self.model_launcher.remove_table(self.tipped_list.list.currentItem().text())
         self.tipped_list.refresh()
-
-    def closeEvent(self, _):
-        for graph in self.graphs:
-            graph.close()
-
-        for table in self.tables:
-            table.close()
-
-        for tableDialog in self.tableDialogs:
-            tableDialog.close()
 
     def search(self):
         searchText = self.searchLine.text()
@@ -164,9 +185,12 @@ class Window(ViewElement, QtWidgets.QWidget):
             self.cached_prices.addItem(wi)
 
     def submit_active(self):
+        active_flavor = self.active_flavors.currentItem().text() \
+            if self.active_flavors.currentItem() is not None else None
         self.chosen_actives.append([self.current_flavor(),
                                     self.platforms.currentItem().toolTip(),
-                                    self.actives.currentItem().text()])
+                                    self.actives.currentItem().text(),
+                                    active_flavor])
 
         self.actives_layout_widgets.append((QtWidgets.QLineEdit(),
                                             QtWidgets.QLineEdit(),
@@ -178,8 +202,12 @@ class Window(ViewElement, QtWidgets.QWidget):
         last_line = self.actives_layout_lines[-1]
 
         last_line_widgets[0].setReadOnly(True)
-        last_line_widgets[0].setText(
-            self.platforms.currentItem().text() + "/" + self.actives.currentItem().text())
+        text = "{}/{}".format(
+            self.platforms.currentItem().text(),
+            self.actives.currentItem().text())
+        if self.active_flavors.currentItem() is not None:
+            text += "/{}".format(self.active_flavors.currentItem().text())
+        last_line_widgets[0].setText(text)
 
         last_line_widgets[2].clicked.connect(
             lambda: self.submit_cached(last_line_widgets[1], self.cached_prices))
@@ -218,7 +246,10 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         for _, active in self.current_flavor()\
                 .actives(self.platforms.currentItem().toolTip(), self.model_launcher).iterrows():
-            self.actives.addItem(active.ActiveName)
+            wi = QtWidgets.QListWidgetItem(active.ActiveName)
+            if 'Updatable' in active and active.Updatable == 0:
+                wi.setBackground(QtGui.QColor(250, 200, 200))
+            self.actives.addItem(wi)
 
     def clear_active(self, vbox):
         i = self.actives_layout_lines.index(vbox)

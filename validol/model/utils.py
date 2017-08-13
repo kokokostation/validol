@@ -4,8 +4,9 @@ import itertools
 from bisect import bisect_left
 from functools import reduce
 from time import mktime
-
 import numpy as np
+from tabula import read_pdf
+import pandas as pd
 
 
 def to_timestamp(date):
@@ -95,13 +96,16 @@ def intersect_lists(lists):
 def group_by(df, columns):
     return df.groupby(columns, sort=False)[[col for col in df.columns if col not in columns]]
 
+
 def date_to_timestamp(df):
     df.Date = df.apply(lambda row: to_timestamp(row['Date']), axis=1)
     return df
 
+
 def date_from_timestamp(df):
     df.Date = df.apply(lambda row: dt.date.fromtimestamp(row['Date']), axis=1)
     return df
+
 
 def remove_duplications(arr):
     s = set()
@@ -112,3 +116,20 @@ def remove_duplications(arr):
             result.append(item)
 
     return result
+
+
+def pdf(pages, fname):
+    df = pd.DataFrame()
+
+    for page, area in pages:
+        df = df.append(read_pdf(fname,
+                                pages=page,
+                                area=area,
+                                spreadsheet=True,
+                                pandas_options={'header': None}))
+
+    return df
+
+
+def date_range(first, last):
+    return [first + dt.timedelta(i) for i in range(0, (last - first).days + 1)]

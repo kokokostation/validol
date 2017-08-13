@@ -8,13 +8,13 @@ class WeeklyReportView(ViewFlavor):
         self.flavor = flavor
 
     def name(self):
-        return self.flavor['name'].upper()
+        return self.flavor['name']
 
     def platforms(self, model_launcher):
-        return Platforms(model_launcher, self.flavor).get_platforms()
+        return Platforms(model_launcher, self.flavor['name']).get_platforms()
 
     def actives(self, platform, model_launcher):
-        return Actives(model_launcher, self.flavor).get_actives(platform)
+        return Actives(model_launcher, self.flavor['name']).get_actives(platform)
 
-    def get_df(self, platform, active, model_launcher):
+    def get_df(self, platform, active, active_flavor, model_launcher):
         return Active(model_launcher, self.flavor, platform, active).read_dates()

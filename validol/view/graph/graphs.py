@@ -150,7 +150,7 @@ class Graph(pg.GraphicsWindow):
 
         for piece in pieces:
             xs = self.df["Date"].tolist()
-            ys = np.array(self.df[piece.atom_id].tolist())
+            ys = self.df[piece.atom_id].tolist()
 
             if isinstance(piece, Line):
                 pen = {'color': piece.color, 'width': 2}

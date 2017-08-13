@@ -18,7 +18,6 @@ class RenamingUnpickler(pickle.Unpickler):
 
 
 def loads(bytes):
-    print(bytes)
     file = BytesIO(bytes)
     unpickler = RenamingUnpickler(file)
     return unpickler.load()

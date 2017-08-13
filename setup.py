@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='validol',
-    version='0.0.3',
+    version='0.0.6',
     license='MIT',
     packages=find_packages(),
     install_requires=[
@@ -14,12 +14,13 @@ setup(
         'sqlalchemy',
         'requests-cache',
         'lxml',
-        'beautifulsoup4'
+        'beautifulsoup4',
+        'marshmallow',
+        'tabula-py'
     ],
     entry_points={
         'console_scripts': [
-            'validol=validol.main:main',
-            'validol-conf=validol.migration_scripts.user_structures:main'
+            'validol=validol.main:main'
         ],
     },
 )

@@ -10,6 +10,8 @@ from validol.view.view_element import ViewElement
 
 
 class ViewLauncher(ViewElement):
+    FLAGS = QtCore.Qt.Window
+
     def __init__(self, controller_launcher, model_launcher):
         ViewElement.__init__(self, controller_launcher, model_launcher)
 
@@ -28,22 +30,22 @@ class ViewLauncher(ViewElement):
 
     def show_table(self, df, labels, title_info):
         self.tables.append(
-            Table(self.main_window, QtCore.Qt.Window, df, labels, title_info))
+            Table(self.main_window, ViewLauncher.FLAGS, df, labels, title_info))
 
     def show_graph_dialog(self, df, table_pattern, title_info):
         self.graph_dialogs.append(
             GraphDialog(
-                self.main_window, QtCore.Qt.Window, df, table_pattern, title_info,
+                self.main_window, ViewLauncher.FLAGS, df, table_pattern, title_info,
                 self.controller_launcher, self.model_launcher))
 
     def show_graph(self, df, pattern, table_labels, title):
         self.graphs.append(
-            CheckedGraph(self.main_window, QtCore.Qt.Window, df, pattern, table_labels, title))
+            CheckedGraph(self.main_window, ViewLauncher.FLAGS, df, pattern, table_labels, title))
 
     def refresh_tables(self):
         self.main_window.tipped_list.refresh()
 
     def show_table_dialog(self):
         self.table_dialogs.append(
-            TableDialog(self.main_window, QtCore.Qt.Window, self.controller_launcher,
+            TableDialog(self.main_window, ViewLauncher.FLAGS, self.controller_launcher,
                         self.model_launcher))

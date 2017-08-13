@@ -16,7 +16,7 @@ class Flavor:
         return [name.strip() for name in market_and_exchange_names.rsplit("-", 1)]
 
     def if_initial(self, flavor):
-        return Platforms(self.model_launcher, flavor).read_df().empty
+        return Platforms(self.model_launcher, flavor['name']).read_df().empty
 
     def get_df(self, flavor):
         cols = flavor["keys"] + \
@@ -41,8 +41,8 @@ class Flavor:
     def update_flavor(self, df, flavor):
         info = group_by(df, flavor["keys"])
 
-        actives_table = Actives(self.model_launcher, flavor)
-        platforms_table = Platforms(self.model_launcher, flavor)
+        actives_table = Actives(self.model_launcher, flavor['name'])
+        platforms_table = Platforms(self.model_launcher, flavor['name'])
 
         platforms = set()
         actives = set()
@@ -73,7 +73,7 @@ class Platforms(Table):
         Table.__init__(
             self,
             model_launcher.main_dbh,
-            "Platforms_{flavor}".format(flavor=flavor["name"]), [
+            "Platforms_{flavor}".format(flavor=flavor), [
             ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
             ("PlatformCode", "TEXT"),
             ("PlatformName", "TEXT")],
@@ -93,41 +93,47 @@ class Platforms(Table):
 
 
 class Actives(Table):
-    def __init__(self, model_launcher, flavor):
+    def __init__(self, model_launcher, flavor, schema_add=None):
+        schema = [
+            ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
+            ("PlatformCode", "TEXT"),
+            ("ActiveName", "TEXT")]
+
+        if schema_add is not None:
+            schema.extend(schema_add)
+
         Table.__init__(
             self,
             model_launcher.main_dbh,
-            "Actives_{flavor}".format(flavor=flavor["name"]), [
-            ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
-            ("PlatformCode", "TEXT"),
-            ("ActiveName", "TEXT")],
+            "Actives_{flavor}".format(flavor=flavor), schema,
             "UNIQUE (PlatformCode, ActiveName) ON CONFLICT IGNORE")
 
     def get_actives(self, platform):
         return pd.read_sql('''
             SELECT
-                ActiveName
+                *
             FROM
                 "{table}"
             WHERE
-                PlatformCode = "{code}"'''.format(table=self.table, code=platform), self.dbh)
+                PlatformCode = ?'''.format(table=self.table), self.dbh, params=(platform,))
 
-    def get_active_id(self, platform_code, active_name):
+    def get_fields(self, platform_code, active_name, fields):
         return self.dbh.cursor().execute('''
             SELECT 
-                id 
+                {fields} 
             FROM 
                 "{table}" 
             WHERE 
                 PlatformCode = ? AND 
-                ActiveName = ?'''.format(table=self.table),
-            (platform_code, active_name)).fetchone()[0]
+                ActiveName = ?'''.format(table=self.table, fields=', '.join(fields)),
+                                         (platform_code, active_name)).fetchone()
 
 
 class Active(Resource):
     def __init__(self, model_launcher, flavor, platform_code, active_name, update_info=pd.DataFrame()):
-        active_id = Actives(model_launcher, flavor).get_active_id(platform_code, active_name)
-        platform_id = Platforms(model_launcher, flavor).get_platform_id(platform_code)
+        active_id = Actives(model_launcher, flavor['name'])\
+            .get_fields(platform_code, active_name, ('id',))[0]
+        platform_id = Platforms(model_launcher, flavor['name']).get_platform_id(platform_code)
 
         Resource.__init__(
             self,

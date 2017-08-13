@@ -43,14 +43,15 @@ class Table:
 
 
 class Resource(Table):
-    def __init__(self, dbh, table, schema):
+    def __init__(self, dbh, table, schema, modifier="PRIMARY KEY (Date) ON CONFLICT IGNORE"):
         Table.__init__(self, dbh, table,
-                       [("Date", "INTEGER PRIMARY KEY ON CONFLICT IGNORE")] + schema)
+                       [("Date", "INTEGER")] + schema, modifier)
 
     def update(self):
         first, last = self.range()
         if last:
-            self.write_df(self.fill(last, date.today()))
+            if last != date.today():
+                self.write_df(self.fill(last, date.today()))
         else:
             self.write_df(self.initial_fill())
 
@@ -75,6 +76,9 @@ class Resource(Table):
             return map(date.fromtimestamp, item)
         else:
             return item
+
+    def empty(self):
+        return self.range() == (None,) * 2
 
     def read_dates(self, begin=None, end=date.today()):
         query = '''
