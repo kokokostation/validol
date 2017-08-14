@@ -1,7 +1,19 @@
 from validol.model.store.structures.pattern import Patterns
 from validol.model.store.structures.structure import Structure, Base, JSONCodec
 from validol.model.utils import flatten
+from validol.model.resource_manager.evaluator import FormulaGrammar
+
 from sqlalchemy import Column, String
+import pyparsing as pp
+
+
+class TableParser(FormulaGrammar):
+    def split(self, expr):
+        self.expr_stack = []
+
+        bnf = pp.delimitedList(pp.Combine(self.bnf))
+
+        return list(bnf.parseString(expr, True))
 
 
 class Table(Base):
@@ -9,9 +21,10 @@ class Table(Base):
     name = Column(String, primary_key=True)
     formula_groups = Column(JSONCodec())
 
-    def __init__(self, name, formula_groups):
+    def __init__(self, name, formula_groups, all_atoms):
         self.name = name
-        self.formula_groups = [table.split(",") for table in formula_groups.split("\n")]
+        parser = TableParser(all_atoms)
+        self.formula_groups = [parser.split(table) for table in formula_groups.split("\n")]
 
     def all_formulas(self):
         return flatten(self.formula_groups)
@@ -28,8 +41,8 @@ class Tables(Structure):
     def get_tables(self):
         return self.read()
 
-    def write_table(self, table_name, formula_groups):
-        self.write(Table(table_name, formula_groups))
+    def write_table(self, table_name, formula_groups, all_atoms):
+        self.write(Table(table_name, formula_groups, all_atoms))
 
     def remove_table(self, name):
         self.remove_by_name(name)

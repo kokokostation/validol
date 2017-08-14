@@ -17,4 +17,4 @@ class WeeklyReportView(ViewFlavor):
         return Actives(model_launcher, self.flavor['name']).get_actives(platform)
 
     def get_df(self, platform, active, active_flavor, model_launcher):
-        return Active(model_launcher, self.flavor, platform, active).read_dates()
+        return Active(model_launcher, self.flavor, platform, active).read_dates_dt()

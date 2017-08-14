@@ -1,6 +1,7 @@
 from datetime import date
-
 import pandas as pd
+import numpy as np
+
 from validol.model.utils import date_to_timestamp, to_timestamp
 
 
@@ -78,14 +79,19 @@ class Resource(Table):
             return item
 
     def empty(self):
-        return self.range() == (None,) * 2
+        return pd.DataFrame(columns=[name for name, _ in self.schema],
+                            dtype=np.float64)
 
-    def read_dates(self, begin=None, end=date.today()):
+    def read_dates_dt(self, *args):
+        return self.read_dates_ts(*map(to_timestamp, args))
+
+    def read_dates_ts(self, begin=None, end=to_timestamp(date.today())):
         query = '''
             SELECT 
                 * 
             FROM 
                 "{table}"'''.format(table=self.table)
+
         params = None
 
         if begin:
@@ -94,7 +100,7 @@ class Resource(Table):
                 Date >= ? AND
                 Date <= ?'''
 
-            params = to_timestamp(begin), to_timestamp(end)
+            params = begin, end
 
         df = pd.read_sql(query, self.dbh, params=params)
 

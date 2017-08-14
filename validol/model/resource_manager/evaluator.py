@@ -1,28 +1,20 @@
 import numpy as np
 import operator
 import math
+import re
 
 import pyparsing as pp
 
-
-class Atom:
-    def __init__(self, name, letter=None):
-        self.name = name
-        self.letter = letter
-
-    @property
-    def independent(self):
-        return self.letter is None
-
-    @property
-    def full_name(self):
-        if self.independent:
-            return self.name
-        else:
-            return "{name}({letter})".format(name=self.name, letter=self.letter)
+from validol.model.resource_manager.atom_base import AtomBase
 
 
-class NumericStringParser:
+class AtomRepr(AtomBase):
+    def __init__(self, name, params, params_map=None):
+        params = params if params_map is None else [params_map.get(x, x) for x in params]
+        AtomBase.__init__(self, name, params)
+
+
+class FormulaGrammar:
     def push_first(self, toks):
         self.expr_stack.append(toks[0])
 
@@ -30,35 +22,24 @@ class NumericStringParser:
         if toks and toks[0] == '-':
             self.expr_stack.append('unary -')
 
-    def atom_from_toks(self, toks):
-        if self.atom is not None:
-            return Atom(toks[0], self.atom.letter)
-        else:
-            return Atom(*toks)
-
-    @staticmethod
-    def atom_or(atoms):
-        return pp.Or(map(pp.Literal,
-                         sorted([atom.name for atom in atoms], key=lambda x: -len(x))))
-
-    def __init__(self, evaluator):
-        self.evaluator = evaluator
+    def __init__(self, all_atoms):
         self.expr_stack = []
-        self.atom = None
+        self.params_map = None
 
         point = pp.Literal(".")
         e = pp.CaselessLiteral("E")
         lpar = pp.Literal("(").suppress()
         rpar = pp.Literal(")").suppress()
 
-        independent_atom = NumericStringParser.atom_or(self.evaluator.independent_atoms)\
-            .setParseAction(lambda toks: Atom(toks[0]))
+        atom_names = [atom.name for atom in all_atoms]
+        chars = re.sub('[,()]', "", pp.printables)
+        validol_atom = pp.Or([
+            pp.Literal(atom_name) + lpar + pp.Group(pp.delimitedList(pp.Word(chars))) + rpar
+            for atom_name in sorted(atom_names, key=lambda x: -len(x))]).setParseAction(
+            lambda toks: AtomRepr(toks[0], toks[1], self.params_map)
+        )
 
-        dependent_atom = (NumericStringParser.atom_or(self.evaluator.dependent_atoms) +
-                          pp.Optional(lpar + pp.Word(pp.alphas, exact=1) + rpar)) \
-            .setParseAction(self.atom_from_toks)
-
-        fnumber = dependent_atom | independent_atom | pp.Combine(pp.Word("+-" + pp.nums, pp.nums) +
+        fnumber = validol_atom | pp.Combine(pp.Word("+-" + pp.nums, pp.nums) +
                              pp.Optional(point + pp.Optional(pp.Word(pp.nums))) +
                              pp.Optional(e + pp.Word("+-" + pp.nums, pp.nums)))
         ident = pp.Word(pp.alphas, pp.alphas + pp.nums + "_$")
@@ -95,10 +76,17 @@ class NumericStringParser:
                    "abs": np.abs,
                    "round": np.round}
 
+
+class NumericStringParser(FormulaGrammar):
+    def __init__(self, evaluator):
+        FormulaGrammar.__init__(self, evaluator.atoms_map.values())
+
+        self.evaluator = evaluator
+
     def evaluate_stack(self, stack):
         op = stack.pop()
 
-        if isinstance(op, Atom):
+        if isinstance(op, AtomRepr):
             return self.evaluator.evaluate_atom(op)
         elif op == 'unary -':
             return -self.evaluate_stack(stack)
@@ -115,32 +103,36 @@ class NumericStringParser:
         else:
             return float(op)
 
-    def evaluate_atom(self, atom):
-        self.atom = atom
+    def evaluate(self, formula, params_map=None):
+        self.expr_stack = []
+        self.params_map = params_map
 
-        return self.evaluate(self.evaluator.atoms_map[atom.name].formula)
-
-    def evaluate(self, formula):
         self.bnf.parseString(formula, True)
+
         return self.evaluate_stack(self.expr_stack)
 
 
 class Evaluator:
-    def __init__(self, df, all_atoms):
+    def __init__(self, model_launcher, df, letter_map):
+        self.model_launcher = model_launcher
         self.df = df
-        self.independent_atoms = [atom for atom in all_atoms if atom.independent]
-        self.dependent_atoms = [atom for atom in all_atoms if not atom.independent]
-        self.atoms_map = {atom.name: atom for atom in all_atoms}
+        self.letter_map = letter_map
+        self.atoms_map = {atom.name: atom for atom in self.model_launcher.get_atoms()}
+        self.parser = NumericStringParser(self)
 
     def evaluate_atom(self, atom):
-        if atom.full_name not in self.df:
-            self.df[atom.full_name] = NumericStringParser(self).evaluate_atom(atom)
+        if str(atom) not in self.df:
+            self.atoms_map[atom.name].evaluate(self, atom.params, str(atom))
 
-        return self.df[atom.full_name]
+        return self.df[str(atom)]
 
     def evaluate(self, formulas):
         for formula in formulas:
-            self.df[formula] = NumericStringParser(self).evaluate(formula)
+            self.df[formula] = self.parser.evaluate(formula)
 
     def get_result(self):
         return self.df
+
+    @staticmethod
+    def merge_dfs(dfa, dfb):
+        return dfa.merge(dfb, 'outer', 'Date', sort=True)

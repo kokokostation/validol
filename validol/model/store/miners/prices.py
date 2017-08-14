@@ -119,5 +119,5 @@ class InvestingPrice(Resource):
         except requests.exceptions.ConnectionError:
             pass
 
-        return Resource.read_dates(self, begin, end)
+        return Resource.read_dates_dt(self, begin, end)
 

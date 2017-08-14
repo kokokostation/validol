@@ -6,7 +6,6 @@ from validol.model.store.miners.weekly_reports.flavors import Cftc, Ice
 from validol.model.store.view.view_flavors import ALL_VIEW_FLAVORS
 
 from validol.model.resource_manager.resource_manager import ResourceManager
-from validol.model.store.collectors.monetary_delta import MonetaryDelta
 from validol.model.store.miners.monetary import Monetary
 from validol.model.store.miners.prices import InvestingPrices
 from validol.model.store.structures.atom import Atoms
@@ -46,7 +45,7 @@ class ModelLauncher:
 
     def update(self):
         try:
-            for cls in (Monetary, MonetaryDelta, Cftc, Ice, IceDaily):
+            for cls in (Monetary, Cftc, Ice, IceDaily):
                 cls(self).update()
             return True
         except requests.exceptions.ConnectionError:
@@ -59,10 +58,10 @@ class ModelLauncher:
         return InvestingPrices(self).get_prices()
 
     def get_atoms(self):
-        return Atoms(self).get_atoms(self.resource_manager.get_primary_atoms())
+        return Atoms(self).get_atoms(ResourceManager.get_primary_atoms())
 
     def write_atom(self, atom_name, named_formula):
-        Atoms(self).write_atom(atom_name, named_formula, self.get_atoms())
+        Atoms(self).write_atom(atom_name, named_formula)
 
     def remove_atom(self, atom_name):
         Atoms(self).remove_atom(atom_name)
@@ -74,7 +73,7 @@ class ModelLauncher:
         return Tables(self).get_table(table_name)
 
     def write_table(self, table_name, formula_groups):
-        Tables(self).write_table(table_name, formula_groups)
+        Tables(self).write_table(table_name, formula_groups, self.get_atoms())
 
     def remove_table(self, name):
         Tables(self).remove_table(name)

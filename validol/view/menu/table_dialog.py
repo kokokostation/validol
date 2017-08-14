@@ -2,14 +2,13 @@ from PyQt5 import QtWidgets, QtGui
 from pyparsing import alphas
 
 from validol.view.view_element import ViewElement
+from validol.model.resource_manager.atom_flavors import Atom
 
 
 class TableDialog(ViewElement, QtWidgets.QWidget):
     def __init__(self, parent, flags, controller_launcher, model_launcher):
         QtWidgets.QWidget.__init__(self, parent, flags)
         ViewElement.__init__(self, controller_launcher, model_launcher)
-
-        self.atoms_map = {}
 
         self.setWindowTitle("Table edit")
 
@@ -21,6 +20,7 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
 
         self.atom_list = QtWidgets.QListWidget()
         self.atom_list.itemDoubleClicked.connect(self.insert_atom)
+        self.atoms_map = {}
         self.refresh_atoms()
 
         self.name = QtWidgets.QLineEdit()
@@ -77,25 +77,20 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
 
         for atom in atoms:
             wi = QtWidgets.QListWidgetItem(atom.name)
-            wi.setToolTip(atom.formula)
+            wi.setToolTip("{}: {}".format(atom, atom.formula))
             self.atom_list.addItem(wi)
 
     def insert_atom(self):
-        atom = self.atom_list.currentItem().text()
+        atom = self.atoms_map[self.atom_list.currentItem().text()]
         mode = self.mode.checkedButton().text()
         letter = self.letters.currentText()
 
-        text = atom
-        if mode == "Table":
-            if not self.atoms_map[atom].independent:
-                text += "(" + letter + ")"
-            text += ","
+        text = str(atom)
+
+        if mode == 'Table':
+            text = text.replace(Atom.LETTER, letter) + ','# немного неправильно
 
         self.mainEdit.insertPlainText(text)
-
-        if mode == "Table" and not letter:
-            for _ in "),":
-                self.mainEdit.moveCursor(QtGui.QTextCursor.Left)
 
         self.mainEdit.setFocus()
 

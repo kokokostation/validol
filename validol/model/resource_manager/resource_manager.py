@@ -1,15 +1,10 @@
-from datetime import date
-
-import numpy as np
-import pandas as pd
 from pyparsing import alphas
+import datetime as dt
 
 from validol.model.resource_manager import evaluator
-from validol.model.store.collectors.monetary_delta import MonetaryDelta
-from validol.model.store.miners.monetary import Monetary
 from validol.model.store.miners.prices import InvestingPrice
 from validol.model.store.resource import Resource
-from validol.model.store.structures import atom
+from validol.model.resource_manager.atom_flavors import MonetaryAtom, MBDeltaAtom, Atom, AtomBase
 from validol.model.store.miners.weekly_reports.flavors import WEEKLY_REPORT_FLAVORS
 import validol.model.store.miners.daily_reports.ice as ice
 
@@ -20,14 +15,14 @@ class ResourceManager:
 
     @staticmethod
     def add_letter(df, letter):
-        return df.rename(str, {name: evaluator.Atom(name, letter).full_name
+        return df.rename(str, {name: str(AtomBase(name, [letter]))
                                for name in df.columns if name != "Date"})
 
     @staticmethod
     def merge_dfs(dfs):
         complete_df = dfs[0]
         for df in dfs[1:]:
-            complete_df = complete_df.merge(df, 'outer', 'Date', sort=True)
+            complete_df = evaluator.Evaluator.merge_dfs(complete_df, df)
 
         return complete_df
 
@@ -49,49 +44,39 @@ class ResourceManager:
 
     def add_prices(self, prices_info, dfs):
         for letter, df, prices_pair_id in zip(alphas, dfs, prices_info):
-            begin, end = map(lambda row: date.fromtimestamp(df.Date.iloc[row]), (0, -1))
-
             prices = InvestingPrice(self.model_launcher, prices_pair_id)
             if prices_pair_id is None:
-                prices_df = pd.DataFrame(columns=[name for name, _ in prices.schema],
-                                         dtype=np.float64)
+                prices_df = prices.empty()
             else:
-                prices_df = prices.read_dates(begin, end)
+                prices_df = prices.read_dates(
+                    *[dt.date.fromtimestamp(df.Date.iloc[i]) for i in (0, -1)])
             dfs.append(ResourceManager.add_letter(prices_df, letter))
 
     def prepare_tables(self, table_pattern, actives_info, prices_info):
+        letter_map = dict(zip(alphas, actives_info))
+
         dfs = self.prepare_actives(actives_info, prices_info)
-
-        global_begin = date.fromtimestamp(min([df.Date[0] for df in dfs if not df.empty]))
-        global_end = date.fromtimestamp(max([df.Date.iloc[-1] for df in dfs if not df.empty]))
-
-        for resource in (Monetary(self.model_launcher),
-                         MonetaryDelta(self.model_launcher)):
-            dfs.append(resource.read_dates(global_begin, global_end))
 
         complete_df = ResourceManager.merge_dfs(dfs)
 
-        evaluator_ = evaluator.Evaluator(complete_df, self.model_launcher.get_atoms())
+        evaluator_ = evaluator.Evaluator(self.model_launcher, complete_df, letter_map)
 
         evaluator_.evaluate(table_pattern.all_formulas())
 
         return evaluator_.get_result()
 
-# ToDo: вынести атомы в сами классы
-    def get_primary_atoms(self):
-        result = []
-
-        for cls in (Monetary, MonetaryDelta, InvestingPrice):
-            result.extend([atom.Atom(name, name, cls.INDEPENDENT)
-                           for name in Resource.get_atoms(cls.SCHEMA)])
+    @staticmethod
+    def get_primary_atoms():
+        result = [MonetaryAtom(), MBDeltaAtom()]
 
         flavor_atom_names = [name
                              for flavor in WEEKLY_REPORT_FLAVORS
                              for name in Resource.get_atoms(flavor.get("schema", []))]
 
-        result.extend([atom.Atom(name, name, False) for name in sorted(set(flavor_atom_names))])
+        names = sorted(set(flavor_atom_names +
+                           Resource.get_atoms(ice.Active.SCHEMA[1:]) +
+                           Resource.get_atoms(InvestingPrice.SCHEMA)))
 
-        result.extend([atom.Atom(name, name, ice.Active.INDEPENDENT)
-                       for name, _ in ice.Active.SCHEMA[1:]])
+        result.extend([Atom(name, None, [Atom.LETTER]) for name in names])
 
         return result
