@@ -1,7 +1,6 @@
 import html
 import io
 from zipfile import ZipFile
-
 import requests
 from requests_cache import enabled
 

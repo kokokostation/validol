@@ -1,10 +1,11 @@
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore, QtWidgets
 from collections import OrderedDict
 
-from validol.model.store.structures.glued_active.glued_active_view import GluedActiveView
 from validol.view.utils.tipped_list import TippedList
 from validol.view.utils.utils import scrollable_area
 from validol.view.view_element import ViewElement
+from validol.model.store.view.active_info import ActiveInfo
+from validol.model.launcher import Update
 
 
 class Window(ViewElement, QtWidgets.QWidget):
@@ -27,18 +28,19 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.searchLine.textChanged.connect(self.search)
         self.searchLine.returnPressed.connect(self.search)
 
-        self.switch_update_button = QtWidgets.QPushButton('Switch update')
-        self.switch_update_button.clicked.connect(self.switch_update)
+        self.new_active_button = QtWidgets.QPushButton('New active')
+        self.new_active_button.clicked.connect(self.new_active)
 
         self.activesListLayout = QtWidgets.QVBoxLayout()
         self.activesListLayout.addWidget(self.searchLine)
         self.activesListLayout.addWidget(self.actives)
-        self.activesListLayout.addWidget(self.switch_update_button)
+        self.activesListLayout.addWidget(self.new_active_button)
 
         self.platforms = QtWidgets.QListWidget()
         self.platforms.currentItemChanged.connect(self.platform_chosen)
 
         self.active_flavors = QtWidgets.QListWidget()
+        self.active_flavors.itemDoubleClicked.connect(self.submit_active)
 
         self.flavors = QtWidgets.QListWidget()
         self.flavors.currentItemChanged.connect(self.flavor_chosen)
@@ -61,7 +63,12 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.createTable.clicked.connect(self.create_table)
 
         self.updateButton = QtWidgets.QPushButton('Update')
-        self.updateButton.clicked.connect(self.on_update)
+        self.updateButton.clicked.connect(
+            lambda: self.on_update(Update.WEEKLY, self.updateButton))
+
+        self.update_daily_button = QtWidgets.QPushButton('Update daily')
+        self.update_daily_button.clicked.connect(
+            lambda: self.on_update(Update.DAILY, self.update_daily_button))
 
         self.removeTable = QtWidgets.QPushButton('Remove table')
         self.removeTable.clicked.connect(self.remove_table)
@@ -70,6 +77,7 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.leftLayout.addWidget(self.flavors)
         self.leftLayout.addWidget(self.active_flavors)
         self.leftLayout.addWidget(self.updateButton)
+        self.leftLayout.addWidget(self.update_daily_button)
 
         self.cached_prices = QtWidgets.QListWidget()
         self.set_cached_prices()
@@ -87,18 +95,14 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.lists_layout = QtWidgets.QHBoxLayout()
 
-        self.glue_layout = QtWidgets.QVBoxLayout()
-        self.glue_name = QtWidgets.QLineEdit()
-        self.glue_button = QtWidgets.QPushButton('Glue actives')
-        self.glue_button.clicked.connect(self.glue)
-        self.remove_glue = QtWidgets.QPushButton('Remove glued active')
-        self.remove_glue.clicked.connect(self.remove_glued_active)
+        self.remove_active_button = QtWidgets.QPushButton('Remove active')
+        self.remove_active_button.clicked.connect(self.remove_active)
 
         self.rightLayout = QtWidgets.QVBoxLayout()
         self.rightLayout.addWidget(self.cached_prices)
         self.rightLayout.addWidget(self.tipped_list.list)
         self.rightLayout.addWidget(self.removeTable)
-        self.rightLayout.addWidget(self.remove_glue)
+        self.rightLayout.addWidget(self.remove_active_button)
         self.rightLayout.addWidget(self.tipped_list.view)
         self.rightLayout.addWidget(self.createTable)
 
@@ -107,9 +111,7 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.actives_layout_lines = []
         self.chosen_actives = []
 
-        self.actives_layout.addWidget(self.clear, alignment=QtCore.Qt.AlignTop)
-        self.actives_layout.addWidget(self.glue_name, alignment=QtCore.Qt.AlignBottom)
-        self.actives_layout.addWidget(self.glue_button)
+        self.actives_layout.addWidget(self.clear)
 
         self.lists_layout.insertLayout(0, self.leftLayout)
         self.lists_layout.addWidget(self.platforms)
@@ -122,11 +124,11 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.showMaximized()
 
-    def switch_update(self):
-        self.current_flavor().switch_update(
+    def new_active(self):
+        self.current_flavor().new_active(
             self.platforms.currentItem().toolTip(),
-            self.actives.currentItem().text(),
-            self.model_launcher)
+            self.model_launcher,
+            self.controller_launcher)
 
         self.platform_chosen()
 
@@ -147,19 +149,10 @@ class Window(ViewElement, QtWidgets.QWidget):
         if not active_flavors.empty:
             self.active_flavors.setCurrentRow(0)
 
-    def glue(self):
-        if self.glue_name.text():
-            self.model_launcher.write_glued_active(self.glue_name.text(), self.chosen_actives)
-            self.glue_name.clear()
+    def remove_active(self):
+        self.current_flavor().remove_active(self.active_info(), self.model_launcher)
 
-            self.platform_chosen()
-
-    def remove_glued_active(self):
-        active = self.actives.currentItem()
-        if isinstance(self.current_flavor(), GluedActiveView) and active is not None:
-            self.model_launcher.remove_glued_active(active.text())
-
-            self.platform_chosen()
+        self.platform_chosen()
 
     def remove_table(self):
         self.model_launcher.remove_table(self.tipped_list.list.currentItem().text())
@@ -184,13 +177,17 @@ class Window(ViewElement, QtWidgets.QWidget):
             wi.setToolTip(value["url"])
             self.cached_prices.addItem(wi)
 
-    def submit_active(self):
+    def active_info(self):
         active_flavor = self.active_flavors.currentItem().text() \
             if self.active_flavors.currentItem() is not None else None
-        self.chosen_actives.append([self.current_flavor(),
-                                    self.platforms.currentItem().toolTip(),
-                                    self.actives.currentItem().text(),
-                                    active_flavor])
+
+        return ActiveInfo(self.current_flavor(),
+                          self.platforms.currentItem().toolTip(),
+                          self.actives.currentItem().text(),
+                          active_flavor)
+
+    def submit_active(self):
+        self.chosen_actives.append(self.active_info())
 
         self.actives_layout_widgets.append((QtWidgets.QLineEdit(),
                                             QtWidgets.QLineEdit(),
@@ -217,8 +214,7 @@ class Window(ViewElement, QtWidgets.QWidget):
         for w in last_line_widgets:
             last_line.addWidget(w)
 
-        self.actives_layout.insertLayout(
-            len(self.actives_layout_lines), last_line)
+        self.actives_layout.insertLayout(len(self.actives_layout_lines), last_line)
 
     def submit_cached(self, lineEdit, listWidget):
         lineEdit.setText(listWidget.currentItem().toolTip())
@@ -247,8 +243,6 @@ class Window(ViewElement, QtWidgets.QWidget):
         for _, active in self.current_flavor()\
                 .actives(self.platforms.currentItem().toolTip(), self.model_launcher).iterrows():
             wi = QtWidgets.QListWidgetItem(active.ActiveName)
-            if 'Updatable' in active and active.Updatable == 0:
-                wi.setBackground(QtGui.QColor(250, 200, 200))
             self.actives.addItem(wi)
 
     def clear_active(self, vbox):
@@ -280,13 +274,14 @@ class Window(ViewElement, QtWidgets.QWidget):
     def create_table(self):
         self.controller_launcher.show_table_dialog()
 
-    def on_update(self):
-        self.updateButton.setText("Wait a sec. Updating the data...")
+    def on_update(self, how, button):
+        text = button.text()
+        button.setText("Wait a sec. Updating the data...")
         self.app.processEvents()
-        if not self.controller_launcher.update_data():
+        if not self.controller_launcher.update_data(how):
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             msg.setText("Unable to update due to network error")
             msg.setWindowTitle("Network error")
             msg.exec_()
-        self.updateButton.setText("Update")
+        button.setText(text)

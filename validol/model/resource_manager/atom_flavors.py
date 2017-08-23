@@ -1,13 +1,43 @@
 from itertools import groupby
+from sqlalchemy import Column, String
+import pandas as pd
+from copy import deepcopy
+from dateutil.relativedelta import relativedelta
 
-from validol.model.resource_manager.evaluator import Evaluator, NumericStringParser
 from validol.model.store.miners.monetary import Monetary
 from validol.model.store.structures.structure import Base, JSONCodec
-from sqlalchemy import Column, String
-from validol.model.resource_manager.atom_base import AtomBase
+from validol.model.resource_manager.atom_base import AtomBase, rangable
+from validol.model.utils import to_timestamp, merge_dfs_list
+from validol.model.store.miners.daily_reports.expirations import Expirations
+from validol.model.store.structures.pdf_helper import PdfHelpers
 
 
-class Atom(Base, AtomBase):
+class LazyAtom(AtomBase):
+    @rangable
+    def evaluate(self, evaluator, params):
+        name = str(AtomBase(self.name, params))
+        df = evaluator.df
+
+        if name in df:
+            begin, end = [to_timestamp(a) for a in evaluator.range]
+
+            return df[name][(begin <= df.index) & (df.index <= end)]
+        else:
+            return pd.Series()
+
+
+class MonetaryAtom(AtomBase):
+    def __init__(self):
+        AtomBase.__init__(self, "MBase", [])
+
+    @rangable
+    def evaluate(self, evaluator, params):
+        df = Monetary(evaluator.model_launcher).read_dates_dt(*evaluator.range)
+
+        return df.MBase
+
+
+class FormulaAtom(Base, AtomBase):
     __tablename__ = "atoms"
     name = Column(String, primary_key=True)
     formula = Column(String)
@@ -20,34 +50,20 @@ class Atom(Base, AtomBase):
 
         self.formula = formula
 
-    def evaluate(self, evaluator, params, name):
-        raise NotImplementedError
-
-
-class MonetaryAtom(Atom):
-    def __init__(self):
-        Atom.__init__(self, "MBase", None, [])
-
-    def evaluate(self, evaluator, params, name):
-        df = Monetary(evaluator.model_launcher).read_dates_ts(evaluator.df.Date.iloc[0],
-                                                                evaluator.df.Date.iloc[-1])
-
-        evaluator.df = Evaluator.merge_dfs(evaluator.df, df.rename({"MBase": name}))
-
-
-class FormulaAtom(Atom):
-    def evaluate(self, evaluator, params, name):
+    @rangable
+    def evaluate(self, evaluator, params):
         params_map = dict(zip(self.params, params))
 
-        evaluator.df[name] = evaluator.parser.evaluate(self.formula, params_map)
+        return evaluator.parser.evaluate(self.formula, params_map)
 
 
-class MBDeltaAtom(Atom):
+class MBDeltaAtom(AtomBase):
     def __init__(self):
-        Atom.__init__(self, "MBDelta", None, [])
+        AtomBase.__init__(self, "MBDelta", [])
 
-    def evaluate(self, evaluator, params, name):
-        df = Monetary(evaluator.model_launcher).read_dates_ts()
+    @rangable
+    def evaluate(self, evaluator, params):
+        df = MonetaryAtom().evaluate(evaluator, params)
         mbase = df.MBase
 
         grouped_mbase = [(mbase[0], 1)] + [(k, len(list(g))) for k, g in groupby(mbase)]
@@ -61,4 +77,62 @@ class MBDeltaAtom(Atom):
 
         df.MBase = deltas
 
-        evaluator.df = Evaluator.merge_dfs(evaluator.df, df.rename({"MBase": name}))
+        return df.MBase
+
+
+class Apply(AtomBase):
+    def __init__(self):
+        AtomBase.__init__(self, 'APPLY', ['...'])
+
+    def evaluate(self, evaluator, params):
+        return evaluator.atoms_map[params[0]].evaluate(evaluator, params[1:])
+
+
+class Merge(AtomBase):
+    def __init__(self):
+        AtomBase.__init__(self, 'MERGE', ['df'])
+
+    def evaluate(self, evaluator, params):
+        return merge_dfs_list([param.to_frame('i') for param in params])['i']
+
+
+class Curr(AtomBase):
+    def __init__(self):
+        AtomBase.__init__(self, 'CURR', ['@atom', FormulaAtom.LETTER, '@delta'])
+
+    def evaluate(self, evaluator, params):
+        ai = evaluator.letter_map[params[1]]
+
+        atom_info = ai.flavor.get_full_df(ai, evaluator.model_launcher)
+        atom_info['CONTRACT'] = atom_info['CONTRACT'].apply(Expirations.from_contract)
+
+        exp = evaluator.model_launcher.get_exp_info(ai)
+        exp_info = Expirations(evaluator.model_launcher).read_df('''
+            SELECT
+                Date, Contract
+            FROM
+                {table}
+            WHERE
+                PlatformCode = ? AND ActiveName = ? AND ActiveCode = ? AND Event = 'LTD'
+        ''', params=(exp['PlatformCode'], exp['ActiveName'], exp['ActiveCode']))
+        exp_info['Contract'] = exp_info['Contract'].apply(Expirations.from_contract)
+
+        result = pd.DataFrame()
+
+        for i in range(1, len(exp_info)):
+            begin, end = exp_info.index[i - 1], exp_info.index[i]
+
+            curr_contract = exp_info['Contract'].iloc[i] + relativedelta(months=int(params[2]))
+
+            df = atom_info[
+                (begin <= atom_info.index) &
+                (atom_info.index < end) &
+                (atom_info.CONTRACT == curr_contract)
+            ]
+
+            result = result.append(df)
+
+        if not result.empty:
+            return result[params[0]]
+        else:
+            return pd.Series()

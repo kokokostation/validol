@@ -1,23 +1,15 @@
 import pandas as pd
-
-from validol.model.store.structures.structure import Structure, Base, JSONCodec
 from sqlalchemy import Column, String
 
-
-def pre_dump(info):
-    return [[x[0].name()] + x[1:] for x in info]
-
-
-def post_load(info):
-    from validol.model.store.view.view_flavors import VIEW_FLAVORS_MAP
-
-    return [[VIEW_FLAVORS_MAP[x[0]]] + x[1:] for x in info]
+from validol.model.store.structures.structure import Structure, Base, JSONCodec
+from validol.model.utils import merge_dfs_list
+from validol.model.store.view.active_info import ActiveInfoSchema
 
 
 class GluedActive(Base):
     __tablename__ = "glued_actives"
     name = Column(String, primary_key=True)
-    info = Column(JSONCodec(pre_dump=pre_dump, post_load=post_load))
+    info = Column(JSONCodec(ActiveInfoSchema))
 
     def __init__(self, name, info):
         self.name = name
@@ -28,25 +20,7 @@ class GluedActive(Base):
 
         dfs = ResourceManager(model_launcher).prepare_actives(self.info)
 
-        result = dfs[0]
-        for df in dfs[1:]:
-            result = GluedActive.merge_dfs(result, df)
-
-        return result
-
-    @staticmethod
-    def merge_dfs(dfa, dfb):
-        suffix = "_y"
-
-        merged = dfa.merge(dfb, 'outer', 'Date', sort=True, suffixes=("", suffix))
-
-        intersection = set(dfa.columns) & set(dfb.columns) - {"Date"}
-
-        for col in intersection:
-            merged[col].fillna(merged[col + suffix], inplace=True)
-            del merged[col + suffix]
-
-        return merged
+        return merge_dfs_list(dfs)
 
     @staticmethod
     def get_df(model_launcher, active):

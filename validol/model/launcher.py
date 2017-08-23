@@ -2,22 +2,31 @@ import os
 import sqlite3
 import requests
 from sqlalchemy import create_engine
+
 from validol.model.store.miners.weekly_reports.flavors import Cftc, Ice
 from validol.model.store.view.view_flavors import ALL_VIEW_FLAVORS
-
 from validol.model.resource_manager.resource_manager import ResourceManager
 from validol.model.store.miners.monetary import Monetary
 from validol.model.store.miners.prices import InvestingPrices
 from validol.model.store.structures.atom import Atoms
 from validol.model.store.structures.glued_active.glued_active import GluedActives
-from validol.model.store.structures.pattern import Patterns
+from validol.model.store.structures.pattern import Patterns, StrPattern
 from validol.model.store.structures.table import Tables
 from validol.model.store.miners.daily_reports.ice import IceDaily
+from validol.model.store.miners.daily_reports.cme import CmeDaily
+from validol.model.store.structures.pdf_helper import PdfHelpers
+from validol.model.store.miners.daily_reports.expirations import Expirations
+
+
+class Update:
+    DAILY = [IceDaily, CmeDaily, Expirations]
+    WEEKLY = [Monetary, Cftc, Ice, IceDaily, CmeDaily, Expirations]
 
 
 class ModelLauncher:
-    def init_user(self, user_dbh='user.db'):
-        self.user_dbh = create_engine('sqlite:///{}'.format(user_dbh))
+    def init_user(self, user_db='user.db'):
+        self.user_engine = create_engine('sqlite:///{}'.format(user_db))
+        self.user_dbh = sqlite3.connect(user_db)
 
         self.resource_manager = ResourceManager(self)
 
@@ -34,18 +43,20 @@ class ModelLauncher:
         if not os.path.isfile(main_dbh):
             self.main_dbh = sqlite3.connect(":memory:")
 
-            self.update()
+            self.update(Update.WEEKLY)
 
             with sqlite3.connect(main_dbh) as new_db:
                 new_db.executescript("".join(self.main_dbh.iterdump()))
 
         self.main_dbh = sqlite3.connect(main_dbh)
 
+        self.cache_engine = create_engine('sqlite:///cache.sqlite')
+
         return self
 
-    def update(self):
+    def update(self, clss):
         try:
-            for cls in (Monetary, Cftc, Ice, IceDaily):
+            for cls in clss:
                 cls(self).update()
             return True
         except requests.exceptions.ConnectionError:
@@ -87,8 +98,8 @@ class ModelLauncher:
     def write_pattern(self, pattern):
         Patterns(self).write_pattern(pattern)
 
-    def remove_pattern(self, table_name, pattern_name):
-        Patterns(self).remove_pattern(table_name, pattern_name)
+    def remove_pattern(self, pattern):
+        Patterns(self).remove(pattern)
 
     def prepare_tables(self, table_pattern, actives_info, prices_info):
         return self.resource_manager.prepare_tables(table_pattern, actives_info, prices_info)
@@ -98,3 +109,21 @@ class ModelLauncher:
 
     def remove_glued_active(self, name):
         GluedActives(self).remove_by_name(name)
+
+    def write_pdf_helper(self, ai, info, other_info):
+        PdfHelpers(self).write_helper(ai, info, other_info)
+
+    def read_pdf_helper(self, ai):
+        PdfHelpers(self).read_by_name(ai)
+
+    def remove_pdf_helper(self, ai):
+        PdfHelpers(self).remove_by_name(ai)
+
+    def get_exp_info(self, ai):
+        return PdfHelpers(self).read_by_name(ai).other_info['expirations']
+
+    def read_str_pattern(self, pattern):
+        return Patterns(self, StrPattern).read_pattern(pattern.table_name, pattern.name)
+
+    def write_str_pattern(self, pattern):
+        return Patterns(self, StrPattern).write_pattern(pattern)

@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets, QtGui
 from pyparsing import alphas
 
 from validol.view.view_element import ViewElement
-from validol.model.resource_manager.atom_flavors import Atom
+from validol.model.resource_manager.atom_flavors import FormulaAtom
 
 
 class TableDialog(ViewElement, QtWidgets.QWidget):
@@ -76,8 +76,12 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         self.atoms_map = {atom.name: atom for atom in atoms}
 
         for atom in atoms:
+            formula = 'primary'
+            if isinstance(atom, FormulaAtom):
+                formula = atom.formula
+
             wi = QtWidgets.QListWidgetItem(atom.name)
-            wi.setToolTip("{}: {}".format(atom, atom.formula))
+            wi.setToolTip("{}: {}".format(atom, formula))
             self.atom_list.addItem(wi)
 
     def insert_atom(self):
@@ -88,7 +92,7 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         text = str(atom)
 
         if mode == 'Table':
-            text = text.replace(Atom.LETTER, letter) + ','# немного неправильно
+            text = text.replace(FormulaAtom.LETTER, letter) + ','# немного неправильно
 
         self.mainEdit.insertPlainText(text)
 

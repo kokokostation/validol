@@ -1,12 +1,14 @@
 import sys
-
 from PyQt5 import QtCore, QtWidgets
+
 from validol.view.graph.graphs import CheckedGraph
 from validol.view.menu.graph_dialog import GraphDialog
 from validol.view.menu.main_window import Window
 from validol.view.menu.table_dialog import TableDialog
 from validol.view.table.tables import Table
 from validol.view.view_element import ViewElement
+from validol.view.menu.pdf_helper_dialog import PdfHelperDialog
+from validol.view.menu.glued_active_dialog import GluedActiveDialog
 
 
 class ViewLauncher(ViewElement):
@@ -49,3 +51,15 @@ class ViewLauncher(ViewElement):
         self.table_dialogs.append(
             TableDialog(self.main_window, ViewLauncher.FLAGS, self.controller_launcher,
                         self.model_launcher))
+
+    def show_pdf_helper_dialog(self, processors, widgets):
+        return PdfHelperDialog(processors, widgets).get_data()
+
+    def refresh_actives(self):
+        self.main_window.platform_chosen()
+
+    def get_chosen_actives(self):
+        return self.main_window.chosen_actives
+
+    def ask_name(self):
+        return GluedActiveDialog().get_data()

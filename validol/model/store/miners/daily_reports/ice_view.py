@@ -1,23 +1,63 @@
-from validol.model.store.view.view_flavor import ViewFlavor
-from validol.model.store.miners.daily_reports.ice import IceActives, Active
-from validol.model.store.miners.weekly_reports.flavor import Platforms
+from PyQt5.QtWidgets import QComboBox
+import pandas as pd
+
+from validol.model.store.miners.daily_reports.ice import IceActives, Active, IceAllActives
+from validol.model.store.miners.daily_reports.expirations import Expirations
+from validol.model.store.miners.daily_reports.pdf_helpers.ice import IceParser
+from validol.model.store.miners.daily_reports.daily_view import DailyView, active_df_tolist
+from validol.model.store.view.active_info import ActiveInfo
 
 
-class IceView(ViewFlavor):
-    def name(self):
-        return Active.FLAVOR
+class IceView(DailyView):
+    def __init__(self):
+        DailyView.__init__(self, Active, IceActives)
 
-    def platforms(self, model_launcher):
-        return Platforms(model_launcher, Active.FLAVOR).get_platforms()
+    def new_active(self, platform, model_launcher, controller_launcher):
+        actives = IceAllActives(model_launcher).get_actives(platform)
 
-    def actives(self, platform, model_launcher):
-        return IceActives(model_launcher).get_actives(platform)
+        expirations_w = QComboBox()
 
-    def active_flavors(self, platform, active, model_launcher):
-        return Active(model_launcher, platform, active).get_flavors()
+        curr_expirations = pd.DataFrame()
 
-    def get_df(self, platform, active, active_flavor, model_launcher):
-        return Active(model_launcher, platform, active).get_flavor(active_flavor)
+        def change_expirations(a0):
+            nonlocal curr_expirations
 
-    def switch_update(self, platform, active, model_launcher):
-        Active(model_launcher, platform, active).switch_update()
+            curr_expirations = Expirations(model_launcher).read_df(
+                '''
+                SELECT DISTINCT
+                    PlatformCode, ActiveCode, ActiveName
+                FROM
+                    {table}
+                WHERE
+                    PlatformCode = ? AND ActiveCode = ?''',
+                params=(actives.loc[a0, 'PlatformCode'], actives.loc[a0, 'ActiveCode']),
+                index_on=False)
+
+            expirations_w.clear()
+            expirations_w.addItems(active_df_tolist(curr_expirations))
+
+        actives_w = QComboBox()
+        actives_w.addItems(active_df_tolist(actives))
+        actives_w.currentIndexChanged.connect(change_expirations)
+        actives_w.activated.connect(change_expirations)
+
+        processors = [processor.NAME for processor in (IceParser,)]
+
+        info = controller_launcher.show_pdf_helper_dialog(processors, [actives_w, expirations_w])
+
+        if info is None:
+            return
+
+        active = actives.iloc[actives_w.currentIndex()]
+
+        IceActives(model_launcher).write_df(pd.DataFrame([active]))
+
+        model_launcher.write_pdf_helper(
+            ActiveInfo(self, platform, active.ActiveName),
+            info,
+            {
+                'active_code': active.ActiveCode,
+                'expirations': curr_expirations.iloc[expirations_w.currentIndex()].to_dict()
+            })
+
+        controller_launcher.refresh_actives()

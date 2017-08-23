@@ -37,4 +37,4 @@ class Monetary(Resource):
 
     def fill(self, first, last):
         df = self.initial_fill()
-        return df[(first < df["Date"]) & (df["Date"] <= last)]
+        return df[(first <= df["Date"]) & (df["Date"] <= last)]

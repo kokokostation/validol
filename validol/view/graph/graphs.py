@@ -12,6 +12,7 @@ from validol.model.utils import remove_duplications
 from validol.model.utils import to_timestamp
 from validol.view.utils.utils import set_title
 from validol.view.utils.pattern_tree import PatternTree
+from validol.model.utils import merge_dfs
 
 
 def negate(color):
@@ -92,21 +93,20 @@ class ScatteredPlot:
 
 class DaysMap:
     def __init__(self, df, pattern):
-        self.start = dt.date.fromtimestamp(df.Date.iloc[0])
+        self.start = dt.date.fromtimestamp(df.index[0])
 
-        days_num = (dt.date.fromtimestamp(df.Date.iloc[-1]) - self.start).days + 1 + 10
+        days_num = (dt.date.fromtimestamp(df.index[-1]) - self.start).days + 1 + 10
         all_dates = [to_timestamp(self.start + dt.timedelta(days=i)) for i in range(0, days_num)]
 
-        self.days_map = pd.DataFrame(all_dates, columns=["Date"])
-
-        self.days_map = self.days_map\
-            .merge(df[['Date'] + remove_duplications(pattern.get_formulas())],
-                   'outer', 'Date', sort=True)\
+        self.days_map = merge_dfs(pd.DataFrame(index=all_dates),
+                                  df[remove_duplications(pattern.get_formulas())])\
             .fillna(method='ffill', axis=0)
+
+        self.days_map.index = np.arange(len(self.days_map))
 
     def get_value(self, index, key):
         if 0 <= index < len(self.days_map[key]):
-            return self.days_map[key][index]
+            return self.days_map.loc[index, key]
 
     def days_passed(self, timestamp):
         try:
@@ -149,7 +149,7 @@ class Graph(pg.GraphicsWindow):
             bar_width = 0.9 * week / bases_num
 
         for piece in pieces:
-            xs = self.df["Date"].tolist()
+            xs = self.df.index.tolist()
             ys = self.df[piece.atom_id].tolist()
 
             if isinstance(piece, Line):
@@ -220,7 +220,7 @@ class Graph(pg.GraphicsWindow):
                 plots[i].setXLink(plots[j])
 
         if plots:
-            plots[0].setXRange(self.df.Date.iloc[0], self.df.Date.iloc[-1])
+            plots[0].setXRange(self.df.index[0], self.df.index[-1])
 
         vLines = []
         hLines = []

@@ -57,12 +57,14 @@ Base = declarative_base()
 
 
 class Structure:
-    def __init__(self, klass, model_launcher):
+    def __init__(self, klass, model_launcher, engine=None):
         self.klass = klass
         self.model_launcher = model_launcher
+        if engine is None:
+            engine = self.model_launcher.user_engine
 
-        self.klass.__table__.create(bind=self.model_launcher.user_dbh, checkfirst=True)
-        self.Session = sessionmaker(bind=self.model_launcher.user_dbh, expire_on_commit=False)
+        self.klass.__table__.create(bind=engine, checkfirst=True)
+        self.Session = sessionmaker(bind=engine, expire_on_commit=False)
 
     @with_session
     def write(self, session, item):
@@ -81,11 +83,15 @@ class Structure:
         return self.read(self.klass.name == name)[0]
 
     @with_session
-    def remove_by_pred(self, session, pred):
+    def remove_by_pred(self, session, pred=None):
         session\
             .query(self.klass)\
             .filter(pred)\
             .delete(synchronize_session=False)
+
+    @with_session
+    def remove(self, session, item):
+        session.delete(item)
 
     def remove_by_name(self, name):
         self.remove_by_pred(self.klass.name == name)
@@ -93,3 +99,10 @@ class Structure:
     @property
     def session(self):
         return self.Session()
+
+    @with_session
+    def one_or_none(self, session):
+        try:
+            return session.query(self.klass).one_or_none()
+        except:
+            return None

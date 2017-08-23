@@ -102,11 +102,6 @@ def date_to_timestamp(df):
     return df
 
 
-def date_from_timestamp(df):
-    df.Date = df.apply(lambda row: dt.date.fromtimestamp(row['Date']), axis=1)
-    return df
-
-
 def remove_duplications(arr):
     s = set()
     result = []
@@ -118,14 +113,14 @@ def remove_duplications(arr):
     return result
 
 
-def pdf(pages, fname):
+def pdf(fname, pages, spreadsheet):
     df = pd.DataFrame()
 
     for page, area in pages:
         df = df.append(read_pdf(fname,
                                 pages=page,
                                 area=area,
-                                spreadsheet=True,
+                                spreadsheet=spreadsheet,
                                 pandas_options={'header': None}))
 
     return df
@@ -133,3 +128,41 @@ def pdf(pages, fname):
 
 def date_range(first, last):
     return [first + dt.timedelta(i) for i in range(0, (last - first).days + 1)]
+
+
+def merge_dfs(dfa, dfb):
+    suffix = "_y"
+
+    merged = dfa.merge(dfb, 'outer', left_index=True, right_index=True,
+                       sort=True, suffixes=("", suffix))
+
+    intersection = set(dfa.columns) & set(dfb.columns)
+
+    for col in intersection:
+        merged[col].fillna(merged[col + suffix], inplace=True)
+        del merged[col + suffix]
+
+    return merged
+
+
+def merge_dfs_list(dfs):
+    result = dfs[0]
+    for df in dfs[1:]:
+        result = merge_dfs(result, df)
+
+    return result
+
+
+def isfile(ftp, file):
+    try:
+        ftp.size(file)
+        return True
+    except:
+        return False
+
+
+def concat(dfs):
+    if dfs:
+        return pd.concat(dfs)
+    else:
+        return pd.DataFrame()

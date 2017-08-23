@@ -1,6 +1,7 @@
 from validol.model.store.structures.structure import Structure, Base, JSONCodec
 from sqlalchemy import Column, String
 from marshmallow import Schema, fields, post_load, pre_dump
+from sqlalchemy.ext.declarative import declarative_base
 
 
 class Piece:
@@ -112,26 +113,27 @@ class Pattern(Base):
     def get_formulas(self):
         return [piece.atom_id for graph in self.graphs for lr in graph.pieces for piece in lr]
 
-    @staticmethod
-    def name_pred(table_name, name):
-        return (Pattern.table_name == table_name) & (Pattern.name == name)
+
+class StrPattern(declarative_base()):
+    __tablename__ = Pattern.__tablename__
+    graphs = Column(String)
+    table_name = Column(String, primary_key=True)
+    name = Column(String, primary_key=True)
 
 
 class Patterns(Structure):
-    def __init__(self, model_launcher):
-        Structure.__init__(self, Pattern, model_launcher)
+    def __init__(self, model_launcher, cls=Pattern):
+        self.cls = cls
+        Structure.__init__(self, self.cls, model_launcher)
 
     def get_patterns(self, table_name):
-        return [pattern for pattern in self.read() if pattern.table_name == table_name]
+        return self.read(self.cls.table_name == table_name)
 
     def write_pattern(self, pattern):
         self.write(pattern)
 
-    def remove_pattern(self, table_name, name):
-        self.remove_by_pred(Pattern.name_pred(table_name, name))
-
     def read_pattern(self, table_name, name):
-        self.read(Pattern.name_pred(table_name, name))
+        return self.read((self.cls.table_name == table_name) & (self.cls.name == name))[0]
 
     def remove_table_patterns(self, table_name):
-        self.remove_by_pred(Pattern.table_name == table_name)
+        self.remove_by_pred(self.cls.table_name == table_name)

@@ -1,7 +1,7 @@
 from PyQt5 import QtCore
 
 
-class ButtonGroup():
+class ButtonGroup:
     def __init__(self):
         self.buttons = []
         self.last = None

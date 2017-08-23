@@ -16,7 +16,8 @@ setup(
         'lxml',
         'beautifulsoup4',
         'marshmallow',
-        'tabula-py'
+        'tabula-py',
+        'python-dateutil'
     ],
     entry_points={
         'console_scripts': [

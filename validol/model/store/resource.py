@@ -1,4 +1,4 @@
-from datetime import date
+import datetime as dt
 import pandas as pd
 import numpy as np
 
@@ -39,8 +39,16 @@ class Table:
     def write_df(self, df):
         df.to_sql(self.table, self.dbh, if_exists='append', index=False)
 
-    def read_df(self):
-        return pd.read_sql('SELECT * FROM "{table}"'.format(table=self.table), self.dbh)
+    def read_df(self, query=None, **kwargs):
+        if query is None:
+            query = 'SELECT * FROM "{table}"'
+        return pd.read_sql(query.format(table=self.table), self.dbh, **kwargs)
+
+    def drop(self):
+        self.dbh.cursor.execute('''
+            DROP TABLE IF EXISTS
+                "{table}"
+        '''.format(table=self.table))
 
 
 class Resource(Table):
@@ -51,8 +59,8 @@ class Resource(Table):
     def update(self):
         first, last = self.range()
         if last:
-            if last != date.today():
-                self.write_df(self.fill(last, date.today()))
+            if last != dt.date.today():
+                self.write_df(self.fill(last + dt.timedelta(days=1), dt.date.today()))
         else:
             self.write_df(self.initial_fill())
 
@@ -74,7 +82,7 @@ class Resource(Table):
         item = c.fetchone()
 
         if item != (None,) * 2:
-            return map(date.fromtimestamp, item)
+            return map(dt.date.fromtimestamp, item)
         else:
             return item
 
@@ -85,24 +93,34 @@ class Resource(Table):
     def read_dates_dt(self, *args):
         return self.read_dates_ts(*map(to_timestamp, args))
 
-    def read_dates_ts(self, begin=None, end=to_timestamp(date.today())):
+    def read_dates_ts(self, begin=None, end=None):
         query = '''
             SELECT 
                 * 
             FROM 
                 "{table}"'''.format(table=self.table)
 
-        params = None
+        cp = list(zip(*[(clause, int(param))
+                        for clause, param in (('Date >= ?', begin), ('Date <= ?', end))
+                        if param is not None]))
 
-        if begin:
-            query += '''
-            WHERE
-                Date >= ? AND
-                Date <= ?'''
+        if cp:
+            clauses, params = cp
 
-            params = begin, end
+            query += 'WHERE {}'.format(' AND '.join(clauses))
+        else:
+            params = None
 
-        df = pd.read_sql(query, self.dbh, params=params)
+        return self.read_df(query, params=params)
+
+    def read_df(self, query=None, index_on=True, **kwargs):
+        if index_on:
+            kwargs['index_col'] = 'Date'
+
+        df = super().read_df(query, **kwargs)
+
+        if index_on:
+            df.sort_index(inplace=True)
 
         return df
 

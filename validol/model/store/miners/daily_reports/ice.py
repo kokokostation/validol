@@ -3,35 +3,11 @@ from bs4 import BeautifulSoup
 from requests_cache import CachedSession
 from requests import Request
 import pandas as pd
-import os
-from tempfile import NamedTemporaryFile
-import re
-import locale
-from locale import atof
 
-from validol.model.utils import pdf, to_timestamp, date_range
-from validol.model.store.resource import Resource
 from validol.model.store.miners.weekly_reports.flavor import Actives, Platforms
-
-
-class IceActives(Actives):
-    def __init__(self, model_launcher):
-        Actives.__init__(self, model_launcher, Active.FLAVOR,
-                         [
-                             ('ActiveCode', 'TEXT'),
-                             ('Updatable', 'INTEGER')
-                         ])
-
-    def set_update(self, platform_code, active_name, updatable):
-        self.dbh.cursor().execute('''
-            UPDATE 
-                "{table}"
-            SET
-                Updatable = ?
-            WHERE
-                PlatformCode = ? AND ActiveName = ?
-        '''.format(table=self.table), (updatable, platform_code, active_name))
-        self.dbh.commit()
+from validol.model.store.view.active_info import ActiveInfo
+from validol.model.store.structures.pdf_helper import PdfHelpers
+from validol.model.store.miners.daily_reports.daily import DailyResource
 
 
 class IceDaily:
@@ -39,10 +15,9 @@ class IceDaily:
         self.model_launcher = model_launcher
 
     def update_actives(self, df):
-        df['Updatable'] = 0
         df['PlatformCode'] = 'IFEU'
 
-        IceActives(self.model_launcher).write_df(df)
+        IceAllActives(self.model_launcher).write_df(df)
 
     def prepare_update(self):
         platforms_table = Platforms(self.model_launcher, Active.FLAVOR)
@@ -70,7 +45,10 @@ class IceDaily:
         bs = BeautifulSoup(response.text)
 
         df = pd.DataFrame([(opt['value'], opt.text) for opt in bs.find_all('option')],
-                          columns=["ActiveCode", "ActiveName"])
+                          columns=["WebActiveCode", "ActiveName"])
+
+        df['ActiveCode'] = df.WebActiveCode.apply(lambda s: s.split('|', 1)[1] if '|' in s else None)
+        df = df.dropna(how='any')
 
         self.update_actives(df)
 
@@ -79,63 +57,27 @@ class IceDaily:
     def update(self):
         session = self.prepare_update()
 
+        from validol.model.store.miners.daily_reports.ice_view import IceView
+
         for index, active in IceActives(self.model_launcher).read_df().iterrows():
-            if active.Updatable == 1:
-                Active(self.model_launcher,
-                       active.PlatformCode,
-                       active.ActiveName,
-                       session).update()
+            pdf_helper = PdfHelpers(self.model_launcher).read_by_name(
+                ActiveInfo(IceView(), active.PlatformCode, active.ActiveName))
+
+            Active(self.model_launcher, active.PlatformCode, active.ActiveName, session,
+                   pdf_helper).update()
 
 
-class Active(Resource):
-    FLAVOR = 'ice_futures_daily'
-    SCHEMA = [
-        ('CONTRACT', 'TEXT'),
-        ('SET', 'REAL'),
-        ('CHG', 'REAL'),
-        ('VOL', 'INTEGER'),
-        ('OI', 'INTEGER'),
-        ('OIChg', 'INTEGER')
-    ]
-    PARSING_MAP = {
-        1: 'CONTRACT',
-        6: 'SET',
-        7: 'CHG',
-        8: 'VOL',
-        9: 'OI',
-        10: 'OIChg'
-    }
-    INDEPENDENT = False
+class Active(DailyResource):
+    FLAVOR = 'ice_daily'
 
-    def __init__(self, model_launcher, platform_code, active_name, session=None):
-        self.platform_code = platform_code
-        self.active_name = active_name
+    def __init__(self, model_launcher, platform_code, active_name, session=None, pdf_helper=None):
+        DailyResource.__init__(self, model_launcher, platform_code, active_name, IceActives,
+                               Active.FLAVOR, pdf_helper)
         self.session = session
-        self.model_launcher = model_launcher
 
-        self.ice_actives = IceActives(model_launcher)
-        active_id, self.active_code = \
-            self.ice_actives.get_fields(platform_code, active_name, ('id', 'ActiveCode'))
-        platform_id = Platforms(model_launcher, Active.FLAVOR).get_platform_id(platform_code)
-
-        Resource.__init__(
-            self,
-            model_launcher.main_dbh,
-            "Active_platform_{platform_id}_active_{active_id}_{flavor}".format(
-                platform_id=platform_id,
-                active_id=active_id,
-                flavor=Active.FLAVOR),
-            Active.SCHEMA,
-            "UNIQUE (Date, CONTRACT) ON CONFLICT IGNORE")
-
-    def switch_update(self):
-        state = self.ice_actives.get_fields(self.platform_code, self.active_name, ('Updatable',))[0]
-
-        if state == 0:
-            self.session = IceDaily(self.model_launcher).prepare_update()
-            self.update()
-
-        self.ice_actives.set_update(self.platform_code, self.active_name, 1 - state)
+        self.active_code = IceActives(model_launcher).get_fields(platform_code, active_name,
+                                                                 ('WebActiveCode',))[0]
+        self.platform_code = platform_code
 
     def download_date(self, date):
         request = Request(
@@ -143,7 +85,7 @@ class Active(Resource):
             url='https://www.theice.com/marketdata/reports/datawarehouse/ConsolidatedEndOfDayReportPDF.shtml',
             params={
                 'generateReport': '',
-                'exchangeCode': 'IFEU',
+                'exchangeCode': self.platform_code,
                 'exchangeCodeAndContract': self.active_code,
                 'optionRequest': 'false',
                 'selectedDate': date.strftime("%m/%d/%Y"),
@@ -164,75 +106,42 @@ class Active(Resource):
         if response.content[1:4] != b'PDF':
             return bad_response()
 
-        with NamedTemporaryFile() as file:
-            file.write(response.content)
-
-            try:
-                return self.parse_date(file.name, date)
-            except ValueError:
-                return bad_response()
-
-    def parse_date(self, fname, date):
-        df = pdf([
-            (1, (135.432, 47.124, 607.662, 752.994)),
-            (2, (81.972, 48.114, 601.722, 758.934)),
-            (3, (79.002, 51.084, 602.712, 750.024))], fname)
-        df = df.rename(str, Active.PARSING_MAP)[list(Active.PARSING_MAP.values())]
-
-        for col in df:
-            if df[col].isnull().sum() > 20:
-                raise ValueError
-
-        locale.setlocale(locale.LC_NUMERIC, '')
-
-        cols = [a for a, b in Active.SCHEMA if b == 'INTEGER']
-        df[cols] = df[cols].applymap(lambda x: atof(str(x)) if not pd.isnull(x) else x)
-
-        df['Date'] = date
-
-        def row_ok(row):
-            try:
-                dt.datetime.strptime(row['CONTRACT'], '%b%y')
-                return True
-            except:
-                return False
-
-        df = df[df.apply(row_ok, axis=1)]
-
-        return df
+        try:
+            return self.pdf_helper.parse_content(response.content, date)
+        except ValueError:
+            return bad_response()
 
     def available_dates(self):
-        return [dt.date.today() - dt.timedelta(days=i) for i in range(0, 11)]
+        with self.session.cache_disabled():
+            response = self.session.post(
+                url='https://www.theice.com/marketdata/reports/datawarehouse/ConsolidatedEndOfDayReportPDF.shtml',
+                headers={
+                    'User-Agent': 'Mozilla/5.0',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                params={
+                    'selectionForm': '',
+                    'exchangeCode': self.platform_code,
+                    'optionRequest': 'false',
+                    'exchangeCodeAndContract': self.active_code,
+                    'smpbss': self.session.cookies['smpbss'],
+                }
+            )
 
-    def initial_fill(self):
-        dir = 'Ice reports/Futures/'
+        bs = BeautifulSoup(response.text)
 
-        from_files = []
+        return [dt.datetime.strptime(a['value'][4:-17] + a['value'][-4:], '%b %d %Y').date()
+                for a in bs.find_all(attrs={'name': "selectedDate"})]
 
-        if os.path.isdir(dir):
-            pure_active_code = self.active_code.split('|', 1)[1]
 
-            regex = re.compile('{ac}_(\d{{4}}_\d{{2}}_\d{{2}})\.pdf'.format(ac=pure_active_code))
+class IceActives(Actives):
+    def __init__(self, model_launcher, flavor=Active.FLAVOR):
+        Actives.__init__(self, model_launcher.user_dbh, flavor, [
+            ('ActiveCode', 'TEXT'),
+            ('WebActiveCode', 'TEXT')
+        ])
 
-            for file in os.listdir(dir):
-                match = regex.match(file)
-                if match is not None:
-                    from_files.append(
-                        self.parse_date(os.path.join(dir, file),
-                                        dt.datetime.strptime(match.group(1), '%Y_%m_%d').date()))
 
-        df = pd.concat(from_files + [self.download_date(date) for date in self.available_dates()])
-
-        return df
-
-    def fill(self, first, last):
-        return pd.concat([self.download_date(date)
-                          for date in set(self.available_dates()) & set(date_range(first, last))])
-
-    def get_flavors(self):
-        return pd.read_sql('SELECT DISTINCT CONTRACT AS active_flavor FROM "{table}"'
-                           .format(table=self.table), self.dbh)
-
-    def get_flavor(self, contract):
-        return pd.read_sql('SELECT * FROM "{table}" WHERE CONTRACT = ?'
-                    .format(table=self.table), self.dbh, params=(contract,))
+class IceAllActives(IceActives):
+    def __init__(self, model_launcher):
+        IceActives.__init__(self, model_launcher, "ice_daily_all")

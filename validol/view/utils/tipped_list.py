@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
 
+
 class TippedList:
     def __init__(self, items_getter, view_setter, view):
         self.items_getter = items_getter

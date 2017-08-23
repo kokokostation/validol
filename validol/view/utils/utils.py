@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets
+import json
 
 
 def scrollable_area(layout):
@@ -15,6 +16,22 @@ def set_title(layout, title):
     denotions.setText(title)
     denotions.setReadOnly(True)
     layout.addWidget(denotions, stretch=1)
+
+
+def prettify_json(json_str):
+    return json.dumps(json.loads(json_str), indent=4, sort_keys=True)
+
+
+def flatten_json(json_str):
+    return json.dumps(json.loads(json_str))
+
+
+def display_error(title, text):
+    msg = QtWidgets.QMessageBox()
+    msg.setIcon(QtWidgets.QMessageBox.Critical)
+    msg.setText(text)
+    msg.setWindowTitle(title)
+    msg.exec_()
 
 
 

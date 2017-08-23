@@ -9,8 +9,6 @@ import pyparsing as pp
 
 class TableParser(FormulaGrammar):
     def split(self, expr):
-        self.expr_stack = []
-
         bnf = pp.delimitedList(pp.Combine(self.bnf))
 
         return list(bnf.parseString(expr, True))
@@ -23,7 +21,7 @@ class Table(Base):
 
     def __init__(self, name, formula_groups, all_atoms):
         self.name = name
-        parser = TableParser(all_atoms)
+        parser = TableParser([atom.name for atom in all_atoms])
         self.formula_groups = [parser.split(table) for table in formula_groups.split("\n")]
 
     def all_formulas(self):

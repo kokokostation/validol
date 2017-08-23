@@ -6,7 +6,6 @@ from validol.model.store.resource import Resource, Table
 from validol.model.utils import group_by
 
 
-
 class Flavor:
     def __init__(self, model_launcher):
         self.model_launcher = model_launcher
@@ -41,7 +40,7 @@ class Flavor:
     def update_flavor(self, df, flavor):
         info = group_by(df, flavor["keys"])
 
-        actives_table = Actives(self.model_launcher, flavor['name'])
+        actives_table = WeeklyActives(self.model_launcher, flavor['name'])
         platforms_table = Platforms(self.model_launcher, flavor['name'])
 
         platforms = set()
@@ -93,7 +92,7 @@ class Platforms(Table):
 
 
 class Actives(Table):
-    def __init__(self, model_launcher, flavor, schema_add=None):
+    def __init__(self, dbh, flavor, schema_add=None):
         schema = [
             ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
             ("PlatformCode", "TEXT"),
@@ -102,20 +101,18 @@ class Actives(Table):
         if schema_add is not None:
             schema.extend(schema_add)
 
-        Table.__init__(
-            self,
-            model_launcher.main_dbh,
+        Table.__init__(self, dbh,
             "Actives_{flavor}".format(flavor=flavor), schema,
             "UNIQUE (PlatformCode, ActiveName) ON CONFLICT IGNORE")
 
     def get_actives(self, platform):
-        return pd.read_sql('''
+        return self.read_df('''
             SELECT
                 *
             FROM
                 "{table}"
             WHERE
-                PlatformCode = ?'''.format(table=self.table), self.dbh, params=(platform,))
+                PlatformCode = ?''', params=(platform,))
 
     def get_fields(self, platform_code, active_name, fields):
         return self.dbh.cursor().execute('''
@@ -128,10 +125,24 @@ class Actives(Table):
                 ActiveName = ?'''.format(table=self.table, fields=', '.join(fields)),
                                          (platform_code, active_name)).fetchone()
 
+    def remove_active(self, ai):
+        self.dbh.cursor().execute('''
+            DELETE 
+            FROM 
+                "{table}" 
+            WHERE
+                PlatformCode = ? AND 
+                ActiveName = ?'''.format(table=self.table), (ai.platform, ai.active))
+
+
+class WeeklyActives(Actives):
+    def __init__(self, model_launcher, flavor):
+        Actives.__init__(self, model_launcher.main_dbh, flavor)
+
 
 class Active(Resource):
     def __init__(self, model_launcher, flavor, platform_code, active_name, update_info=pd.DataFrame()):
-        active_id = Actives(model_launcher, flavor['name'])\
+        active_id = WeeklyActives(model_launcher, flavor['name'])\
             .get_fields(platform_code, active_name, ('id',))[0]
         platform_id = Platforms(model_launcher, flavor['name']).get_platform_id(platform_code)
 
@@ -150,5 +161,5 @@ class Active(Resource):
         return self.update_info
 
     def fill(self, first, last):
-        return self.update_info[(first < self.update_info.Date) &
+        return self.update_info[(first <= self.update_info.Date) &
                                 (self.update_info.Date <= last)]

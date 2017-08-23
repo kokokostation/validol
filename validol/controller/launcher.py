@@ -9,8 +9,8 @@ class ControllerLauncher:
         self.view_launcher = ViewLauncher(self, self.model_launcher)
         self.view_launcher.show_main_window()
 
-    def update_data(self):
-        return self.model_launcher.update()
+    def update_data(self, how):
+        return self.model_launcher.update(how)
 
     def draw_table(self, table_pattern, actives_info, prices_info):
         title_info = []
@@ -21,7 +21,7 @@ class ControllerLauncher:
                 self.view_launcher.refresh_prices()
 
             prices_info[i] = pair_id
-            title_info.append(active_info + [price_name])
+            title_info.append((active_info, price_name))
 
         df = self.model_launcher.prepare_tables(table_pattern, actives_info, prices_info)
 
@@ -36,6 +36,18 @@ class ControllerLauncher:
     def refresh_tables(self):
         self.view_launcher.refresh_tables()
 
+    def refresh_actives(self):
+        self.view_launcher.refresh_actives()
+
     def show_table_dialog(self):
         self.view_launcher.show_table_dialog()
+
+    def show_pdf_helper_dialog(self, processors, widgets):
+        return self.view_launcher.show_pdf_helper_dialog(processors, widgets)
+
+    def get_chosen_actives(self):
+        return self.view_launcher.get_chosen_actives()
+
+    def ask_name(self):
+        return self.view_launcher.ask_name()
 

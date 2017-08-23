@@ -10,6 +10,7 @@ from validol.view.utils.tipped_list import TippedList
 from validol.view.utils.button_group import ButtonGroup
 from validol.view.utils.pattern_tree import PatternTree
 from validol.view.view_element import ViewElement
+from validol.view.menu.pattern_edit_dialog import PatternEditDialog
 
 
 class GraphDialog(ViewElement, QtWidgets.QWidget):
@@ -51,9 +52,13 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.removePattern = QtWidgets.QPushButton('Remove pattern')
         self.removePattern.clicked.connect(self.remove_pattern)
 
+        self.edit_pattern_button = QtWidgets.QPushButton('Edit pattern')
+        self.edit_pattern_button.clicked.connect(self.edit_pattern)
+
         self.patternChoiceLayout.addWidget(self.tipped_list.list)
         self.patternChoiceLayout.addWidget(self.removePattern)
         self.patternChoiceLayout.addWidget(self.tipped_list.view)
+        self.patternChoiceLayout.addWidget(self.edit_pattern_button)
 
         self.graphsTree = PatternTree()
 
@@ -128,11 +133,11 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
     @staticmethod
     def make_title(title_info):
         title = ""
-        for i, (flavor, platform, active, active_flavor, price_name) in enumerate(title_info):
-            active_title = "{}/{}/{}".format(flavor.name(), platform, active)
+        for i, (ai, price_name) in enumerate(title_info):
+            active_title = "{}/{}/{}".format(ai.flavor.name(), ai.platform, ai.active)
 
-            if active_flavor is not None:
-                active_title += "/{}".format(active_flavor)
+            if ai.active_flavor is not None:
+                active_title += "/{}".format(ai.active_flavor)
 
             if price_name is not None:
                 active_title += "; Quot from: {}".format(price_name)
@@ -142,8 +147,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         return title
 
     def remove_pattern(self):
-        title = self.tipped_list.list.currentItem().text()
-        self.model_launcher.remove_pattern(self.table_name, title)
+        self.model_launcher.remove_pattern(self.tipped_list.current_item())
         self.tipped_list.refresh()
 
     def activated(self, comboBox, _=None):
@@ -222,3 +226,14 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
         self.graphsTree.clear()
         self.currentPattern = Pattern()
+
+    def edit_pattern(self):
+        pattern = self.model_launcher.read_str_pattern(self.tipped_list.current_item())
+
+        pattern.graphs = PatternEditDialog(pattern.graphs).get_data()
+
+        if pattern.graphs is not None:
+            self.model_launcher.write_str_pattern(pattern)
+
+            self.tipped_list.refresh()
+
