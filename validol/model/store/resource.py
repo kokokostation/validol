@@ -45,7 +45,7 @@ class Table:
         return pd.read_sql(query.format(table=self.table), self.dbh, **kwargs)
 
     def drop(self):
-        self.dbh.cursor.execute('''
+        self.dbh.cursor().execute('''
             DROP TABLE IF EXISTS
                 "{table}"
         '''.format(table=self.table))

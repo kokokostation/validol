@@ -134,6 +134,8 @@ class Actives(Table):
                 PlatformCode = ? AND 
                 ActiveName = ?'''.format(table=self.table), (ai.platform, ai.active))
 
+        self.dbh.commit()
+
 
 class WeeklyActives(Actives):
     def __init__(self, model_launcher, flavor):

@@ -9,7 +9,6 @@ from validol.model.store.structures.structure import Base, JSONCodec
 from validol.model.resource_manager.atom_base import AtomBase, rangable
 from validol.model.utils import to_timestamp, merge_dfs_list
 from validol.model.store.miners.daily_reports.expirations import Expirations
-from validol.model.store.structures.pdf_helper import PdfHelpers
 
 
 class LazyAtom(AtomBase):

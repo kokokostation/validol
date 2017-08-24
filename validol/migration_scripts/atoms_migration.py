@@ -1,10 +1,13 @@
 import sqlite3
 import pandas as pd
+from shutil import copyfile
 
 from validol.model.resource_manager.resource_manager import ResourceManager
 
 
 def main():
+    copyfile('user.db', 'user.db.old')
+
     dbh = sqlite3.connect('user.db')
 
     atoms = pd.read_sql('select * from atoms', dbh)

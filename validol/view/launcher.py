@@ -57,7 +57,7 @@ class ViewLauncher(ViewElement):
         return PdfHelperDialog(processors, widgets).get_data()
 
     def refresh_actives(self):
-        self.main_window.platform_chosen()
+        self.main_window.flavor_chosen()
 
     def get_chosen_actives(self):
         return self.main_window.chosen_actives

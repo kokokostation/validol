@@ -100,9 +100,9 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.rightLayout = QtWidgets.QVBoxLayout()
         self.rightLayout.addWidget(self.cached_prices)
+        self.rightLayout.addWidget(self.remove_active_button)
         self.rightLayout.addWidget(self.tipped_list.list)
         self.rightLayout.addWidget(self.removeTable)
-        self.rightLayout.addWidget(self.remove_active_button)
         self.rightLayout.addWidget(self.tipped_list.view)
         self.rightLayout.addWidget(self.createTable)
 
@@ -240,10 +240,15 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.actives.clear()
 
-        for _, active in self.current_flavor()\
-                .actives(self.platforms.currentItem().toolTip(), self.model_launcher).iterrows():
-            wi = QtWidgets.QListWidgetItem(active.ActiveName)
-            self.actives.addItem(wi)
+        actives = self.current_flavor()\
+                .actives(self.platforms.currentItem().toolTip(), self.model_launcher)
+
+        if actives.empty:
+            self.active_flavors.clear()
+        else:
+            for _, active in actives.iterrows():
+                wi = QtWidgets.QListWidgetItem(active.ActiveName)
+                self.actives.addItem(wi)
 
     def clear_active(self, vbox):
         i = self.actives_layout_lines.index(vbox)

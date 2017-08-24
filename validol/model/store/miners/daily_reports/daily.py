@@ -1,3 +1,5 @@
+import datetime as dt
+
 from validol.model.utils import date_range
 from validol.model.store.resource import Resource
 from validol.model.store.miners.weekly_reports.flavor import Platforms
@@ -40,16 +42,21 @@ class DailyResource(Resource):
     def get_flavor(self, contract):
         return self.read_df('SELECT * FROM "{table}" WHERE CONTRACT = ?', params=(contract,))
 
+    def download_dates(self, dates):
+        return concat([self.download_date(date) for date in dates])
+
     def initial_fill(self):
-        return self.pdf_helper.initial(self.model_launcher)
+        df = self.pdf_helper.initial(self.model_launcher)
+
+        if not df.empty:
+            net_df = self.fill(max(df.Date), dt.date.today())
+        else:
+            net_df = self.download_dates(self.available_dates())
+
+        return df.append(net_df)
 
     def fill(self, first, last):
-        return concat([self.download_date(date)
-                       for date in set(self.available_dates()) & set(date_range(first, last))])
-
-    def update(self):
-        for _ in range(2):
-            super().update()
+        return self.download_dates(set(self.available_dates()) & set(date_range(first, last)))
 
     def available_dates(self):
         raise NotImplementedError
