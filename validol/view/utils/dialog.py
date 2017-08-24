@@ -18,8 +18,6 @@ class MyDialog(QDialog):
 
         self.main_layout.addWidget(self.ready_button)
 
-        self.showMaximized()
-
     def get_data(self):
         if self.exec_() == QDialog.Accepted:
             return self.on_accepted()

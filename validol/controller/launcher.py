@@ -51,3 +51,9 @@ class ControllerLauncher:
     def ask_name(self):
         return self.view_launcher.ask_name()
 
+    def edit_pattern(self, json_str):
+        return self.view_launcher.edit_pattern(json_str)
+
+    def main_window_closed(self):
+        self.view_launcher.on_close()
+

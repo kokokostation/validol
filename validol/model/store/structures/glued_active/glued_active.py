@@ -2,14 +2,13 @@ import pandas as pd
 from sqlalchemy import Column, String
 
 from validol.model.store.structures.structure import Structure, Base, JSONCodec
-from validol.model.utils import merge_dfs_list
 from validol.model.store.view.active_info import ActiveInfoSchema
 
 
 class GluedActive(Base):
     __tablename__ = "glued_actives"
     name = Column(String, primary_key=True)
-    info = Column(JSONCodec(ActiveInfoSchema))
+    info = Column(JSONCodec(ActiveInfoSchema(many=True)))
 
     def __init__(self, name, info):
         self.name = name
@@ -18,9 +17,9 @@ class GluedActive(Base):
     def prepare_df(self, model_launcher):
         from validol.model.resource_manager.resource_manager import ResourceManager
 
-        dfs = ResourceManager(model_launcher).prepare_actives(self.info)
+        df, _ = ResourceManager(model_launcher).prepare_actives(self.info)
 
-        return merge_dfs_list(dfs)
+        return df
 
     @staticmethod
     def get_df(model_launcher, active):

@@ -285,3 +285,6 @@ class Window(ViewElement, QtWidgets.QWidget):
             msg.setWindowTitle("Network error")
             msg.exec_()
         button.setText(text)
+
+    def closeEvent(self, qce):
+        self.controller_launcher.main_window_closed()

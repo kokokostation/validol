@@ -268,8 +268,8 @@ class Graph(pg.GraphicsWindow):
 
 
 class CheckedGraph(QtWidgets.QWidget):
-    def __init__(self, parent, flags, df, pattern, tableLabels, title):
-        QtWidgets.QWidget.__init__(self, parent, flags)
+    def __init__(self, flags, df, pattern, tableLabels, title):
+        QtWidgets.QWidget.__init__(self, flags=flags)
 
         self.setWindowTitle(title)
         self.graph = Graph(df, pattern, tableLabels)

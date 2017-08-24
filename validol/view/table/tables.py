@@ -8,8 +8,8 @@ from validol.view.menu.graph_dialog import GraphDialog
 import validol.pyqtgraph as pg
 
 class Table(QtWidgets.QWidget):
-    def __init__(self, parent, flags, df, labels, title_info):
-        QtWidgets.QWidget.__init__(self, parent, flags)
+    def __init__(self, flags, df, labels, title_info):
+        QtWidgets.QWidget.__init__(self, flags=flags)
 
         title = GraphDialog.make_title(title_info)
 

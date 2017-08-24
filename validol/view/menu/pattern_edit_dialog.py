@@ -13,6 +13,7 @@ class PatternEditDialog(MyDialog):
 
         self.setWindowTitle("Pattern edit")
 
+        self.showMaximized()
 
     def on_accepted(self):
         try:

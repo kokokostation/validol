@@ -6,8 +6,8 @@ from validol.model.resource_manager.atom_flavors import FormulaAtom
 
 
 class TableDialog(ViewElement, QtWidgets.QWidget):
-    def __init__(self, parent, flags, controller_launcher, model_launcher):
-        QtWidgets.QWidget.__init__(self, parent, flags)
+    def __init__(self, flags, controller_launcher, model_launcher):
+        QtWidgets.QWidget.__init__(self, flags=flags)
         ViewElement.__init__(self, controller_launcher, model_launcher)
 
         self.setWindowTitle("Table edit")

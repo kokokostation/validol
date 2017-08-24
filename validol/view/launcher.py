@@ -9,6 +9,7 @@ from validol.view.table.tables import Table
 from validol.view.view_element import ViewElement
 from validol.view.menu.pdf_helper_dialog import PdfHelperDialog
 from validol.view.menu.glued_active_dialog import GluedActiveDialog
+from validol.view.menu.pattern_edit_dialog import PatternEditDialog
 
 
 class ViewLauncher(ViewElement):
@@ -32,24 +33,24 @@ class ViewLauncher(ViewElement):
 
     def show_table(self, df, labels, title_info):
         self.tables.append(
-            Table(self.main_window, ViewLauncher.FLAGS, df, labels, title_info))
+            Table(ViewLauncher.FLAGS, df, labels, title_info))
 
     def show_graph_dialog(self, df, table_pattern, title_info):
         self.graph_dialogs.append(
             GraphDialog(
-                self.main_window, ViewLauncher.FLAGS, df, table_pattern, title_info,
+                ViewLauncher.FLAGS, df, table_pattern, title_info,
                 self.controller_launcher, self.model_launcher))
 
     def show_graph(self, df, pattern, table_labels, title):
         self.graphs.append(
-            CheckedGraph(self.main_window, ViewLauncher.FLAGS, df, pattern, table_labels, title))
+            CheckedGraph(ViewLauncher.FLAGS, df, pattern, table_labels, title))
 
     def refresh_tables(self):
         self.main_window.tipped_list.refresh()
 
     def show_table_dialog(self):
         self.table_dialogs.append(
-            TableDialog(self.main_window, ViewLauncher.FLAGS, self.controller_launcher,
+            TableDialog(ViewLauncher.FLAGS, self.controller_launcher,
                         self.model_launcher))
 
     def show_pdf_helper_dialog(self, processors, widgets):
@@ -63,3 +64,10 @@ class ViewLauncher(ViewElement):
 
     def ask_name(self):
         return GluedActiveDialog().get_data()
+
+    def edit_pattern(self, json_str):
+        return PatternEditDialog(json_str).get_data()
+
+    def on_close(self):
+        for win in sum([self.tables, self.graphs, self.graph_dialogs, self.table_dialogs], []):
+            win.close()

@@ -10,7 +10,6 @@ from validol.view.utils.tipped_list import TippedList
 from validol.view.utils.button_group import ButtonGroup
 from validol.view.utils.pattern_tree import PatternTree
 from validol.view.view_element import ViewElement
-from validol.view.menu.pattern_edit_dialog import PatternEditDialog
 
 
 class GraphDialog(ViewElement, QtWidgets.QWidget):
@@ -18,9 +17,9 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
               (255, 0, 255), (0, 0, 255), (192, 192, 192), (255, 69, 0), (255, 140, 0),
               (102, 0, 204), (51, 153, 255)]
 
-    def __init__(self, parent, flags, df, table_pattern, title_info,
+    def __init__(self, flags, df, table_pattern, title_info,
                  controller_launcher, model_launcher):
-        QtWidgets.QWidget.__init__(self, parent, flags)
+        QtWidgets.QWidget.__init__(self, flags=flags)
         ViewElement.__init__(self, controller_launcher, model_launcher)
 
         self.setWindowTitle(table_pattern.name)
@@ -230,9 +229,11 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
     def edit_pattern(self):
         pattern = self.model_launcher.read_str_pattern(self.tipped_list.current_item())
 
-        pattern.graphs = PatternEditDialog(pattern.graphs).get_data()
+        edited = self.controller_launcher.edit_pattern(pattern.graphs)
 
-        if pattern.graphs is not None:
+        if edited is not None:
+            pattern.graphs = edited
+
             self.model_launcher.write_str_pattern(pattern)
 
             self.tipped_list.refresh()
