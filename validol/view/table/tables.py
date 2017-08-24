@@ -1,13 +1,11 @@
 import datetime as dt
-
-import numpy as np
 from PyQt5 import QtWidgets
-from validol.model.utils import date_to_timestamp
+import numpy as np
+
 from validol.view.utils.utils import set_title
 from validol.view.menu.graph_dialog import GraphDialog
 
 import validol.pyqtgraph as pg
-
 
 class Table(QtWidgets.QWidget):
     def __init__(self, parent, flags, df, labels, title_info):
@@ -19,19 +17,14 @@ class Table(QtWidgets.QWidget):
 
         table = pg.TableWidget()
 
-        cols = ["Date"] + labels
-
         show_df = df[labels].dropna(axis=0, how='all')
+        show_df.index = show_df.index.map(dt.date.fromtimestamp)
 
-        content = np.insert(show_df.values, 0, show_df.index, axis=1).tolist()
+        for col in show_df:
+            if show_df[col].dtype == np.float64:
+                show_df[col] = show_df[col].apply("{:.2f}".format)
 
-        for i, val in enumerate(content):
-            content[i] = tuple([dt.date.fromtimestamp(val[0])] + val[1:])
-
-        data = np.array(list(map(tuple, content)),
-                        dtype=list(zip(cols, [dt.date] + [float] * len(labels))))
-
-        table.setData(data)
+        table.setData(show_df.to_records())
 
         self.mainLayout = QtWidgets.QVBoxLayout(self)
 
