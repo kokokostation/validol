@@ -7,6 +7,7 @@ from time import mktime
 import numpy as np
 from tabula import read_pdf
 import pandas as pd
+import os
 
 
 def to_timestamp(date):
@@ -166,3 +167,18 @@ def concat(dfs):
         return pd.concat(dfs)
     else:
         return pd.DataFrame()
+
+
+class TempFile:
+    def __init__(self):
+        self.name = 'tempfile{}'.format(np.random.randint(1e8))
+
+    def __enter__(self):
+        self.file = open(self.name, 'wb')
+
+        return self.file
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.file.close()
+
+        os.remove(self.name)

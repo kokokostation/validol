@@ -102,7 +102,4 @@ class Structure:
 
     @with_session
     def one_or_none(self, session):
-        try:
-            return session.query(self.klass).one_or_none()
-        except:
-            return None
+        return session.query(self.klass).first()

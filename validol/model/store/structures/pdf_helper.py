@@ -1,14 +1,13 @@
 from sqlalchemy import Column, String
 from sqlalchemy.types import TypeDecorator
 from sqlalchemy.orm import reconstructor
-from tempfile import NamedTemporaryFile
 import pandas as pd
 import os
 
 from validol.model.store.structures.structure import Structure, Base, JSONCodec
 from validol.model.store.view.active_info import ActiveInfoSchema
 from validol.model.store.miners.daily_reports.expirations import Expirations
-from validol.model.utils import pdf
+from validol.model.utils import pdf, TempFile
 
 
 class PdfParser:
@@ -78,7 +77,7 @@ class PdfHelper(Base):
     def parse_content(self, content, date):
         content = self.processor.map_content(content)
 
-        with NamedTemporaryFile() as file:
+        with TempFile() as file:
             file.write(content)
 
             try:

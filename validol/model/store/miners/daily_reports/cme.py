@@ -48,8 +48,8 @@ class Active(DailyResource):
 
     @staticmethod
     def file_to_date(file):
-        start = len(os.path.join(Active.FTP_DIR, 'DailyBulletin_pdf_'))
-        return dt.datetime.strptime(file[start:start + 8], '%Y%m%d').date()
+        start = len('DailyBulletin_pdf_')
+        return dt.datetime.strptime(os.path.basename(file)[start:start + 8], '%Y%m%d').date()
 
     @staticmethod
     def get_files():
