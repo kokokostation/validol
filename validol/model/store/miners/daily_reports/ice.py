@@ -146,4 +146,4 @@ class IceActives(Actives):
 
 class IceAllActives(IceActives):
     def __init__(self, model_launcher, flavor):
-        IceActives.__init__(self, model_launcher, flavor)
+        IceActives.__init__(self, model_launcher, "all_{}".format(flavor))

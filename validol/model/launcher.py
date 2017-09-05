@@ -21,7 +21,7 @@ from validol.model.store.collectors.ml import MlCurves, MlCurve
 class Update:
     pass
 
-Update.DAILY = [MlCurves] #[DailyReports, Expirations, MlCurves]
+Update.DAILY = [DailyReports, Expirations, MlCurves]
 Update.WEEKLY = [Monetary, Cftc, Ice] + Update.DAILY
 
 

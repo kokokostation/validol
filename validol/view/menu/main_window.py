@@ -198,32 +198,35 @@ class Window(ViewElement, QtWidgets.QWidget):
     def submit_active(self):
         self.chosen_actives.append(self.active_info())
 
-        self.actives_layout_widgets.append((QtWidgets.QLineEdit(),
-                                            QtWidgets.QLineEdit(),
-                                            QtWidgets.QPushButton('Submit cached'),
-                                            QtWidgets.QPushButton('Clear')))
-        last_line_widgets = self.actives_layout_widgets[-1]
+        active_name = QtWidgets.QLineEdit()
+        price_name = QtWidgets.QLineEdit()
+        submit_cached = QtWidgets.QPushButton('Submit cached')
+        clear = QtWidgets.QPushButton('Clear')
 
-        self.actives_layout_lines.append(QtWidgets.QVBoxLayout())
-        last_line = self.actives_layout_lines[-1]
+        layout = QtWidgets.QVBoxLayout()
 
-        last_line_widgets[0].setReadOnly(True)
+        active_name.setReadOnly(True)
         text = "{}/{}".format(
             self.platforms.currentItem().text(),
             self.actives.currentItem().text())
-        if self.active_flavors.currentItem() is not None:
-            text += "/{}".format(self.active_flavors.currentItem().text())
-        last_line_widgets[0].setText(text)
+        curr_flavor = self.active_flavors.currentItem()
+        if curr_flavor is not None:
+            text += "/{}".format(curr_flavor.text())
+        active_name.setText(text)
 
-        last_line_widgets[2].clicked.connect(
-            lambda: self.submit_cached(last_line_widgets[1], self.cached_prices))
-        last_line_widgets[3].clicked.connect(
-            lambda: self.clear_active(last_line))
+        submit_cached.clicked.connect(
+            lambda: self.submit_cached(price_name, self.cached_prices))
+        clear.clicked.connect(
+            lambda: self.clear_active(layout))
 
-        for w in last_line_widgets:
-            last_line.addWidget(w)
+        self.actives_layout_widgets.append((active_name, price_name, submit_cached, clear))
 
-        self.actives_layout.insertLayout(len(self.actives_layout_lines), last_line)
+        for w in self.actives_layout_widgets[-1]:
+            layout.addWidget(w)
+
+        self.actives_layout_lines.append(layout)
+
+        self.actives_layout.insertLayout(len(self.actives_layout_lines), layout)
 
     def submit_cached(self, lineEdit, listWidget):
         lineEdit.setText(listWidget.currentItem().toolTip())

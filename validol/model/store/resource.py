@@ -1,6 +1,7 @@
 import datetime as dt
 import pandas as pd
 import numpy as np
+from functools import wraps
 
 from validol.model.utils import date_to_timestamp, to_timestamp
 
@@ -148,7 +149,7 @@ class Resource(Table, Updatable):
         return df
 
     def write_df(self, df):
-        if not df.empty and df.Date.dtype == np.object:
+        if not df.empty and df.Date.dtype != np.int64:
             df = date_to_timestamp(df)
 
         super().write_df(df)
@@ -242,3 +243,14 @@ class ActiveResource(Resource):
                               active_id=active_id,
                               flavor=flavor),
                           schema, modifier, pre_dump, post_load)
+
+
+def check_empty(f):
+    @wraps(f)
+    def wrapped(df):
+        if df.empty:
+            return df
+        else:
+            return f(df)
+
+    return wrapped

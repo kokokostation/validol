@@ -1,7 +1,7 @@
 import pandas as pd
 
 from validol.model.utils import to_timestamp
-from validol.model.store.resource import ActiveResource, Updater
+from validol.model.store.resource import ActiveResource, Updater, check_empty
 from validol.model.store.miners.daily_reports.cme_view import CmeView
 from validol.model.store.miners.daily_reports.cme_flavors import CME_OPTIONS
 from validol.model.store.miners.daily_reports.ice_view import IceView
@@ -9,12 +9,13 @@ from validol.model.store.miners.daily_reports.ice_flavors import ICE_OPTIONS
 from validol.model.utils import group_by
 
 
+@check_empty
 def pre_dump(df):
     df.CURVE = df.CURVE.apply(lambda series: series.to_json(orient='split'))
 
     return df
 
-
+@check_empty
 def post_load(df):
     df.CURVE = df.CURVE.map(lambda json: pd.read_json(json, typ='series', orient='split'))
 
