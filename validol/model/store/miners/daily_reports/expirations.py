@@ -25,11 +25,43 @@ class Expirations(Resource):
         Resource.__init__(self, model_launcher.main_dbh, 'Expirations',
                           Expirations.SCHEMA, Expirations.CONSTRAINT)
 
+        self.model_launcher = model_launcher
+
 
     @staticmethod
     def from_contract(date):
         return dt.datetime.strptime(date, '%b%y').date()
 
+    def current(self, ai, delta, df):
+        df['CONTRACT'] = df['CONTRACT'].apply(Expirations.from_contract)
+
+        exp = self.model_launcher.get_exp_info(ai)
+
+        exp_info = self.read_df('''
+                    SELECT
+                        Date, Contract
+                    FROM
+                        {table}
+                    WHERE
+                        PlatformCode = ? AND ActiveName = ? AND ActiveCode = ? AND Event = 'LTD'
+                ''', params=(exp['PlatformCode'], exp['ActiveName'], exp['ActiveCode']))
+
+        exp_info['Contract'] = exp_info['Contract'].apply(Expirations.from_contract)
+
+        result = pd.DataFrame()
+
+        for i in range(1, len(exp_info)):
+            begin, end = exp_info.index[i - 1], exp_info.index[i]
+
+            curr_contract = exp_info['Contract'].iloc[i] + relativedelta(months=delta)
+
+            result = result.append(df[
+                (begin <= df.index) &
+                (df.index < end) &
+                (df.CONTRACT == curr_contract)
+                ])
+
+        return result
 
     def parse_csv(self, csv):
         df = pd.read_csv(StringIO(csv),

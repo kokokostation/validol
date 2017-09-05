@@ -1,6 +1,7 @@
 import datetime as dt
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 import numpy as np
+import pandas as pd
 
 from validol.view.utils.utils import set_title
 from validol.view.menu.graph_dialog import GraphDialog
@@ -17,7 +18,9 @@ class Table(QtWidgets.QWidget):
 
         table = pg.TableWidget()
 
-        show_df = df[labels].dropna(axis=0, how='all')
+        filtered_df = df[labels].dropna(axis=0, how='all')
+
+        show_df = filtered_df.copy()
         show_df.index = show_df.index.map(dt.date.fromtimestamp)
 
         for col in show_df:
@@ -25,6 +28,20 @@ class Table(QtWidgets.QWidget):
                 show_df[col] = show_df[col].apply("{:.2f}".format)
 
         table.setData(show_df.to_records())
+
+        for i, col in enumerate(filtered_df):
+            col_without_nan = filtered_df[col].dropna()
+
+            if col_without_nan.empty:
+                continue
+
+            min_val, max_val = min(col_without_nan), max(col_without_nan)
+            for j in range(len(filtered_df)):
+                norm = (filtered_df.iloc[j, i] - min_val) / (max_val - min_val)
+
+                if not pd.isnull(norm):
+                    table.item(j, i + 1).setBackground(
+                        QtGui.QBrush(QtGui.QColor(*map(int, [255 * norm, 0, 255 * (1 - norm), 100]))))
 
         self.mainLayout = QtWidgets.QVBoxLayout(self)
 

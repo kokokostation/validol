@@ -12,15 +12,17 @@ from validol.model.store.structures.atom import Atoms
 from validol.model.store.structures.glued_active.glued_active import GluedActives
 from validol.model.store.structures.pattern import Patterns, StrPattern
 from validol.model.store.structures.table import Tables
-from validol.model.store.miners.daily_reports.ice import IceDaily
-from validol.model.store.miners.daily_reports.cme import CmeDaily
+from validol.model.store.miners.daily_reports.flavors import DailyReports
 from validol.model.store.structures.pdf_helper import PdfHelpers
 from validol.model.store.miners.daily_reports.expirations import Expirations
+from validol.model.store.collectors.ml import MlCurves, MlCurve
 
 
 class Update:
-    DAILY = [IceDaily, CmeDaily, Expirations]
-    WEEKLY = [Monetary, Cftc, Ice, IceDaily, CmeDaily, Expirations]
+    pass
+
+Update.DAILY = [MlCurves] #[DailyReports, Expirations, MlCurves]
+Update.WEEKLY = [Monetary, Cftc, Ice] + Update.DAILY
 
 
 class ModelLauncher:
@@ -127,3 +129,9 @@ class ModelLauncher:
 
     def write_str_pattern(self, pattern):
         return Patterns(self, StrPattern).write_pattern(pattern)
+
+    def get_ml_curves(self, ai, with_flavor=True):
+        return MlCurve(self, ai).read_curves(with_flavor)
+
+    def current(self, ai, delta, df):
+        return Expirations(self).current(ai, delta, df)

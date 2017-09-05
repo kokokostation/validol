@@ -1,38 +1,22 @@
-import datetime as dt
-
 from validol.model.utils import date_range
-from validol.model.store.resource import Resource
-from validol.model.store.miners.weekly_reports.flavor import Platforms
+from validol.model.store.resource import ActiveResource
 from validol.model.utils import concat
 
 
-class DailyResource(Resource):
-    SCHEMA = [
-        ('CONTRACT', 'TEXT'),
-        ('SET', 'REAL'),
-        ('CHG', 'REAL'),
-        ('VOL', 'INTEGER'),
-        ('OI', 'INTEGER'),
-        ('OIChg', 'INTEGER')
-    ]
-
+class DailyResource(ActiveResource):
     def __init__(self, model_launcher, platform_code, active_name, actives_cls, flavor,
                  pdf_helper):
+        ActiveResource.__init__(self,
+                                flavor["schema"],
+                                model_launcher,
+                                platform_code,
+                                active_name,
+                                flavor["name"],
+                                actives_cls=actives_cls,
+                                modifier=flavor['constraint'])
+
         self.model_launcher = model_launcher
         self.pdf_helper = pdf_helper
-
-        active_id = actives_cls(model_launcher).get_fields(platform_code, active_name, ('id',))[0]
-        platform_id = Platforms(model_launcher, flavor).get_platform_id(platform_code)
-
-        Resource.__init__(
-            self,
-            model_launcher.main_dbh,
-            "Active_platform_{platform_id}_active_{active_id}_{flavor}".format(
-                platform_id=platform_id,
-                active_id=active_id,
-                flavor=flavor),
-            DailyResource.SCHEMA,
-            "UNIQUE (Date, CONTRACT) ON CONFLICT IGNORE")
 
     def get_flavors(self):
         df = self.read_df('SELECT DISTINCT CONTRACT AS active_flavor FROM "{table}"', index_on=False)
@@ -49,7 +33,7 @@ class DailyResource(Resource):
         df = self.pdf_helper.initial(self.model_launcher)
 
         if not df.empty:
-            net_df = self.fill(max(df.Date), dt.date.today())
+            net_df = self.download_dates(set(self.available_dates()) - set(df.Date))
         else:
             net_df = self.download_dates(self.available_dates())
 

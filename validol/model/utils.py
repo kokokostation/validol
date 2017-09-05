@@ -8,6 +8,9 @@ import numpy as np
 from tabula import read_pdf
 import pandas as pd
 import os
+from PyPDF2 import PdfFileReader
+from itertools import groupby
+from operator import itemgetter
 
 
 def to_timestamp(date):
@@ -114,15 +117,22 @@ def remove_duplications(arr):
     return result
 
 
-def pdf(fname, pages, spreadsheet):
+def pdf(fname, pages, kwargs):
     df = pd.DataFrame()
 
     for page, area in pages:
-        df = df.append(read_pdf(fname,
-                                pages=page,
-                                area=area,
-                                spreadsheet=spreadsheet,
-                                pandas_options={'header': None}))
+        if isinstance(page, int) or page == 'all':
+            pgs = [page]
+        else:
+            begin, end = [int({'start': 1, 'end': PdfFileReader(fname).getNumPages()}.get(x, x))
+                          for x in page.split('-')]
+            pgs = range(begin, end + 1)
+
+        for i in pgs:
+            df = df.append(read_pdf(fname,
+                                    pages=i,
+                                    area=area,
+                                    **kwargs))
 
     return df
 
@@ -182,3 +192,19 @@ class TempFile:
         self.file.close()
 
         os.remove(self.name)
+
+
+def get_pages_run(fobj, phrase):
+    result = []
+
+    pfr = PdfFileReader(fobj)
+    for page in range(pfr.getNumPages()):
+        if phrase in pfr.getPage(page).extractText():
+            result.append(page + 1)
+        elif result:
+            return result
+
+
+def first_run(items):
+    for k, g in groupby(enumerate(items), lambda ix: ix[0] - ix[1]):
+        return map(itemgetter(1), g)

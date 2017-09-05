@@ -3,17 +3,16 @@ import pandas as pd
 
 from validol.model.store.miners.daily_reports.ice import IceActives, Active, IceAllActives
 from validol.model.store.miners.daily_reports.expirations import Expirations
-from validol.model.store.miners.daily_reports.pdf_helpers.ice import IceParser
 from validol.model.store.miners.daily_reports.daily_view import DailyView, active_df_tolist
 from validol.model.store.view.active_info import ActiveInfo
 
 
 class IceView(DailyView):
-    def __init__(self):
-        DailyView.__init__(self, Active, IceActives)
+    def __init__(self, flavor):
+        DailyView.__init__(self, Active, IceActives, flavor)
 
     def new_active(self, platform, model_launcher, controller_launcher):
-        actives = IceAllActives(model_launcher).get_actives(platform)
+        actives = IceAllActives(model_launcher, self.flavor['name']).get_actives(platform)
 
         expirations_w = QComboBox()
 
@@ -41,16 +40,14 @@ class IceView(DailyView):
         actives_w.currentIndexChanged.connect(change_expirations)
         actives_w.activated.connect(change_expirations)
 
-        processors = [processor.NAME for processor in (IceParser,)]
-
-        info = controller_launcher.show_pdf_helper_dialog(processors, [actives_w, expirations_w])
+        info = controller_launcher.show_pdf_helper_dialog(self.get_processors(), [actives_w, expirations_w])
 
         if info is None:
             return
 
         active = actives.iloc[actives_w.currentIndex()]
 
-        IceActives(model_launcher).write_df(pd.DataFrame([active]))
+        IceActives(model_launcher, self.flavor['name']).write_df(pd.DataFrame([active]))
 
         model_launcher.write_pdf_helper(
             ActiveInfo(self, platform, active.ActiveName),

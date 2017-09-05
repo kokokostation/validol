@@ -21,7 +21,7 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.actives = QtWidgets.QListWidget()
         self.actives.itemDoubleClicked.connect(self.submit_active)
-        self.actives.currentItemChanged.connect(self.active_flavor_chosen)
+        self.actives.currentItemChanged.connect(self.active_chosen)
 
         self.searchLine = QtWidgets.QLineEdit()
         self.searchLine.setPlaceholderText("Search")
@@ -98,9 +98,13 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.remove_active_button = QtWidgets.QPushButton('Remove active')
         self.remove_active_button.clicked.connect(self.remove_active)
 
+        self.remove_active_data_button = QtWidgets.QPushButton('Remove active data')
+        self.remove_active_data_button.clicked.connect(self.remove_active_data)
+
         self.rightLayout = QtWidgets.QVBoxLayout()
         self.rightLayout.addWidget(self.cached_prices)
         self.rightLayout.addWidget(self.remove_active_button)
+        self.rightLayout.addWidget(self.remove_active_data_button)
         self.rightLayout.addWidget(self.tipped_list.list)
         self.rightLayout.addWidget(self.removeTable)
         self.rightLayout.addWidget(self.tipped_list.view)
@@ -132,7 +136,7 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.platform_chosen()
 
-    def active_flavor_chosen(self):
+    def active_chosen(self):
         if self.actives.currentItem() is None:
             return
 
@@ -153,6 +157,11 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.current_flavor().remove_active(self.active_info(), self.model_launcher)
 
         self.platform_chosen()
+
+    def remove_active_data(self):
+        self.current_flavor().remove_active_data(self.active_info(), self.model_launcher)
+
+        self.active_chosen()
 
     def remove_table(self):
         self.model_launcher.remove_table(self.tipped_list.list.currentItem().text())

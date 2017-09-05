@@ -5,33 +5,19 @@ import re
 import locale
 from locale import atof
 
-from validol.model.store.structures.pdf_helper import PdfParser
-from validol.model.store.miners.daily_reports.ice import Active
-from validol.model.store.miners.daily_reports.pdf_helpers.utils import filter_rows, expirations
+from validol.model.store.miners.daily_reports.pdf_helpers.utils import filter_rows, DailyPdfParser
 from validol.model.utils import concat
 
 
-class IceParser(PdfParser):
-    NAME = 'ice'
+class IceParser(DailyPdfParser):
+    def parsing_map(self):
+        raise NotImplementedError
 
-    def pages(self):
-        return [
-            (1, (135.432, 47.124, 607.662, 752.994)),
-            (2, (81.972, 48.114, 601.722, 758.934)),
-            (3, (79.002, 51.084, 602.712, 750.024))
-        ], True
+    def pages(self, content):
+        return [('all', None)], {'lattice': True, 'pandas_options': {'header': None}}
 
     def process_df(self, df):
-        parsing_map = {
-            1: 'CONTRACT',
-            6: 'SET',
-            7: 'CHG',
-            8: 'VOL',
-            9: 'OI',
-            10: 'OIChg'
-        }
-
-        df = df.rename(columns=parsing_map)[list(parsing_map.values())]
+        df = filter_rows(df.rename(columns=self.parsing_map())[list(self.parsing_map().values())])
 
         for col in df:
             if df[col].isnull().sum() > 20:
@@ -39,13 +25,16 @@ class IceParser(PdfParser):
 
         locale.setlocale(locale.LC_NUMERIC, '')
 
-        cols = [a for a, b in Active.SCHEMA if b == 'INTEGER']
+        from validol.model.store.miners.daily_reports.ice_flavors import ICE_DAILY_FLAVORS_MAP
+        schema = ICE_DAILY_FLAVORS_MAP[self.pdf_helper.name.flavor.name()]['schema']
+
+        cols = [a for a, b in schema if b == 'INTEGER']
         df[cols] = df[cols].applymap(lambda x: atof(str(x)) if not pd.isnull(x) else x)
 
-        return filter_rows(df)
+        return df
 
-    def read_expirations(self, expirations_file):
-        return expirations(expirations_file)
+    def fix_df(self, df):
+        return df
 
     def read_data(self, active_folder):
         from_files = []
@@ -64,3 +53,40 @@ class IceParser(PdfParser):
 
         return concat(from_files)
 
+
+class IceFuturesParser(IceParser):
+    NAME = 'ice'
+
+    def parsing_map(self):
+        return {
+            1: 'CONTRACT',
+            6: 'SET',
+            7: 'CHG',
+            8: 'VOL',
+            9: 'OI',
+            10: 'OIChg'
+        }
+
+    def get_config(self):
+        return {
+            'exp_prefix': DailyPdfParser.FUTURES_EXP_PREFIX,
+            'exp_types': DailyPdfParser.FUTURES_EXP_TYPES
+        }
+
+
+class IceOptionsParser(IceParser):
+    NAME = 'ice_options'
+
+    def parsing_map(self):
+        return {
+            1: 'CONTRACT',
+            2: 'STRIKE',
+            3: 'PC',
+            12: 'OI'
+        }
+
+    def get_config(self):
+        return {
+            'exp_prefix': DailyPdfParser.OPTIONS_EXP_PREFIX,
+            'exp_types': DailyPdfParser.OPTIONS_EXP_TYPES
+        }

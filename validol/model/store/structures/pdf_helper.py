@@ -14,7 +14,7 @@ class PdfParser:
     def __init__(self, pdf_helper):
         self.pdf_helper = pdf_helper
 
-    def pages(self):
+    def pages(self, content):
         raise NotImplementedError
 
     def map_content(self, content):
@@ -80,14 +80,18 @@ class PdfHelper(Base):
         with TempFile() as file:
             file.write(content)
 
+            pages, kwargs = self.processor.pages(content)
+
             try:
-                df = self.processor.process_df(pdf(file.name, *self.processor.pages()))
-
-                df['Date'] = date
-
-                return df
-            except KeyError:
+                df = pdf(file.name, pages, kwargs)
+            except:
                 return pd.DataFrame()
+
+            df = self.processor.process_df(df)
+
+            df['Date'] = date
+
+            return df
 
 
 class PdfHelpers(Structure):

@@ -1,0 +1,40 @@
+from validol.model.store.miners.daily_reports.pdf_helpers.ice import IceFuturesParser, \
+    IceOptionsParser
+
+OPTIONS_SCHEMA = [
+    ('CONTRACT', 'TEXT'),
+    ('STRIKE', 'REAL'),
+    ('PC', 'TEXT'),
+    ('OI', 'INTEGER')
+]
+FUTURES_SCHEMA = [
+    ('CONTRACT', 'TEXT'),
+    ('SET', 'REAL'),
+    ('CHG', 'REAL'),
+    ('VOL', 'INTEGER'),
+    ('OI', 'INTEGER'),
+    ('OIChg', 'INTEGER')
+]
+FUTURES_CONSTRAINT = "UNIQUE (Date, CONTRACT) ON CONFLICT IGNORE"
+OPTIONS_CONSTRAINT = "UNIQUE (Date, CONTRACT, STRIKE, PC) ON CONFLICT IGNORE"
+
+ICE_FUTURES = {
+    'name': 'ice_daily',
+    'optionRequest': 'false',
+    'processors': [IceFuturesParser],
+    'schema': FUTURES_SCHEMA,
+    'constraint': FUTURES_CONSTRAINT,
+    'get_df': True
+}
+
+ICE_OPTIONS = {
+    'name': 'ice_daily_options',
+    'optionRequest': 'true',
+    'processors': [IceOptionsParser],
+    'schema': OPTIONS_SCHEMA,
+    'constraint':OPTIONS_CONSTRAINT,
+    'get_df': False
+}
+
+ICE_DAILY_FLAVORS = [ICE_OPTIONS, ICE_FUTURES]
+ICE_DAILY_FLAVORS_MAP = {flavor['name']: flavor for flavor in ICE_DAILY_FLAVORS}

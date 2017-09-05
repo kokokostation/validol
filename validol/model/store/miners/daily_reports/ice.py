@@ -4,23 +4,24 @@ from requests_cache import CachedSession
 from requests import Request
 import pandas as pd
 
-from validol.model.store.miners.weekly_reports.flavor import Actives, Platforms
+from validol.model.store.resource import Actives, Platforms
 from validol.model.store.view.active_info import ActiveInfo
 from validol.model.store.structures.pdf_helper import PdfHelpers
 from validol.model.store.miners.daily_reports.daily import DailyResource
 
 
 class IceDaily:
-    def __init__(self, model_launcher):
+    def __init__(self, model_launcher, flavor):
         self.model_launcher = model_launcher
+        self.flavor = flavor
 
     def update_actives(self, df):
         df['PlatformCode'] = 'IFEU'
 
-        IceAllActives(self.model_launcher).write_df(df)
+        IceAllActives(self.model_launcher, self.flavor['name']).write_df(df)
 
     def prepare_update(self):
-        platforms_table = Platforms(self.model_launcher, Active.FLAVOR)
+        platforms_table = Platforms(self.model_launcher, self.flavor['name'])
         platforms_table.write_df(
             pd.DataFrame([['IFEU', 'ICE FUTURES EUROPE']],
                          columns=("PlatformCode", "PlatformName")))
@@ -38,7 +39,7 @@ class IceDaily:
                 params={
                     'selectionForm': '',
                     'exchangeCode': 'IFEU',
-                    'optionRequest': 'false'
+                    'optionRequest': self.flavor['optionRequest']
                 }
             )
 
@@ -59,25 +60,26 @@ class IceDaily:
 
         from validol.model.store.miners.daily_reports.ice_view import IceView
 
-        for index, active in IceActives(self.model_launcher).read_df().iterrows():
+        for index, active in IceActives(self.model_launcher, self.flavor['name']).read_df().iterrows():
             pdf_helper = PdfHelpers(self.model_launcher).read_by_name(
-                ActiveInfo(IceView(), active.PlatformCode, active.ActiveName))
+                ActiveInfo(IceView(self.flavor), active.PlatformCode, active.ActiveName))
 
-            Active(self.model_launcher, active.PlatformCode, active.ActiveName, session,
-                   pdf_helper).update()
+            Active(self.model_launcher, active.PlatformCode, active.ActiveName, self.flavor,
+                   session, pdf_helper).update()
 
 
 class Active(DailyResource):
-    FLAVOR = 'ice_daily'
-
-    def __init__(self, model_launcher, platform_code, active_name, session=None, pdf_helper=None):
+    def __init__(self, model_launcher, platform_code, active_name, flavor,
+                 session=None, pdf_helper=None):
         DailyResource.__init__(self, model_launcher, platform_code, active_name, IceActives,
-                               Active.FLAVOR, pdf_helper)
+                               flavor, pdf_helper)
+
         self.session = session
 
-        self.active_code = IceActives(model_launcher).get_fields(platform_code, active_name,
-                                                                 ('WebActiveCode',))[0]
+        self.active_code = IceActives(model_launcher, flavor['name'])\
+            .get_fields(platform_code, active_name, ('WebActiveCode',))[0]
         self.platform_code = platform_code
+        self.flavor = flavor
 
     def download_date(self, date):
         request = Request(
@@ -87,7 +89,7 @@ class Active(DailyResource):
                 'generateReport': '',
                 'exchangeCode': self.platform_code,
                 'exchangeCodeAndContract': self.active_code,
-                'optionRequest': 'false',
+                'optionRequest': self.flavor['optionRequest'],
                 'selectedDate': date.strftime("%m/%d/%Y"),
                 'submit': 'Download',
                 'smpbss': self.session.cookies['smpbss']
@@ -122,7 +124,7 @@ class Active(DailyResource):
                 params={
                     'selectionForm': '',
                     'exchangeCode': self.platform_code,
-                    'optionRequest': 'false',
+                    'optionRequest': self.flavor['optionRequest'],
                     'exchangeCodeAndContract': self.active_code,
                     'smpbss': self.session.cookies['smpbss'],
                 }
@@ -135,7 +137,7 @@ class Active(DailyResource):
 
 
 class IceActives(Actives):
-    def __init__(self, model_launcher, flavor=Active.FLAVOR):
+    def __init__(self, model_launcher, flavor):
         Actives.__init__(self, model_launcher.user_dbh, flavor, [
             ('ActiveCode', 'TEXT'),
             ('WebActiveCode', 'TEXT')
@@ -143,5 +145,5 @@ class IceActives(Actives):
 
 
 class IceAllActives(IceActives):
-    def __init__(self, model_launcher):
-        IceActives.__init__(self, model_launcher, "ice_daily_all")
+    def __init__(self, model_launcher, flavor):
+        IceActives.__init__(self, model_launcher, flavor)

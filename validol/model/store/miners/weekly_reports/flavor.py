@@ -1,15 +1,13 @@
 import datetime as dt
 from io import StringIO
-
 import pandas as pd
-from validol.model.store.resource import Resource, Table
+
+from validol.model.store.resource import Actives, ActiveResource, Platforms
+from validol.model.store.resource import Updater
 from validol.model.utils import group_by
 
 
-class Flavor:
-    def __init__(self, model_launcher):
-        self.model_launcher = model_launcher
-
+class Flavor(Updater):
     @staticmethod
     def get_active_platform_name(market_and_exchange_names):
         return [name.strip() for name in market_and_exchange_names.rsplit("-", 1)]
@@ -24,12 +22,12 @@ class Flavor:
 
         df = pd.DataFrame()
 
-        for csv in self.load_csvs(flavor):
+        for csv, date_fmt in self.load_csvs(flavor):
             df = df.append(pd.read_csv(
                 StringIO(csv),
                 usecols=cols,
                 parse_dates=[flavor["date"]],
-                date_parser=lambda date: dt.datetime.strptime(date, flavor["date_fmt"]).date()))
+                date_parser=lambda date: dt.datetime.strptime(date, date_fmt).date()))
 
         df = df.rename(str, flavor["values"])
 
@@ -67,95 +65,20 @@ class Flavor:
         raise NotImplementedError
 
 
-class Platforms(Table):
-    def __init__(self, model_launcher, flavor):
-        Table.__init__(
-            self,
-            model_launcher.main_dbh,
-            "Platforms_{flavor}".format(flavor=flavor), [
-            ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
-            ("PlatformCode", "TEXT"),
-            ("PlatformName", "TEXT")],
-            "UNIQUE (PlatformCode) ON CONFLICT IGNORE")
-
-    def get_platforms(self):
-        return self.read_df()
-
-    def get_platform_id(self, platform_code):
-        return self.dbh.cursor().execute('''
-            SELECT 
-                id 
-            FROM 
-                "{table}" 
-            WHERE 
-                PlatformCode = ?'''.format(table=self.table), (platform_code,)).fetchone()[0]
-
-
-class Actives(Table):
-    def __init__(self, dbh, flavor, schema_add=None):
-        schema = [
-            ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
-            ("PlatformCode", "TEXT"),
-            ("ActiveName", "TEXT")]
-
-        if schema_add is not None:
-            schema.extend(schema_add)
-
-        Table.__init__(self, dbh,
-            "Actives_{flavor}".format(flavor=flavor), schema,
-            "UNIQUE (PlatformCode, ActiveName) ON CONFLICT IGNORE")
-
-    def get_actives(self, platform):
-        return self.read_df('''
-            SELECT
-                *
-            FROM
-                "{table}"
-            WHERE
-                PlatformCode = ?''', params=(platform,))
-
-    def get_fields(self, platform_code, active_name, fields):
-        return self.dbh.cursor().execute('''
-            SELECT 
-                {fields} 
-            FROM 
-                "{table}" 
-            WHERE 
-                PlatformCode = ? AND 
-                ActiveName = ?'''.format(table=self.table, fields=', '.join(fields)),
-                                         (platform_code, active_name)).fetchone()
-
-    def remove_active(self, ai):
-        self.dbh.cursor().execute('''
-            DELETE 
-            FROM 
-                "{table}" 
-            WHERE
-                PlatformCode = ? AND 
-                ActiveName = ?'''.format(table=self.table), (ai.platform, ai.active))
-
-        self.dbh.commit()
-
-
 class WeeklyActives(Actives):
     def __init__(self, model_launcher, flavor):
         Actives.__init__(self, model_launcher.main_dbh, flavor)
 
 
-class Active(Resource):
+class Active(ActiveResource):
     def __init__(self, model_launcher, flavor, platform_code, active_name, update_info=pd.DataFrame()):
-        active_id = WeeklyActives(model_launcher, flavor['name'])\
-            .get_fields(platform_code, active_name, ('id',))[0]
-        platform_id = Platforms(model_launcher, flavor['name']).get_platform_id(platform_code)
-
-        Resource.__init__(
-            self,
-            model_launcher.main_dbh,
-            "Active_platform_{platform_id}_active_{active_id}_{flavor}".format(
-                platform_id=platform_id,
-                active_id=active_id,
-                flavor=flavor["name"]),
-            flavor["schema"])
+        ActiveResource.__init__(self,
+                                flavor["schema"],
+                                model_launcher,
+                                platform_code,
+                                active_name,
+                                flavor["name"],
+                                actives_cls=WeeklyActives)
 
         self.update_info = update_info
 

@@ -50,7 +50,7 @@ class FormulaGrammar:
 
         function = (validol_atom + args)
         st_function = ident + args
-        letters = pp.Word(pp.alphas)
+        string = pp.Word(pp.alphas + '%_' + pp.nums)
         date = pp.Combine(pp.Word(pp.nums, exact=4) + (pp.Literal('-') + pp.Word(pp.nums, exact=2)) * 2)
         none = pp.CaselessLiteral('None').setParseAction(lambda toks: [None])
 
@@ -62,7 +62,7 @@ class FormulaGrammar:
         multop = mult | div
         expop = pp.Literal("^")
         pi = pp.CaselessLiteral("PI")
-        true_atom = (function | st_function | date | pi | e | fnumber | var | none | letters)\
+        true_atom = (function | st_function | date | pi | e | fnumber | var | none | string)\
             .setParseAction(self.push_first)
         atom = ((pp.Optional(pp.oneOf("- +")) + true_atom) |
                 pp.Optional(pp.oneOf("- +")) + pp.Group(lpar + expr + rpar))\
@@ -93,6 +93,7 @@ class NumericStringParser(FormulaGrammar):
         FormulaGrammar.__init__(self, evaluator.atoms_map.keys())
 
         self.evaluator = evaluator
+        self.cache = {}
 
     def evaluate_stack(self, stack, params_map):
         op = stack.pop()
@@ -103,7 +104,18 @@ class NumericStringParser(FormulaGrammar):
             atom = self.evaluator.atoms_map[op.name]
             args_num = stack.pop()
             params = list(reversed([self.evaluate_stack(stack, params_map) for _ in range(args_num)]))
-            return atom.evaluate(self.evaluator, params)
+
+            name = atom.cache_name(params)
+
+            if name not in self.cache:
+                result = atom.evaluate(self.evaluator, params)
+
+                if name is not None:
+                    self.cache[name] = result
+            else:
+                result = self.cache[name]
+
+            return result
         elif op[0] == '@':
             return params_map[op]
         elif op == 'unary -':

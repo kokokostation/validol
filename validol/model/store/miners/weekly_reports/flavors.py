@@ -127,11 +127,75 @@ CFTC_DISAGGREGATED_FUTURES_AND_OPTIONS_COMBINED = cftc_disaggregated(
     name="cftc_disaggregated_futures_and_options_combined")
 
 
+def cftc_financial_futures(initial_prefix, year_prefix, name):
+    return {
+        "keys": ["CFTC_Market_Code", "Market_and_Exchange_Names"],
+        "date": "Report_Date_as_YYYY-MM-DD",
+        "values": {
+            "Report_Date_as_YYYY-MM-DD": "Date",
+            "Open_Interest_All": "OI",
+            "Dealer_Positions_Long_All": "DIPL",
+            "Dealer_Positions_Short_All": "DIPS",
+            "Dealer_Positions_Spread_All": "DIPSpr",
+            "Asset_Mgr_Positions_Long_All": "AMPL",
+            "Asset_Mgr_Positions_Short_All": "AMPS",
+            "Asset_Mgr_Positions_Spread_All": "AMPSpr",
+            "Lev_Money_Positions_Long_All": "LMPL",
+            "Lev_Money_Positions_Short_All": "LMPS",
+            "Lev_Money_Positions_Spread_All": "LMPSpr",
+            "Other_Rept_Positions_Long_All": "ORPL",
+            "Other_Rept_Positions_Short_All": "ORPS",
+            "Other_Rept_Positions_Spread_All": "ORPSpr",
+            "NonRept_Positions_Long_All": "NRL",
+            "NonRept_Positions_Short_All": "NRS"
+        },
+        "schema": [
+            ("OI", "INTEGER"),
+            ("DIPL", "INTEGER"),
+            ("DIPS", "INTEGER"),
+            ("DIPSpr", "INTEGER"),
+            ("AMPL", "INTEGER"),
+            ("AMPS", "INTEGER"),
+            ("AMPSpr", "INTEGER"),
+            ("LMPL", "INTEGER"),
+            ("LMPS", "INTEGER"),
+            ("LMPSpr", "INTEGER"),
+            ("ORPL", "INTEGER"),
+            ("ORPS", "INTEGER"),
+            ("ORPSpr", "INTEGER"),
+            ("NRL", "INTEGER"),
+            ("NRS", "INTEGER")
+        ],
+        "name": name,
+        "initial_prefix": initial_prefix,
+        "year_prefix": year_prefix,
+        "disaggregated": False,
+        "initial_date_fmt": "%m/%d/%Y 12:00:00 AM",
+        "date_fmt": CFTC_DATE_FMT
+    }
+
+
+CFTC_FINANCIAL_FUTURES_FUTURES_ONLY = cftc_financial_futures(
+    initial_prefix="http://www.cftc.gov/files/dea/history/fin_fut_txt_2006_",
+    year_prefix="http://www.cftc.gov/files/dea/history/fut_fin_txt_",
+    name='cftc_financial_futures_futures_only'
+)
+
+CFTC_FINANCIAL_FUTURES_COMBINED = cftc_financial_futures(
+    initial_prefix="http://www.cftc.gov/files/dea/history/fin_com_txt_2006_",
+    year_prefix="http://www.cftc.gov/files/dea/history/com_fin_txt_",
+    name='cftc_financial_futures_combined'
+)
+
+
 class Cftc(Flavor):
     FLAVORS = [
         CFTC_FUTURES_ONLY,
         CFTC_DISAGGREGATED_FUTURES_ONLY,
-        CFTC_DISAGGREGATED_FUTURES_AND_OPTIONS_COMBINED]
+        CFTC_DISAGGREGATED_FUTURES_AND_OPTIONS_COMBINED,
+        CFTC_FINANCIAL_FUTURES_FUTURES_ONLY,
+        CFTC_FINANCIAL_FUTURES_COMBINED
+    ]
 
     def __init__(self, model_launcher):
         Flavor.__init__(self, model_launcher)
@@ -141,16 +205,20 @@ class Cftc(Flavor):
             "{year_prefix}{curr_year}.zip"
                 .format(year_prefix=flavor["year_prefix"],
                         curr_year=date.today().year),
-            False)]
+            False,
+            flavor['date_fmt']
+        )]
 
         if self.if_initial(flavor):
             sources.append((
                 "{initial_prefix}{prev_year}.zip"
                     .format(initial_prefix=flavor["initial_prefix"],
                             prev_year=date.today().year - 1),
-                True))
+                True,
+                flavor.get("initial_date_fmt", flavor['date_fmt'])))
 
-        return [read_url_one_filed_zip(source, cache_enabled) for source, cache_enabled in sources]
+        return [(read_url_one_filed_zip(source, cache_enabled), date_fmt)
+                for source, cache_enabled, date_fmt in sources]
 
     def update(self):
         for flavor in Cftc.FLAVORS:
@@ -215,8 +283,9 @@ class Ice(Flavor):
         else:
             years = [date.today().year]
 
-        return [read_url_text("https://www.theice.com/publicdocs/futures/COTHist{year}.csv"
-                              .format(year=year), year != years[-1]) for year in years]
+        return [(read_url_text("https://www.theice.com/publicdocs/futures/COTHist{year}.csv"
+                              .format(year=year), year != years[-1]), flavor['date_fmt'])
+                for year in years]
 
     def update(self):
         df = self.get_df(Ice.FLAVORS[0])

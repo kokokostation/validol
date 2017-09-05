@@ -17,7 +17,9 @@ setup(
         'beautifulsoup4',
         'marshmallow',
         'tabula-py',
-        'python-dateutil'
+        'python-dateutil',
+        'PyPDF2',
+        'scipy'
     ],
     entry_points={
         'console_scripts': [

@@ -1,6 +1,6 @@
 from functools import wraps
 
-from validol.model.utils import to_timestamp, parse_isoformat_date
+from validol.model.utils import parse_isoformat_date
 
 class AtomBase:
     def __init__(self, name, params):
@@ -11,8 +11,14 @@ class AtomBase:
     def full_name(self):
         return "{name}({params})".format(name=self.name, params=', '.join(self.params))
 
+    def cache_name(self, params):
+        if all(any(isinstance(param, typ) for typ in (str, float)) for param in params):
+            return str(AtomBase(self.name, params))
+        else:
+            return None
+
     def __str__(self):
-        return "{name}({params})".format(name=self.name, params=', '.join(self.params))
+        return "{name}({params})".format(name=self.name, params=', '.join(str(self.params)))
 
     def evaluate(self, evaluator, params):
         raise NotImplementedError

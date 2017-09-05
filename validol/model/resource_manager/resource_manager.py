@@ -6,9 +6,8 @@ from validol.model.resource_manager import evaluator
 from validol.model.store.miners.prices import InvestingPrice
 from validol.model.store.resource import Resource
 from validol.model.resource_manager.atom_flavors import MonetaryAtom, MBDeltaAtom, \
-    LazyAtom, FormulaAtom, AtomBase, Apply, Merge, Curr
-from validol.model.store.miners.weekly_reports.flavors import WEEKLY_REPORT_FLAVORS
-from validol.model.store.miners.daily_reports.daily import DailyResource
+    LazyAtom, FormulaAtom, AtomBase, Apply, Merge, Curr, MlCurve, ArgMin, Quantile, Min
+from validol.model.store.miners.report_flavors import REPORT_FLAVORS
 from validol.model.utils import merge_dfs
 
 
@@ -31,7 +30,11 @@ class ResourceManager:
 
             df = merge_dfs(df, active_df)
 
-        begin, end = [dt.date.fromtimestamp(df.index[i]) for i in (0, -1)]
+        begin, end = dt.date(2000, 1, 1), dt.date.today()
+
+        if not df.empty:
+            l, r = [dt.date.fromtimestamp(df.index[i]) for i in (0, -1)]
+            begin, end = min(begin, l), max(end, r)
 
         if prices_info is not None:
             for letter, prices_pair_id in zip(alphas, prices_info):
@@ -57,14 +60,13 @@ class ResourceManager:
 
     @staticmethod
     def get_primary_atoms():
-        result = [MonetaryAtom(), MBDeltaAtom(), Apply(), Merge(), Curr()]
+        result = [MonetaryAtom(), MBDeltaAtom(), Apply(), Merge(), Curr(), MlCurve(), ArgMin(), Quantile(), Min()]
 
         flavor_atom_names = [name
-                             for flavor in WEEKLY_REPORT_FLAVORS
+                             for flavor in REPORT_FLAVORS
                              for name in Resource.get_atoms(flavor.get("schema", []))]
 
         names = sorted(set(flavor_atom_names +
-                           Resource.get_atoms(DailyResource.SCHEMA[1:]) +
                            Resource.get_atoms(InvestingPrice.SCHEMA)))
 
         result.extend([LazyAtom(name, [FormulaAtom.LETTER]) for name in names])

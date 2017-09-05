@@ -1,20 +1,28 @@
 from itertools import groupby
 from sqlalchemy import Column, String
 import pandas as pd
-from copy import deepcopy
-from dateutil.relativedelta import relativedelta
+from scipy.interpolate import interp1d
+import numpy as np
 
 from validol.model.store.miners.monetary import Monetary
 from validol.model.store.structures.structure import Base, JSONCodec
 from validol.model.resource_manager.atom_base import AtomBase, rangable
 from validol.model.utils import to_timestamp, merge_dfs_list
-from validol.model.store.miners.daily_reports.expirations import Expirations
 
 
-class LazyAtom(AtomBase):
+class Currable:
+    def get_full(self, ai, model_launcher):
+        raise NotImplementedError
+
+    def extract_info(self, df):
+        raise NotImplementedError
+
+
+class LazyAtom(AtomBase, Currable):
     @rangable
     def evaluate(self, evaluator, params):
-        name = str(AtomBase(self.name, params))
+        name = self.cache_name(params)
+
         df = evaluator.df
 
         if name in df:
@@ -23,6 +31,12 @@ class LazyAtom(AtomBase):
             return df[name][(begin <= df.index) & (df.index <= end)]
         else:
             return pd.Series()
+
+    def get_full(self, ai, model_launcher):
+        return ai.flavor.get_full_df(ai, model_launcher)
+
+    def extract_info(self, df):
+        return df[self.name]
 
 
 class MonetaryAtom(AtomBase):
@@ -81,7 +95,7 @@ class MBDeltaAtom(AtomBase):
 
 class Apply(AtomBase):
     def __init__(self):
-        AtomBase.__init__(self, 'APPLY', ['...'])
+        AtomBase.__init__(self, 'APPLY', ['atom, args separated by comma'])
 
     def evaluate(self, evaluator, params):
         return evaluator.atoms_map[params[0]].evaluate(evaluator, params[1:])
@@ -89,7 +103,7 @@ class Apply(AtomBase):
 
 class Merge(AtomBase):
     def __init__(self):
-        AtomBase.__init__(self, 'MERGE', ['df'])
+        AtomBase.__init__(self, 'MERGE', ['dfs separated by comma'])
 
     def evaluate(self, evaluator, params):
         return merge_dfs_list([param.to_frame('i') for param in params])['i']
@@ -101,37 +115,67 @@ class Curr(AtomBase):
 
     def evaluate(self, evaluator, params):
         ai = evaluator.letter_map[params[1]]
+        atom = evaluator.atoms_map[params[0]]
 
-        atom_info = ai.flavor.get_full_df(ai, evaluator.model_launcher)
-        atom_info['CONTRACT'] = atom_info['CONTRACT'].apply(Expirations.from_contract)
+        df = evaluator.model_launcher.current(ai, int(params[2]), atom.get_full(ai, evaluator.model_launcher))
 
-        exp = evaluator.model_launcher.get_exp_info(ai)
-        exp_info = Expirations(evaluator.model_launcher).read_df('''
-            SELECT
-                Date, Contract
-            FROM
-                {table}
-            WHERE
-                PlatformCode = ? AND ActiveName = ? AND ActiveCode = ? AND Event = 'LTD'
-        ''', params=(exp['PlatformCode'], exp['ActiveName'], exp['ActiveCode']))
-        exp_info['Contract'] = exp_info['Contract'].apply(Expirations.from_contract)
-
-        result = pd.DataFrame()
-
-        for i in range(1, len(exp_info)):
-            begin, end = exp_info.index[i - 1], exp_info.index[i]
-
-            curr_contract = exp_info['Contract'].iloc[i] + relativedelta(months=int(params[2]))
-
-            df = atom_info[
-                (begin <= atom_info.index) &
-                (atom_info.index < end) &
-                (atom_info.CONTRACT == curr_contract)
-            ]
-
-            result = result.append(df)
-
-        if not result.empty:
-            return result[params[0]]
+        if not df.empty:
+            return atom.extract_info(df)
         else:
             return pd.Series()
+
+
+class MlCurve(AtomBase, Currable):
+    def __init__(self):
+        AtomBase.__init__(self, 'ML_CURVE', [FormulaAtom.LETTER])
+
+    def evaluate(self, evaluator, params):
+        ai = evaluator.letter_map[params[0]]
+
+        return evaluator.model_launcher.get_ml_curves(ai)
+
+    def get_full(self, ai, model_launcher):
+        return model_launcher.get_ml_curves(ai, False)
+
+    def extract_info(self, df):
+        return df.CURVE
+
+
+class ArgMin(AtomBase):
+    def __init__(self):
+        AtomBase.__init__(self, 'ARGMIN', ['series of series'])
+
+    def evaluate(self, evaluator, params):
+        return params[0].apply(lambda curve: curve.argmin())
+
+
+class Quantile(AtomBase):
+    def __init__(self):
+        AtomBase.__init__(self, 'QUANTILE', ['series of series', 'quantile', 'min or max'])
+
+    @staticmethod
+    def get_quantile(series, q, minmax):
+        argmin = series.argmin()
+
+        ml = series[argmin] * (1 + q)
+
+        if minmax == 'min':
+            series = series.loc[:argmin]
+        else:
+            series = series.loc[argmin:]
+
+        if len(series) < 2:
+            return np.NaN
+
+        return interp1d(series.values, series.index)(ml)
+
+    def evaluate(self, evaluator, params):
+        return params[0].apply(lambda curve: Quantile.get_quantile(curve, params[1], params[2]))
+
+
+class Min(AtomBase):
+    def __init__(self):
+        AtomBase.__init__(self, 'MIN', ['series of series'])
+
+    def evaluate(self, evaluator, params):
+        return params[0].apply(lambda curve: curve.min())
