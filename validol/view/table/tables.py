@@ -9,10 +9,8 @@ from validol.view.menu.graph_dialog import GraphDialog
 import validol.pyqtgraph as pg
 
 class Table(QtWidgets.QWidget):
-    def __init__(self, flags, df, labels, title_info):
+    def __init__(self, flags, df, labels, title):
         QtWidgets.QWidget.__init__(self, flags=flags)
-
-        title = GraphDialog.make_title(title_info)
 
         self.setWindowTitle(title)
 
@@ -35,7 +33,8 @@ class Table(QtWidgets.QWidget):
             if col_without_nan.empty:
                 continue
 
-            min_val, max_val = min(col_without_nan), max(col_without_nan)
+            min_val, max_val = col_without_nan.min(), col_without_nan.max()
+
             for j in range(len(filtered_df)):
                 norm = (filtered_df.iloc[j, i] - min_val) / (max_val - min_val)
 

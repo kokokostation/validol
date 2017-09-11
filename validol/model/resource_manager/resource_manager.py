@@ -19,13 +19,13 @@ class ResourceManager:
     def add_letter(df, letter):
         return df.rename(columns={name: str(AtomBase(name, [letter])) for name in df.columns})
 
-    def prepare_actives(self, actives_info, prices_info=None):
+    def prepare_actives(self, actives_info, pure_actives=False):
         df = pd.DataFrame()
 
         for letter, ai in zip(alphas, actives_info):
             active_df = ai.flavor.get_df(ai, self.model_launcher)
 
-            if prices_info is not None:
+            if not pure_actives:
                 active_df = ResourceManager.add_letter(active_df, letter)
 
             df = merge_dfs(df, active_df)
@@ -36,23 +36,21 @@ class ResourceManager:
             l, r = [dt.date.fromtimestamp(df.index[i]) for i in (0, -1)]
             begin, end = min(begin, l), max(end, r)
 
-        if prices_info is not None:
-            for letter, prices_pair_id in zip(alphas, prices_info):
-                prices = InvestingPrice(self.model_launcher, prices_pair_id)
+        if not pure_actives:
+            for letter, ai in zip(alphas, actives_info):
+                pair_id = self.model_launcher.get_prices_info(ai.price_url).get('pair_id', None)
+                prices = InvestingPrice(self.model_launcher, pair_id)
 
-                if prices_pair_id is None:
-                    prices_df = prices.empty()
-                else:
-                    prices_df = prices.read_dates(begin, end)
+                prices_df = prices.read_dates(begin, end)
 
                 df = merge_dfs(df, ResourceManager.add_letter(prices_df, letter))
 
         return df, (begin, end)
 
-    def prepare_tables(self, table_pattern, actives_info, prices_info):
+    def prepare_tables(self, table_pattern, actives_info):
         letter_map = dict(zip(alphas, actives_info))
 
-        df, range = self.prepare_actives(actives_info, prices_info)
+        df, range = self.prepare_actives(actives_info)
 
         evaluator_ = evaluator.Evaluator(self.model_launcher, df, letter_map, range)
 

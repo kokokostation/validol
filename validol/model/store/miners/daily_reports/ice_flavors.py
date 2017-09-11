@@ -1,5 +1,7 @@
 from validol.model.store.miners.daily_reports.pdf_helpers.ice import IceFuturesParser, \
     IceOptionsParser
+from validol.model.store.miners.daily_reports.ice import IceDaily
+from validol.model.store.miners.daily_reports.ice_view import IceView
 
 OPTIONS_SCHEMA = [
     ('CONTRACT', 'TEXT'),
@@ -15,6 +17,7 @@ FUTURES_SCHEMA = [
     ('OI', 'INTEGER'),
     ('OIChg', 'INTEGER')
 ]
+
 FUTURES_CONSTRAINT = "UNIQUE (Date, CONTRACT) ON CONFLICT IGNORE"
 OPTIONS_CONSTRAINT = "UNIQUE (Date, CONTRACT, STRIKE, PC) ON CONFLICT IGNORE"
 
@@ -24,7 +27,10 @@ ICE_FUTURES = {
     'processors': [IceFuturesParser],
     'schema': FUTURES_SCHEMA,
     'constraint': FUTURES_CONSTRAINT,
-    'get_df': True
+    'get_df': True,
+    'options': False,
+    'updater': IceDaily,
+    'view': IceView
 }
 
 ICE_OPTIONS = {
@@ -33,7 +39,10 @@ ICE_OPTIONS = {
     'processors': [IceOptionsParser],
     'schema': OPTIONS_SCHEMA,
     'constraint':OPTIONS_CONSTRAINT,
-    'get_df': False
+    'get_df': False,
+    'options': True,
+    'updater': IceDaily,
+    'view': IceView
 }
 
 ICE_DAILY_FLAVORS = [ICE_OPTIONS, ICE_FUTURES]

@@ -11,6 +11,7 @@ import os
 from PyPDF2 import PdfFileReader
 from itertools import groupby
 from operator import itemgetter
+import re
 
 
 def to_timestamp(date):
@@ -102,8 +103,9 @@ def group_by(df, columns):
 
 
 def date_to_timestamp(df):
-    df.Date = df.apply(lambda row: to_timestamp(row['Date']), axis=1)
-    return df
+    result = df.copy()
+    result.Date = result.apply(lambda row: to_timestamp(row['Date']), axis=1)
+    return result
 
 
 def remove_duplications(arr):
@@ -208,3 +210,8 @@ def get_pages_run(fobj, phrase):
 def first_run(items):
     for k, g in groupby(enumerate(items), lambda ix: ix[0] - ix[1]):
         return map(itemgetter(1), g)
+
+
+def get_filename(response):
+    disposition = response.headers['Content-Disposition']
+    return re.search('filename="(.+)"', disposition).group(1)

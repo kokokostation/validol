@@ -3,26 +3,17 @@ import sqlite3
 import requests
 from sqlalchemy import create_engine
 
-from validol.model.store.miners.weekly_reports.flavors import Cftc, Ice
+from validol.model.store.view.composite_updater import DailyUpdater, EntireUpdater, UpdateManager
 from validol.model.store.view.view_flavors import ALL_VIEW_FLAVORS
 from validol.model.resource_manager.resource_manager import ResourceManager
-from validol.model.store.miners.monetary import Monetary
 from validol.model.store.miners.prices import InvestingPrices
 from validol.model.store.structures.atom import Atoms
-from validol.model.store.structures.glued_active.glued_active import GluedActives
 from validol.model.store.structures.pattern import Patterns, StrPattern
 from validol.model.store.structures.table import Tables
-from validol.model.store.miners.daily_reports.flavors import DailyReports
 from validol.model.store.structures.pdf_helper import PdfHelpers
+from validol.model.store.structures.scheduler import Schedulers
 from validol.model.store.miners.daily_reports.expirations import Expirations
-from validol.model.store.collectors.ml import MlCurves, MlCurve
-
-
-class Update:
-    pass
-
-Update.DAILY = [DailyReports, Expirations, MlCurves]
-Update.WEEKLY = [Monetary, Cftc, Ice] + Update.DAILY
+from validol.model.store.collectors.ml import MlCurve
 
 
 class ModelLauncher:
@@ -45,7 +36,7 @@ class ModelLauncher:
         if not os.path.isfile(main_dbh):
             self.main_dbh = sqlite3.connect(":memory:")
 
-            self.update(Update.WEEKLY)
+            self.update_weekly()
 
             with sqlite3.connect(main_dbh) as new_db:
                 new_db.executescript("".join(self.main_dbh.iterdump()))
@@ -56,13 +47,17 @@ class ModelLauncher:
 
         return self
 
-    def update(self, clss):
+    def update(self, cls):
         try:
-            for cls in clss:
-                cls(self).update()
-            return True
+            return cls(self).update_entire()
         except requests.exceptions.ConnectionError:
-            return False
+            return None
+
+    def update_daily(self):
+        return self.update(DailyUpdater)
+
+    def update_weekly(self):
+        return self.update(EntireUpdater)
 
     def get_prices_info(self, url):
         return InvestingPrices(self).get_info_through_url(url)
@@ -103,14 +98,8 @@ class ModelLauncher:
     def remove_pattern(self, pattern):
         Patterns(self).remove(pattern)
 
-    def prepare_tables(self, table_pattern, actives_info, prices_info):
-        return self.resource_manager.prepare_tables(table_pattern, actives_info, prices_info)
-
-    def write_glued_active(self, name, actives):
-        GluedActives(self).write_active(name, actives)
-
-    def remove_glued_active(self, name):
-        GluedActives(self).remove_by_name(name)
+    def prepare_tables(self, table_pattern, actives_info):
+        return self.resource_manager.prepare_tables(table_pattern, actives_info)
 
     def write_pdf_helper(self, ai, info, other_info):
         PdfHelpers(self).write_helper(ai, info, other_info)
@@ -135,3 +124,24 @@ class ModelLauncher:
 
     def current(self, ai, delta, df):
         return Expirations(self).current(ai, delta, df)
+
+    def remove_expirations(self, ai):
+        Expirations(self).remove_active(ai)
+
+    def remove_ml(self, ai):
+        MlCurve(self, ai).drop()
+
+    def read_schedulers(self):
+        return Schedulers(self).read()
+
+    def write_scheduler(self, name, cron, working):
+        Schedulers(self).write_scheduler(name, cron, working)
+
+    def remove_scheduler(self, scheduler):
+        Schedulers(self).remove_scheduler(scheduler)
+
+    def switch_scheduler(self, scheduler):
+        Schedulers(self).switch(scheduler)
+
+    def get_update_manager(self):
+        return UpdateManager(self)

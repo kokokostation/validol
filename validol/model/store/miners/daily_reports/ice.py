@@ -8,6 +8,7 @@ from validol.model.store.resource import Actives, Platforms
 from validol.model.store.view.active_info import ActiveInfo
 from validol.model.store.structures.pdf_helper import PdfHelpers
 from validol.model.store.miners.daily_reports.daily import DailyResource
+from validol.model.utils import get_filename
 
 
 class IceDaily:
@@ -109,7 +110,7 @@ class Active(DailyResource):
             return bad_response()
 
         try:
-            return self.pdf_helper.parse_content(response.content, date)
+            return self.pdf_helper.process_loaded(get_filename(response), response.content, date)
         except ValueError:
             return bad_response()
 

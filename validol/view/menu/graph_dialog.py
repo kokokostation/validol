@@ -1,7 +1,6 @@
 from functools import partial
 
 from PyQt5 import QtWidgets, QtGui
-from pyparsing import alphas
 
 from validol.model.store.structures.pattern import Graph, Line, Bar, Pattern
 from validol.model.utils import remove_duplications
@@ -12,12 +11,25 @@ from validol.view.utils.pattern_tree import PatternTree
 from validol.view.view_element import ViewElement
 
 
+class GDTippedList(TippedList):
+    def __init__(self, model_launcher, table_name):
+        TippedList.__init__(self, model_launcher, PatternTree(), QtWidgets.QListWidget())
+
+        self.table_name = table_name
+
+    def set_view(self, item):
+        self.view.draw_pattern(item)
+
+    def get_items(self):
+        return self.model_launcher.get_patterns(self.table_name)
+
+
 class GraphDialog(ViewElement, QtWidgets.QWidget):
     COLORS = [(255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 255, 255), (255, 255, 0),
               (255, 0, 255), (0, 0, 255), (192, 192, 192), (255, 69, 0), (255, 140, 0),
               (102, 0, 204), (51, 153, 255)]
 
-    def __init__(self, flags, df, table_pattern, title_info,
+    def __init__(self, flags, df, table_pattern, title,
                  controller_launcher, model_launcher):
         QtWidgets.QWidget.__init__(self, flags=flags)
         ViewElement.__init__(self, controller_launcher, model_launcher)
@@ -26,7 +38,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
         self.df = df
 
-        self.title = GraphDialog.make_title(title_info)
+        self.title = title
         self.table_name = table_pattern.name
         self.table_labels = remove_duplications(table_pattern.all_formulas())
 
@@ -42,11 +54,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.main_layout.insertLayout(1, self.upper_layout, stretch=10)
         self.main_layout.insertLayout(2, self.buttons_layout)
 
-        def view_setter(view, pattern):
-            view.draw_pattern(pattern)
-
-        self.tipped_list = TippedList(lambda: self.model_launcher.get_patterns(self.table_name),
-                                      view_setter, PatternTree())
+        self.tipped_list = GDTippedList(model_launcher, self.table_name)
 
         self.removePattern = QtWidgets.QPushButton('Remove pattern')
         self.removePattern.clicked.connect(self.remove_pattern)
@@ -128,22 +136,6 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.currentPattern = Pattern()
 
         self.showMaximized()
-
-    @staticmethod
-    def make_title(title_info):
-        title = ""
-        for i, (ai, price_name) in enumerate(title_info):
-            active_title = "{}/{}/{}".format(ai.flavor.name(), ai.platform, ai.active)
-
-            if ai.active_flavor is not None:
-                active_title += "/{}".format(ai.active_flavor)
-
-            if price_name is not None:
-                active_title += "; Quot from: {}".format(price_name)
-
-            title += "{}: {}\n".format(alphas[i], active_title)
-
-        return title
 
     def remove_pattern(self):
         self.model_launcher.remove_pattern(self.tipped_list.current_item())

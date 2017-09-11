@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
-setup(
-    name='validol',
-    version='0.0.9',
-    license='MIT',
-    packages=find_packages(),
-    install_requires=[
+SETUP_CONFIG = {
+    'name': 'validol',
+    'version': '0.0.9',
+    'license': 'MIT',
+    'packages': find_packages(),
+    'install_requires': [
         'pyparsing',
         'numpy',
         'pandas',
@@ -19,12 +19,15 @@ setup(
         'tabula-py',
         'python-dateutil',
         'PyPDF2',
-        'scipy'
+        'scipy',
+        'croniter'
     ],
-    entry_points={
+    'entry_points': {
         'console_scripts': [
             'validol=validol.main:main',
             'validol-conf=validol.migration_scripts.atoms_migration:main'
         ],
-    },
-)
+    }
+}
+
+setup(**SETUP_CONFIG)

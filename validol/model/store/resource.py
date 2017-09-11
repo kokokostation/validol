@@ -55,17 +55,72 @@ class Table:
 
 
 class Updater:
+    @staticmethod
+    def reduce_ranges(ranges):
+        left, right = zip(*ranges)
+        return min(left), max(right)
+
     def __init__(self, model_launcher):
         self.model_launcher = model_launcher
 
-    def update(self):
+    def update_source(self, source):
+        result = [(source, self.update_source_impl(source))]
+
+        for dep, sources in self.dependencies(source):
+            updater = dep(self.model_launcher)
+
+            if sources is None:
+                result.extend(updater.update_entire())
+            else:
+                for source in sources:
+                    result.extend(updater.update_source(source))
+
+        return result
+
+    def update_source_impl(self, source):
         raise NotImplementedError
+
+    def get_sources(self):
+        raise NotImplementedError
+
+    def update_entire(self):
+        result = []
+
+        for source in self.get_sources():
+            result.extend(self.update_source(source['name']))
+
+        return result
+
+    def dependencies(self, source):
+        return []
+
+
+class FlavorUpdater(Updater):
+    def __init__(self, model_launcher, flavors):
+        Updater.__init__(self, model_launcher)
+
+        self.flavors_map = {flavor['name']: flavor for flavor in flavors}
+
+    def update_source_impl(self, source):
+        return self.update_flavor(self.flavors_map[source])
+
+    def update_flavor(self, flavor):
+        raise NotImplementedError
+
+    def get_sources(self):
+        return list(self.flavors_map.values())
+
+    def flavor_dependencies(self, flavor):
+        raise NotImplementedError
+
+    def dependencies(self, source):
+        return self.flavor_dependencies(self.flavors_map[source])
 
 
 class Updatable:
     @staticmethod
     def range_from_timestamp(range):
-        if range != (None,) * 2:
+        if range != (None, None):
             return map(dt.date.fromtimestamp, range)
         else:
             return range
@@ -75,9 +130,15 @@ class Updatable:
 
         if first is not None:
             if last != dt.date.today():
-                self.write_update(self.fill(last + dt.timedelta(days=1), dt.date.today()))
+                info = self.fill(last + dt.timedelta(days=1), dt.date.today())
+            else:
+                return None, None
         else:
-            return self.write_update(self.initial_fill())
+            info = self.initial_fill()
+
+        self.write_update(info)
+
+        return self.get_range(info)
 
     def initial_fill(self):
         raise NotImplementedError
@@ -89,6 +150,9 @@ class Updatable:
         raise NotImplementedError
 
     def write_update(self, data):
+        raise NotImplementedError
+
+    def get_range(self, info):
         raise NotImplementedError
 
 
@@ -157,9 +221,26 @@ class Resource(Table, Updatable):
     def write_update(self, data):
         self.write_df(data)
 
+    def get_range(self, info):
+        return map(lambda i: info.iloc[i].Date, (0, -1))
+
     @staticmethod
     def get_atoms(schema):
         return [atom[0] for atom in schema]
+
+
+class ResourceUpdater(Resource, Updater):
+    def __init__(self, model_launcher, dbh, table, schema,
+                 modifier=None, pre_dump=None, post_load=None):
+        Resource.__init__(self, dbh, table, schema, modifier, pre_dump, post_load)
+        Updater.__init__(self, model_launcher)
+
+    def update_source_impl(self, source):
+        return self.update()
+
+    def get_sources(self):
+        return [{'name': self.table}]
+
 
 class Platforms(Table):
     def __init__(self, model_launcher, flavor):

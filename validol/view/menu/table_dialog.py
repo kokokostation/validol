@@ -3,6 +3,28 @@ from pyparsing import alphas
 
 from validol.view.view_element import ViewElement
 from validol.model.resource_manager.atom_flavors import FormulaAtom
+from validol.view.utils.searchable_list import SearchableList
+from validol.view.utils.tipped_list import TextTippedList
+
+
+class TDTippedList(TextTippedList):
+    def __init__(self, model_launcher, searchable_list):
+        TextTippedList.__init__(self, model_launcher, searchable_list.list)
+
+        self.searchable_list = searchable_list
+
+    def get_items(self):
+        return self.model_launcher.get_atoms()
+
+    def set_view(self, atom):
+        formula = 'primary'
+        if isinstance(atom, FormulaAtom):
+            formula = atom.formula
+
+        self.view.setText("{}: {}".format(atom, formula))
+
+    def on_refresh(self):
+        self.searchable_list.update()
 
 
 class TableDialog(ViewElement, QtWidgets.QWidget):
@@ -18,10 +40,10 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         self.editLayout = QtWidgets.QVBoxLayout()
         self.leftLayout = QtWidgets.QVBoxLayout()
 
-        self.atom_list = QtWidgets.QListWidget()
-        self.atom_list.itemDoubleClicked.connect(self.insert_atom)
-        self.atoms_map = {}
-        self.refresh_atoms()
+        self.searchable_list = SearchableList(QtWidgets.QListWidget())
+
+        self.tipped_list = TDTippedList(self.model_launcher, self.searchable_list)
+        self.tipped_list.list.itemDoubleClicked.connect(self.insert_atom)
 
         self.name = QtWidgets.QLineEdit()
         self.name.setPlaceholderText("Name")
@@ -40,7 +62,9 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
             self.letters.addItem(a)
         self.letters.setCurrentIndex(1)
 
-        self.leftLayout.addWidget(self.atom_list)
+        self.leftLayout.addWidget(self.searchable_list.searchbar)
+        self.leftLayout.addWidget(self.tipped_list.list)
+        self.leftLayout.addWidget(self.tipped_list.view)
         self.leftLayout.addWidget(self.letters)
 
         self.submitTablePattern = QtWidgets.QPushButton('Submit')
@@ -63,29 +87,15 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         self.mainLayout.insertLayout(0, self.boxesLayout)
         self.mainLayout.insertLayout(1, self.buttonsLayout)
 
-        self.show()
+        self.showMaximized()
 
     def remove_atom(self):
-        atom_name = self.atom_list.currentItem().text()
+        atom_name = self.tipped_list.list.currentItem().text()
         self.model_launcher.remove_atom(atom_name)
-        self.refresh_atoms()
-
-    def refresh_atoms(self):
-        self.atom_list.clear()
-        atoms = self.model_launcher.get_atoms()
-        self.atoms_map = {atom.name: atom for atom in atoms}
-
-        for atom in atoms:
-            formula = 'primary'
-            if isinstance(atom, FormulaAtom):
-                formula = atom.formula
-
-            wi = QtWidgets.QListWidgetItem(atom.name)
-            wi.setToolTip("{}: {}".format(atom, formula))
-            self.atom_list.addItem(wi)
+        self.tipped_list.refresh()
 
     def insert_atom(self):
-        atom = self.atoms_map[self.atom_list.currentItem().text()]
+        atom = self.tipped_list.current_item()
         mode = self.mode.checkedButton().text()
         letter = self.letters.currentText()
 
@@ -113,6 +123,6 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         else:
             atom_name, named_formula = self.name.text(), self.mainEdit.toPlainText()
             self.model_launcher.write_atom(atom_name, named_formula)
-            self.refresh_atoms()
+            self.tipped_list.refresh()
 
         self.clear_edits()

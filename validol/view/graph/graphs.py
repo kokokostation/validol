@@ -142,15 +142,15 @@ class Graph(pg.GraphicsWindow):
     def draw_axis(self, label, plot_item, graph_num, lr, pieces):
         self.legendData[graph_num][lr].append((ItemData(None, None), "____" + label + "____"))
 
-        week = 7 * 24 * 3600
-        bases = [piece.base for piece in pieces if type(piece) == Bar]
-        if bases:
-            bases_num = max(bases) + 1
-            bar_width = 0.9 * week / bases_num
+        bars = [piece for piece in pieces if type(piece) == Bar]
+        if bars:
+            week = pd.Series(self.df[[piece.atom_id for piece in bars]].dropna(how='all').index).diff().min()
+            bases_num = max([piece.base for piece in bars]) + 1
+            bar_width = 0.95 * week / bases_num
 
         for piece in pieces:
-            xs = self.df.index.tolist()
-            ys = self.df[piece.atom_id].tolist()
+            xs = pd.Series(self.df.index).as_matrix()
+            ys = self.df[piece.atom_id].as_matrix().astype(np.float64)
 
             if isinstance(piece, Line):
                 pen = {'color': piece.color, 'width': 2}
@@ -169,7 +169,7 @@ class Graph(pg.GraphicsWindow):
                 chunk = Showable(
                     plot_item,
                     pg.BarGraphItem(
-                        x=[c + bar_width * piece.base for c in xs],
+                        x=xs + bar_width * piece.base,
                         height=ys,
                         width=bar_width,
                         brush=pg.mkBrush(piece.color + [130]),

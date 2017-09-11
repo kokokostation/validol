@@ -6,10 +6,14 @@ from validol.model.utils import group_by, flatten
 
 
 def fix_atoms(df):
+    df = df.copy()
+
     df["CL"] = df["PMPL"] + df["SDPL"]
     df["CS"] = df["PMPS"] + df["SDPS"]
     df["NCL"] = df["MMPL"] + df["ORPL"]
     df["NCS"] = df["MMPS"] + df["ORPS"]
+
+    return df
 
 
 DISAGGREGATED_SCHEMA = [
@@ -198,7 +202,7 @@ class Cftc(Flavor):
     ]
 
     def __init__(self, model_launcher):
-        Flavor.__init__(self, model_launcher)
+        Flavor.__init__(self, model_launcher, Cftc.FLAVORS)
 
     def load_csvs(self, flavor):
         sources = [(
@@ -220,13 +224,13 @@ class Cftc(Flavor):
         return [(read_url_one_filed_zip(source, cache_enabled), date_fmt)
                 for source, cache_enabled, date_fmt in sources]
 
-    def update(self):
-        for flavor in Cftc.FLAVORS:
-            df = self.get_df(flavor)
-            if flavor["disaggregated"]:
-                fix_atoms(df)
+    def update_flavor(self, flavor):
+        df = self.get_df(flavor)
 
-            self.update_flavor(df, flavor)
+        if flavor["disaggregated"]:
+            df = fix_atoms(df)
+
+        return self.process_flavor(df, flavor)
 
 
 def ice(name, ice_flavor):
@@ -275,7 +279,9 @@ class Ice(Flavor):
         ICE_COMBINED]
 
     def __init__(self, model_launcher):
-        Flavor.__init__(self, model_launcher)
+        Flavor.__init__(self, model_launcher, Ice.FLAVORS)
+
+        self.grouped_df = None
 
     def load_csvs(self, flavor):
         if self.if_initial(flavor):
@@ -287,15 +293,18 @@ class Ice(Flavor):
                               .format(year=year), year != years[-1]), flavor['date_fmt'])
                 for year in years]
 
-    def update(self):
+    def prepare_update(self):
         df = self.get_df(Ice.FLAVORS[0])
 
         fix_atoms(df)
 
-        grouped_df = group_by(df, ["FutOnly_or_Combined"])
+        self.grouped_df = group_by(df, ["FutOnly_or_Combined"])
 
-        for flavor in Ice.FLAVORS:
-            self.update_flavor(grouped_df.get_group(flavor["ice_flavor"]), flavor)
+    def update_flavor(self, flavor):
+        if self.grouped_df is None:
+            self.prepare_update()
+
+        return self.process_flavor(self.grouped_df.get_group(flavor["ice_flavor"]), flavor)
 
 
 WEEKLY_REPORT_FLAVORS = flatten([exchange.FLAVORS for exchange in (Cftc, Ice)])

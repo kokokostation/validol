@@ -5,7 +5,7 @@ import pandas as pd
 import requests
 from validol.model.mine.downloader import read_url_text
 from validol.model.store.resource import Resource
-from validol.model.store.structures.structure import Structure, Base
+from validol.model.store.structures.structure import Structure, Base, with_session
 from sqlalchemy import Column, String
 
 
@@ -30,31 +30,38 @@ class InvestingPrices(Structure):
         Structure.__init__(self, InvestingPriceInfo, model_launcher)
 
     def get_info_through_url(self, url):
+        if url is None:
+            return {}
+
         url = normalize_url(url)
 
-        session = self.session
-        response = session.query(InvestingPriceInfo.pair_id, InvestingPriceInfo.name)\
-            .filter(InvestingPriceInfo.url == url).first()
-
-        session.close()
+        response = self.get_info_through_url_db(url)
 
         if response:
-            return response
+            pair_id, name = response
         else:
             try:
                 content = read_url_text(url)
             except requests.exceptions.ConnectionError:
-                return [None] * 2
+                return {}
 
             pair_id = re.search(r'data-pair-id="(\d*)"', content).group(1)
             name = re.search(r'<title>(.*)</title>', content).group(1).rsplit(" - ")[0]
 
             self.write(InvestingPriceInfo(pair_id, name, url))
 
-        return pair_id, name
+        return {
+            'pair_id': pair_id,
+            'name': name
+        }
 
     def get_prices(self):
         return pd.DataFrame(r.__dict__ for r in self.read())
+
+    @with_session
+    def get_info_through_url_db(self, session, url):
+        return session.query(InvestingPriceInfo.pair_id, InvestingPriceInfo.name)\
+            .filter(InvestingPriceInfo.url == url).first()
 
 
 class InvestingPrice(Resource):

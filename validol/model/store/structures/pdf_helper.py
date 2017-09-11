@@ -39,15 +39,10 @@ class Parser(TypeDecorator):
         return PARSERS_MAP[value]
 
 
-class ActiveInfoSchemaModified(ActiveInfoSchema):
-    class Meta:
-        exclude = ('active_flavor',)
-
-
 class PdfHelper(Base):
     __tablename__ = 'pdf_helper'
 
-    name = Column(JSONCodec(ActiveInfoSchemaModified()), primary_key=True)
+    name = Column(JSONCodec(ActiveInfoSchema()), primary_key=True)
     processor = Column(Parser())
     active_folder = Column(String)
     expirations_file = Column(String)
@@ -73,6 +68,16 @@ class PdfHelper(Base):
     def parse_file(self, filename, date):
         with open(filename, 'rb') as file:
             return self.parse_content(file.read(), date)
+
+    def process_loaded(self, filename, content, date):
+        df = self.parse_content(content, date)
+
+        if filename not in os.listdir(self.active_folder):
+            with open(os.path.join(self.active_folder, filename), 'wb') as file:
+                file.write(content)
+
+        return df
+
 
     def parse_content(self, content, date):
         content = self.processor.map_content(content)

@@ -7,10 +7,6 @@ class AtomBase:
         self.name = name
         self.params = params
 
-    @property
-    def full_name(self):
-        return "{name}({params})".format(name=self.name, params=', '.join(self.params))
-
     def cache_name(self, params):
         if all(any(isinstance(param, typ) for typ in (str, float)) for param in params):
             return str(AtomBase(self.name, params))
@@ -18,7 +14,7 @@ class AtomBase:
             return None
 
     def __str__(self):
-        return "{name}({params})".format(name=self.name, params=', '.join(str(self.params)))
+        return "{name}({params})".format(name=self.name, params=', '.join(map(str, self.params)))
 
     def evaluate(self, evaluator, params):
         raise NotImplementedError

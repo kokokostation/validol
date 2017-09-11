@@ -1,11 +1,20 @@
 from PyQt5 import QtCore, QtWidgets
 from collections import OrderedDict
+from functools import partial
 
-from validol.view.utils.tipped_list import TippedList
+from validol.view.utils.tipped_list import TextTippedList
 from validol.view.utils.utils import scrollable_area
 from validol.view.view_element import ViewElement
+from validol.view.utils.searchable_list import SearchableList
 from validol.model.store.view.active_info import ActiveInfo
-from validol.model.launcher import Update
+
+
+class MWTippedList(TextTippedList):
+    def set_view(self, item):
+        self.view.setText(str(item))
+
+    def get_items(self):
+        return self.model_launcher.get_tables()
 
 
 class Window(ViewElement, QtWidgets.QWidget):
@@ -15,24 +24,19 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.app = app
 
-        self.setWindowTitle("COTs")
-
-        self.searchResult = None
+        self.setWindowTitle("Validol")
 
         self.actives = QtWidgets.QListWidget()
         self.actives.itemDoubleClicked.connect(self.submit_active)
         self.actives.currentItemChanged.connect(self.active_chosen)
 
-        self.searchLine = QtWidgets.QLineEdit()
-        self.searchLine.setPlaceholderText("Search")
-        self.searchLine.textChanged.connect(self.search)
-        self.searchLine.returnPressed.connect(self.search)
+        self.searchable_list = SearchableList(self.actives)
 
         self.new_active_button = QtWidgets.QPushButton('New active')
         self.new_active_button.clicked.connect(self.new_active)
 
         self.activesListLayout = QtWidgets.QVBoxLayout()
-        self.activesListLayout.addWidget(self.searchLine)
+        self.activesListLayout.addWidget(self.searchable_list.searchbar)
         self.activesListLayout.addWidget(self.actives)
         self.activesListLayout.addWidget(self.new_active_button)
 
@@ -64,11 +68,14 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.updateButton = QtWidgets.QPushButton('Update')
         self.updateButton.clicked.connect(
-            lambda: self.on_update(Update.WEEKLY, self.updateButton))
+            lambda: self.on_update(self.model_launcher.update_weekly, self.updateButton))
 
         self.update_daily_button = QtWidgets.QPushButton('Update daily')
         self.update_daily_button.clicked.connect(
-            lambda: self.on_update(Update.DAILY, self.update_daily_button))
+            lambda: self.on_update(self.model_launcher.update_daily, self.update_daily_button))
+
+        self.create_scheduler_button = QtWidgets.QPushButton('Create scheduler')
+        self.create_scheduler_button.clicked.connect(self.controller_launcher.show_scheduler_dialog)
 
         self.removeTable = QtWidgets.QPushButton('Remove table')
         self.removeTable.clicked.connect(self.remove_table)
@@ -78,18 +85,12 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.leftLayout.addWidget(self.active_flavors)
         self.leftLayout.addWidget(self.updateButton)
         self.leftLayout.addWidget(self.update_daily_button)
+        self.leftLayout.addWidget(self.create_scheduler_button)
 
         self.cached_prices = QtWidgets.QListWidget()
         self.set_cached_prices()
 
-        def view_setter(view, table_pattern):
-            view.setText(str(table_pattern))
-
-        ro_text_edit = QtWidgets.QTextEdit()
-        ro_text_edit.setReadOnly(True)
-
-        self.tipped_list = TippedList(lambda: model_launcher.get_tables(),
-                                      view_setter, ro_text_edit)
+        self.tipped_list = MWTippedList(self.model_launcher, QtWidgets.QListWidget())
 
         self.main_layout = QtWidgets.QVBoxLayout(self)
 
@@ -111,6 +112,7 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.rightLayout.addWidget(self.createTable)
 
         self.actives_layout = QtWidgets.QVBoxLayout()
+
         self.actives_layout_widgets = []
         self.actives_layout_lines = []
         self.chosen_actives = []
@@ -167,17 +169,6 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.model_launcher.remove_table(self.tipped_list.list.currentItem().text())
         self.tipped_list.refresh()
 
-    def search(self):
-        searchText = self.searchLine.text()
-        if (self.searchResult and self.searchResult[0] != searchText) or not self.searchResult:
-            self.searchResult = [searchText, self.actives.findItems(
-                self.searchLine.text(), QtCore.Qt.MatchContains), 0]
-
-        _, items, index = self.searchResult
-        if items:
-            self.actives.setCurrentItem(items[index % len(items)])
-            self.searchResult[2] += 1
-
     def set_cached_prices(self):
         self.cached_prices.clear()
 
@@ -196,40 +187,41 @@ class Window(ViewElement, QtWidgets.QWidget):
                           active_flavor)
 
     def submit_active(self):
-        self.chosen_actives.append(self.active_info())
+        curr_ai = self.active_info()
 
-        active_name = QtWidgets.QLineEdit()
-        price_name = QtWidgets.QLineEdit()
-        submit_cached = QtWidgets.QPushButton('Submit cached')
-        clear = QtWidgets.QPushButton('Clear')
+        actives = curr_ai.flavor.active_infos(curr_ai, self.model_launcher)
 
-        layout = QtWidgets.QVBoxLayout()
+        self.chosen_actives.extend(actives)
 
-        active_name.setReadOnly(True)
-        text = "{}/{}".format(
-            self.platforms.currentItem().text(),
-            self.actives.currentItem().text())
-        curr_flavor = self.active_flavors.currentItem()
-        if curr_flavor is not None:
-            text += "/{}".format(curr_flavor.text())
-        active_name.setText(text)
+        for active in actives:
+            active_name = QtWidgets.QLineEdit(active.flavor.show_ai(active, self.model_launcher))
+            active_name.setReadOnly(True)
 
-        submit_cached.clicked.connect(
-            lambda: self.submit_cached(price_name, self.cached_prices))
-        clear.clicked.connect(
-            lambda: self.clear_active(layout))
+            price_url = QtWidgets.QLineEdit(active.price_url or '')
+            submit_cached = QtWidgets.QPushButton('Submit cached')
+            clear = QtWidgets.QPushButton('Clear')
 
-        self.actives_layout_widgets.append((active_name, price_name, submit_cached, clear))
+            layout = QtWidgets.QVBoxLayout()
 
-        for w in self.actives_layout_widgets[-1]:
-            layout.addWidget(w)
+            submit_cached.clicked.connect(partial(self.submit_cached, price_url, active))
+            clear.clicked.connect(partial(self.clear_active, layout))
 
-        self.actives_layout_lines.append(layout)
+            self.actives_layout_widgets.append((active_name, price_url, submit_cached, clear))
 
-        self.actives_layout.insertLayout(len(self.actives_layout_lines), layout)
+            for w in self.actives_layout_widgets[-1]:
+                layout.addWidget(w)
 
-    def submit_cached(self, lineEdit, listWidget):
-        lineEdit.setText(listWidget.currentItem().toolTip())
+            self.actives_layout_lines.append(layout)
+
+            self.actives_layout.insertLayout(len(self.actives_layout_lines), layout)
+
+    def submit_cached(self, price_url, active):
+        url = self.cached_prices.currentItem().toolTip()
+
+        price_url.setText(url)
+
+        active.price_url = url
+
 
     def current_flavor(self):
         return self.flavors_map[self.flavors.currentItem().text()]
@@ -262,6 +254,8 @@ class Window(ViewElement, QtWidgets.QWidget):
                 wi = QtWidgets.QListWidgetItem(active.ActiveName)
                 self.actives.addItem(wi)
 
+        self.searchable_list.update()
+
     def clear_active(self, vbox):
         i = self.actives_layout_lines.index(vbox)
         self.remove_line(i)
@@ -285,23 +279,28 @@ class Window(ViewElement, QtWidgets.QWidget):
 
     def draw_table(self):
         table_pattern = self.tipped_list.current_item()
-        prices_info = [bunch[1].text() for bunch in self.actives_layout_widgets]
-        self.controller_launcher.draw_table(table_pattern, self.chosen_actives, prices_info)
+        self.controller_launcher.draw_table(table_pattern, self.chosen_actives)
 
     def create_table(self):
         self.controller_launcher.show_table_dialog()
 
-    def on_update(self, how, button):
+    def on_update(self, action, button):
         text = button.text()
         button.setText("Wait a sec. Updating the data...")
         self.app.processEvents()
-        if not self.controller_launcher.update_data(how):
+
+        results = action()
+
+        if results is None:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             msg.setText("Unable to update due to network error")
             msg.setWindowTitle("Network error")
             msg.exec_()
+        else:
+            self.controller_launcher.notify_update(results)
+
         button.setText(text)
 
     def closeEvent(self, qce):
-        self.controller_launcher.main_window_closed()
+        self.controller_launcher.on_main_window_close()

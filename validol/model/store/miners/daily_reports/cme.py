@@ -82,8 +82,9 @@ class Active(DailyResource):
         return self.available_dates_cache.keys()
 
     def download_date(self, date):
-        content = Active.read_file(self.model_launcher, self.available_dates_cache[date])
-        return self.pdf_helper.parse_content(content, date)
+        filename = self.available_dates_cache[date]
+        content = Active.read_file(self.model_launcher, filename)
+        return self.pdf_helper.process_loaded(os.path.basename(filename), content, date)
 
 
 class CmeActives(Actives):

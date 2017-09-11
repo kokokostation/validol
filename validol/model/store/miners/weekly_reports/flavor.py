@@ -2,12 +2,11 @@ import datetime as dt
 from io import StringIO
 import pandas as pd
 
-from validol.model.store.resource import Actives, ActiveResource, Platforms
-from validol.model.store.resource import Updater
+from validol.model.store.resource import Actives, ActiveResource, Platforms, FlavorUpdater, Updatable
 from validol.model.utils import group_by
 
 
-class Flavor(Updater):
+class Flavor(FlavorUpdater):
     @staticmethod
     def get_active_platform_name(market_and_exchange_names):
         return [name.strip() for name in market_and_exchange_names.rsplit("-", 1)]
@@ -35,7 +34,7 @@ class Flavor(Updater):
 
         return df
 
-    def update_flavor(self, df, flavor):
+    def process_flavor(self, df, flavor):
         info = group_by(df, flavor["keys"])
 
         actives_table = WeeklyActives(self.model_launcher, flavor['name'])
@@ -58,10 +57,9 @@ class Flavor(Updater):
             active_name, _ = Flavor.get_active_platform_name(name)
             Active(self.model_launcher, flavor, code, active_name, info.get_group((code, name))).update()
 
-    def load_csvs(self, flavor):
-        raise NotImplementedError
+        return df.Date.min(), df.Date.max()
 
-    def update(self):
+    def load_csvs(self, flavor):
         raise NotImplementedError
 
 

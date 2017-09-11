@@ -6,26 +6,25 @@ from io import StringIO
 import requests
 from dateutil.relativedelta import relativedelta
 
-from validol.model.store.resource import Resource
+from validol.model.store.resource import ResourceUpdater
 from validol.model.utils import concat
 
 
-class Expirations(Resource):
+class Expirations(ResourceUpdater):
     SCHEMA = [
         ('Contract', 'TEXT'),
         ('PlatformCode', 'TEXT'),
         ('Event', 'TEXT'),
         ('ActiveCode', 'TEXT'),
         ('ActiveName', 'TEXT'),
+        ('Source', 'TEXT')
     ]
     CONSTRAINT = 'UNIQUE (Date, Contract, PlatformCode, Event, ActiveCode, ActiveName) ON CONFLICT IGNORE'
     PLATFORM_RENAME = {'EUROPE': 'IFEU'}
 
     def __init__(self, model_launcher):
-        Resource.__init__(self, model_launcher.main_dbh, 'Expirations',
+        ResourceUpdater.__init__(self, model_launcher, model_launcher.main_dbh, 'Expirations',
                           Expirations.SCHEMA, Expirations.CONSTRAINT)
-
-        self.model_launcher = model_launcher
 
 
     @staticmethod
@@ -90,6 +89,8 @@ class Expirations(Resource):
 
             result = result.append(new_df, ignore_index=True)
 
+        result['Source'] = 'net'
+
         return result
 
     def fill(self, first, last):
@@ -138,3 +139,13 @@ class Expirations(Resource):
 
     def initial_fill(self):
         return self.fill(dt.date(2016, 1, 1), dt.date.today())
+
+    def remove_active(self, ai):
+        self.dbh.cursor().execute('''
+            DELETE 
+            FROM 
+                "{table}" 
+            WHERE
+                Source = ?'''.format(table=self.table), (str(ai)))
+
+        self.dbh.commit()

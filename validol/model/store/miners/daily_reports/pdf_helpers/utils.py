@@ -53,4 +53,6 @@ class DailyPdfParser(PdfParser):
 
             result = result.append(new)
 
+        result['Source'] = str(self.pdf_helper.name)
+
         return result

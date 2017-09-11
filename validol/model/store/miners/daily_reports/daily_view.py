@@ -46,6 +46,8 @@ class DailyView(ViewFlavor):
     def remove_active_data(self, active_info, model_launcher):
         self.active_cls(model_launcher, active_info.platform, active_info.active,
                         self.flavor).drop()
+        model_launcher.remove_expirations(active_info)
+        model_launcher.remove_ml(active_info)
 
     def get_processors(self):
         return [processor.NAME for processor in self.flavor['processors']]

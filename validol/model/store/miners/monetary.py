@@ -2,11 +2,11 @@ from io import StringIO
 
 import pandas as pd
 import requests
-from validol.model.store.resource import Resource
+from validol.model.store.resource import ResourceUpdater
 from validol.model.utils import parse_isoformat_date
 
 
-class Monetary(Resource):
+class Monetary(ResourceUpdater):
     CSV_NAMES = {
         'DATE': 'Date',
         'BOGMBASEW': 'MBase'}
@@ -14,7 +14,7 @@ class Monetary(Resource):
     INDEPENDENT = True
 
     def __init__(self, model_launcher):
-        Resource.__init__(self, model_launcher.main_dbh, "Monetary", Monetary.SCHEMA)
+        ResourceUpdater.__init__(self, model_launcher, model_launcher.main_dbh, "Monetary", Monetary.SCHEMA)
 
     def initial_fill(self):
         session = requests.Session()

@@ -1,11 +1,8 @@
 import pandas as pd
 
 from validol.model.utils import to_timestamp
-from validol.model.store.resource import ActiveResource, Updater, check_empty
-from validol.model.store.miners.daily_reports.cme_view import CmeView
-from validol.model.store.miners.daily_reports.cme_flavors import CME_OPTIONS
-from validol.model.store.miners.daily_reports.ice_view import IceView
-from validol.model.store.miners.daily_reports.ice_flavors import ICE_OPTIONS
+from validol.model.store.resource import ActiveResource, FlavorUpdater, check_empty, Updater
+from validol.model.store.miners.daily_reports.flavors import DAILY_REPORT_FLAVORS
 from validol.model.utils import group_by
 
 
@@ -22,11 +19,18 @@ def post_load(df):
     return df
 
 
-class MlCurves(Updater):
-    def update(self):
-        for flavor in (CmeView(CME_OPTIONS), IceView(ICE_OPTIONS)):
-            for ai in flavor.all_actives(self.model_launcher, with_flavors=False):
-                MlCurve(self.model_launcher, ai).update()
+class MlCurves(FlavorUpdater):
+    def __init__(self, model_launcher):
+        FlavorUpdater.__init__(self, model_launcher,
+                               [flavor for flavor in DAILY_REPORT_FLAVORS if flavor['options']])
+
+    def update_flavor(self, flavor):
+        ranges = [
+            MlCurve(self.model_launcher, ai).update()
+            for ai in flavor['view'](flavor).all_actives(self.model_launcher, with_flavors=False)
+        ]
+
+        return Updater.reduce_ranges(ranges)
 
 
 class MlCurve(ActiveResource):
