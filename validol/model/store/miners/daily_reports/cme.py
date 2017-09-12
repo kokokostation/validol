@@ -11,6 +11,7 @@ from validol.model.store.structures.pdf_helper import PdfHelpers
 from validol.model.store.miners.daily_reports.daily import DailyResource
 from validol.model.utils import isfile
 from validol.model.store.structures.ftp_cache import FtpCache
+from validol.model.store.resource import Updater
 
 
 class CmeDaily:
@@ -26,15 +27,16 @@ class CmeDaily:
 
         from validol.model.store.miners.daily_reports.cme_view import CmeView
 
+        ranges = []
+
         for index, active in CmeActives(self.model_launcher, self.flavor['name']).read_df().iterrows():
             pdf_helper = PdfHelpers(self.model_launcher).read_by_name(
                 ActiveInfo(CmeView(self.flavor), active.PlatformCode, active.ActiveName))
 
-            Active(self.model_launcher,
-                   active.PlatformCode,
-                   active.ActiveName,
-                   self.flavor,
-                   pdf_helper).update()
+            ranges.append(Active(self.model_launcher, active.PlatformCode, active.ActiveName,
+                                 self.flavor, pdf_helper).update())
+
+        return Updater.reduce_ranges(ranges)
 
 
 class Active(DailyResource):

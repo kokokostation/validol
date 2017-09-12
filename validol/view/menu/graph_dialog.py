@@ -13,9 +13,9 @@ from validol.view.view_element import ViewElement
 
 class GDTippedList(TippedList):
     def __init__(self, model_launcher, table_name):
-        TippedList.__init__(self, model_launcher, PatternTree(), QtWidgets.QListWidget())
-
         self.table_name = table_name
+
+        TippedList.__init__(self, model_launcher, PatternTree(), QtWidgets.QListWidget())
 
     def set_view(self, item):
         self.view.draw_pattern(item)

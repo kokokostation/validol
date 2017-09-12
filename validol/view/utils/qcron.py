@@ -21,7 +21,7 @@ class QCron:
 
     def set_qtimer(self):
         next_event = self.iter.get_next(dt.datetime)
-        self.qtimer.setInterval((dt.datetime.now() - next_event).seconds * 1000)
+        self.qtimer.setInterval((next_event - dt.datetime.now()).seconds * 1000)
         self.qtimer.start()
 
     def stop(self):

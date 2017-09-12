@@ -1,11 +1,14 @@
+import pip
+
 from validol.model.launcher import ModelLauncher
 from validol.view.launcher import ViewLauncher
 from validol.model.store.view.view_flavor import ViewFlavor
+from validol.setup import SETUP_CONFIG
 
 
 class ControllerLauncher:
     def __init__(self):
-        self.model_launcher = ModelLauncher().init_data()
+        self.model_launcher = ModelLauncher(self).init_data()
 
         self.view_launcher = ViewLauncher(self, self.model_launcher)
 
@@ -70,3 +73,13 @@ class ControllerLauncher:
 
     def show_scheduler_dialog(self):
         self.view_launcher.show_scheduler_dialog()
+
+    def mark_update_required(self):
+        self.view_launcher.mark_update_required()
+
+    def get_package_config(self):
+        return SETUP_CONFIG
+
+    def pip_update(self):
+        pip.main(['install', '--extra-index-url', 'https://pypi.python.org/pypi', '--upgrade', 'validol'])
+        self.quit()

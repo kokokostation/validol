@@ -1,7 +1,7 @@
 import datetime as dt
 import pandas as pd
 import numpy as np
-from functools import wraps
+from functools import wraps, partial
 
 from validol.model.utils import date_to_timestamp, to_timestamp
 
@@ -57,25 +57,27 @@ class Table:
 class Updater:
     @staticmethod
     def reduce_ranges(ranges):
-        left, right = zip(*ranges)
-        return min(left), max(right)
+        return [f(l) if l else None
+                for f, l in zip((min, max), map(partial(filter, None.__ne__), zip(*ranges)))]
 
     def __init__(self, model_launcher):
         self.model_launcher = model_launcher
 
     def update_source(self, source):
-        result = [(source, self.update_source_impl(source))]
+        result = self.update_source_impl(source)
+
+        results = [] if result is None else [(source, result)]
 
         for dep, sources in self.dependencies(source):
             updater = dep(self.model_launcher)
 
             if sources is None:
-                result.extend(updater.update_entire())
+                results.extend(updater.update_entire())
             else:
                 for source in sources:
-                    result.extend(updater.update_source(source))
+                    results.extend(updater.update_source(source))
 
-        return result
+        return results
 
     def update_source_impl(self, source):
         raise NotImplementedError
@@ -84,15 +86,18 @@ class Updater:
         raise NotImplementedError
 
     def update_entire(self):
-        result = []
+        results = []
 
         for source in self.get_sources():
-            result.extend(self.update_source(source['name']))
+            results.extend(self.update_source(source['name']))
 
-        return result
+        return results
 
     def dependencies(self, source):
         return []
+
+    def verbose(self, source):
+        return True
 
 
 class FlavorUpdater(Updater):
@@ -111,7 +116,7 @@ class FlavorUpdater(Updater):
         return list(self.flavors_map.values())
 
     def flavor_dependencies(self, flavor):
-        raise NotImplementedError
+        return []
 
     def dependencies(self, source):
         return self.flavor_dependencies(self.flavors_map[source])
@@ -222,7 +227,10 @@ class Resource(Table, Updatable):
         self.write_df(data)
 
     def get_range(self, info):
-        return map(lambda i: info.iloc[i].Date, (0, -1))
+        if info.empty:
+            return None, None
+        else:
+            return [info.iloc[i].Date for i in (0, -1)]
 
     @staticmethod
     def get_atoms(schema):

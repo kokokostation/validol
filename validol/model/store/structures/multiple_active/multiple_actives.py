@@ -30,11 +30,11 @@ class MultipleActiveView(ViewFlavor):
     def actives(self, platform, model_launcher):
         return MultipleActives(model_launcher, self.active_cls).get_actives()
 
-    def new_active(self, platform, model_launcher, controller_launcher):
-        name = controller_launcher.ask_name()
+    def new_active(self, platform, model_launcher):
+        name = model_launcher.controller_launcher.ask_name()
         if name is not None:
             MultipleActives(model_launcher, self.active_cls)\
-                .write_active(name, controller_launcher.get_chosen_actives())
+                .write_active(name, model_launcher.controller_launcher.get_chosen_actives())
 
     def remove_active(self, ai, model_launcher):
         MultipleActives(model_launcher, self.active_cls).remove_by_name(ai.active)

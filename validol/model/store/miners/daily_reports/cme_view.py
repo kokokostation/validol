@@ -11,7 +11,7 @@ class CmeView(DailyView):
     def __init__(self, flavor):
         DailyView.__init__(self, Active, CmeActives, flavor)
 
-    def new_active(self, platform, model_launcher, controller_launcher):
+    def new_active(self, platform, model_launcher):
         active_name = QLineEdit()
         active_name.setPlaceholderText("Active Name")
 
@@ -29,7 +29,7 @@ class CmeView(DailyView):
         expirations_w = QComboBox()
         expirations_w.addItems(active_df_tolist(expirations))
 
-        info = controller_launcher.show_pdf_helper_dialog(
+        info = model_launcher.controller_launcher.show_pdf_helper_dialog(
             self.get_processors(), [active_name, archive_file, expirations_w])
 
         if info is None:
@@ -46,4 +46,4 @@ class CmeView(DailyView):
                 'archive_file': archive_file.currentText(),
             })
 
-        controller_launcher.refresh_actives()
+        model_launcher.controller_launcher.refresh_actives()

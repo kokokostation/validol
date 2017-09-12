@@ -5,7 +5,7 @@ import pandas as pd
 import os
 
 from validol.model.store.structures.structure import Structure, Base, JSONCodec
-from validol.model.store.view.active_info import ActiveInfoSchema
+from validol.model.store.view.active_info import ActiveInfoActiveOnlySchema
 from validol.model.store.miners.daily_reports.expirations import Expirations
 from validol.model.utils import pdf, TempFile
 
@@ -42,7 +42,7 @@ class Parser(TypeDecorator):
 class PdfHelper(Base):
     __tablename__ = 'pdf_helper'
 
-    name = Column(JSONCodec(ActiveInfoSchema()), primary_key=True)
+    name = Column(JSONCodec(ActiveInfoActiveOnlySchema()), primary_key=True)
     processor = Column(Parser())
     active_folder = Column(String)
     expirations_file = Column(String)
@@ -78,25 +78,25 @@ class PdfHelper(Base):
 
         return df
 
-
     def parse_content(self, content, date):
         content = self.processor.map_content(content)
 
         with TempFile() as file:
             file.write(content)
 
-            pages, kwargs = self.processor.pages(content)
+            for pages, kwargs, post_processor in self.processor.pages(content):
+                try:
+                    df = post_processor(pdf(file.name, pages, kwargs))
 
-            try:
-                df = pdf(file.name, pages, kwargs)
-            except:
-                return pd.DataFrame()
+                    df = self.processor.process_df(df)
 
-            df = self.processor.process_df(df)
+                    df['Date'] = date
 
-            df['Date'] = date
+                    return df
+                except:
+                    pass
 
-            return df
+            return pd.DataFrame()
 
 
 class PdfHelpers(Structure):

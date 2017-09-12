@@ -3,6 +3,8 @@ from validol.model.store.miners.daily_reports.updater import DailyReports
 from validol.model.store.miners.daily_reports.expirations import Expirations
 from validol.model.store.miners.weekly_reports.flavors import Cftc, Ice
 from validol.model.store.miners.monetary import Monetary
+from validol.model.store.view.pip_checker import PipChecker
+
 
 
 class CompositeUpdater(Updater):
@@ -15,7 +17,7 @@ class CompositeUpdater(Updater):
     def get_sources(self):
         return [{'name': self.name}]
 
-    def update_source_impl(self, source):
+    def update_source(self, source):
         return sum([cls(self.model_launcher).update_entire() for cls in self.clss], [])
 
 
@@ -33,7 +35,7 @@ class EntireUpdater(CompositeUpdater):
         CompositeUpdater.__init__(self, model_launcher, 'Update all', EntireUpdater.CLSS)
 
 
-ALL_UPDATERS = EntireUpdater.CLSS + [DailyUpdater, EntireUpdater]
+ALL_UPDATERS = EntireUpdater.CLSS + [DailyUpdater, EntireUpdater, PipChecker]
 
 
 class UpdateManager(Updater):
@@ -46,8 +48,11 @@ class UpdateManager(Updater):
                   for updater in self.updaters]:
             self.source_map.update(d)
 
-    def update_source_impl(self, source):
+    def update_source(self, source):
         return self.source_map[source].update_source(source)
 
     def get_sources(self):
         return sum([updater.get_sources() for updater in self.updaters], [])
+
+    def verbose(self, source):
+        return self.source_map[source].verbose(source)

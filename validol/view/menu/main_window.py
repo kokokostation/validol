@@ -24,7 +24,8 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.app = app
 
-        self.setWindowTitle("Validol")
+        config = self.controller_launcher.get_package_config()
+        self.setWindowTitle("{name} {version}".format(**config))
 
         self.actives = QtWidgets.QListWidget()
         self.actives.itemDoubleClicked.connect(self.submit_active)
@@ -133,8 +134,7 @@ class Window(ViewElement, QtWidgets.QWidget):
     def new_active(self):
         self.current_flavor().new_active(
             self.platforms.currentItem().toolTip(),
-            self.model_launcher,
-            self.controller_launcher)
+            self.model_launcher)
 
         self.platform_chosen()
 

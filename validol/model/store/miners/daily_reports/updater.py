@@ -13,3 +13,5 @@ class DailyReports(FlavorUpdater):
     def flavor_dependencies(self, flavor):
         if flavor['options']:
             return [(MlCurves, [flavor['name']])]
+        else:
+            return []

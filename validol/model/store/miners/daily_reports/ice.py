@@ -9,6 +9,7 @@ from validol.model.store.view.active_info import ActiveInfo
 from validol.model.store.structures.pdf_helper import PdfHelpers
 from validol.model.store.miners.daily_reports.daily import DailyResource
 from validol.model.utils import get_filename
+from validol.model.store.resource import Updater
 
 
 class IceDaily:
@@ -61,12 +62,16 @@ class IceDaily:
 
         from validol.model.store.miners.daily_reports.ice_view import IceView
 
+        ranges = []
+
         for index, active in IceActives(self.model_launcher, self.flavor['name']).read_df().iterrows():
             pdf_helper = PdfHelpers(self.model_launcher).read_by_name(
                 ActiveInfo(IceView(self.flavor), active.PlatformCode, active.ActiveName))
 
-            Active(self.model_launcher, active.PlatformCode, active.ActiveName, self.flavor,
-                   session, pdf_helper).update()
+            ranges.append(Active(self.model_launcher, active.PlatformCode, active.ActiveName,
+                                 self.flavor, session, pdf_helper).update())
+
+        return Updater.reduce_ranges(ranges)
 
 
 class Active(DailyResource):

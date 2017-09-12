@@ -17,6 +17,9 @@ from validol.model.store.collectors.ml import MlCurve
 
 
 class ModelLauncher:
+    def __init__(self, controller_launcher):
+        self.controller_launcher = controller_launcher
+
     def init_user(self, user_db='user.db'):
         self.user_engine = create_engine('sqlite:///{}'.format(user_db))
         self.user_dbh = sqlite3.connect(user_db)

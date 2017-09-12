@@ -9,9 +9,9 @@ from validol.view.utils.tipped_list import TextTippedList
 
 class TDTippedList(TextTippedList):
     def __init__(self, model_launcher, searchable_list):
-        TextTippedList.__init__(self, model_launcher, searchable_list.list)
-
         self.searchable_list = searchable_list
+
+        TextTippedList.__init__(self, model_launcher, searchable_list.list)
 
     def get_items(self):
         return self.model_launcher.get_atoms()

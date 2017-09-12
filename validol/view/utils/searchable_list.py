@@ -11,9 +11,11 @@ class SearchableList:
         self.items = []
 
     def update(self):
-        self.items = [self.list.item(row).text() for row in range(self.list.count())]
+        self.items = [self.list.item(row).clone() for row in range(self.list.count())]
 
     def search(self):
         self.list.clear()
-        self.list.addItems(
-            [item for item in self.items if self.searchbar.text().upper() in item.upper()])
+
+        for item in self.items:
+            if self.searchbar.text().upper() in item.text().upper():
+                self.list.addItem(item.clone())

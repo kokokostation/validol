@@ -21,7 +21,7 @@ class ViewFlavor:
     def get_df(self, active_info, model_launcher):
         raise NotImplementedError
 
-    def new_active(self, platform, model_launcher, controller_launcher):
+    def new_active(self, platform, model_launcher):
         pass
 
     def remove_active(self, active_info, model_launcher):

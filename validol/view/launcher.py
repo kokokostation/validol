@@ -2,6 +2,8 @@ import sys
 from PyQt5 import QtCore, QtWidgets, QtGui
 import os
 import re
+import requests
+from collections import defaultdict
 
 from validol.view.graph.graphs import CheckedGraph
 from validol.view.menu.graph_dialog import GraphDialog
@@ -27,10 +29,11 @@ class ViewLauncher(ViewElement):
 
         self.app.setQuitOnLastWindowClosed(False)
 
-        self.app_icon = self.get_icon()
-        self.app.setWindowIcon(self.app_icon)
+        self.app_icons = self.get_icons()
+        self.app.setWindowIcon(self.app_icons['default'])
 
-        self.system_tray_icon = MySystemTrayIcon(self.app_icon, self.controller_launcher, self.model_launcher)
+        self.system_tray_icon = MySystemTrayIcon(self.app_icons['default'],
+                                                 self.controller_launcher, self.model_launcher)
 
         self.main_window = Window(self.app, self.controller_launcher, self.model_launcher)
 
@@ -39,24 +42,28 @@ class ViewLauncher(ViewElement):
 
         self.refresh_schedulers()
 
+    def mark_update_required(self):
+        self.app.setWindowIcon(self.app_icons['red'])
+        self.system_tray_icon.setIcon(self.app_icons['red'])
+
     def event_loop(self):
         sys.exit(self.app.exec())
 
     def show_main_window(self):
         self.main_window.showMaximized()
 
-    def get_icon(self):
-        resolution = re.compile('(\d+)x(\d+).png')
-        app_icon = QtGui.QIcon()
+    def get_icons(self):
+        resolution = re.compile('^(\d+)x(\d+)(.*)?.png$')
+        app_icons = defaultdict(QtGui.QIcon)
         icons_dir = '../validol/view/icons'
 
         for icon in os.listdir(icons_dir):
             match = resolution.match(icon)
-            x, y = map(int, [match.group(g) for g in (1, 2)])
+            x, y, name = int(match.group(1)), int(match.group(2)), match.group(3)
 
-            app_icon.addFile(os.path.join(icons_dir, icon), QtCore.QSize(x, y))
+            app_icons[name].addFile(os.path.join(icons_dir, icon), QtCore.QSize(x, y))
 
-        return app_icon
+        return app_icons
 
     def refresh_prices(self):
         self.main_window.set_cached_prices()
@@ -108,8 +115,9 @@ class ViewLauncher(ViewElement):
         return '{}: {} - {}'.format(source, begin, end)
 
     def notify_update(self, results):
-        message = '\n'.join(map(ViewLauncher.show_update_result, results))
-        self.system_tray_icon.showMessage('Update', message)
+        if results:
+            message = '\n'.join(map(ViewLauncher.show_update_result, results))
+            self.system_tray_icon.showMessage('Update', message)
 
     def refresh_schedulers(self):
         schedulers = [scheduler for scheduler in self.model_launcher.read_schedulers()
@@ -120,7 +128,7 @@ class ViewLauncher(ViewElement):
         for qcron in self.qcrons:
             qcron.stop()
 
-        self.qcrons = [QCron(scheduler.cron, lambda: update_manager.update_source(scheduler.name))
+        self.qcrons = [QCron(scheduler.cron, lambda: self.update_wrapper(update_manager, scheduler.name))
                        for scheduler in schedulers]
 
     def notify(self, message):
@@ -128,3 +136,17 @@ class ViewLauncher(ViewElement):
 
     def show_scheduler_dialog(self):
         self.windows.append(SchedulerDialog(self.controller_launcher, self.model_launcher))
+
+    def update_wrapper(self, update_manager, source):
+        if update_manager.verbose(source):
+            self.notify('Update of {} started'.format(source))
+
+        try:
+            results = update_manager.update_source(source)
+        except requests.exceptions.ConnectionError:
+            if update_manager.verbose(source):
+                self.notify('Update of {} failed due to network error'.format(source))
+            return
+
+        if update_manager.verbose(source):
+            self.notify_update(results)

@@ -36,3 +36,8 @@ class ActiveInfoSchema(Schema):
                           data['active'],
                           data.get('active_flavor', None),
                           data.get('price_url', None))
+
+
+class ActiveInfoActiveOnlySchema(ActiveInfoSchema):
+    class Meta:
+        exclude = ('active_flavor', 'price_url')

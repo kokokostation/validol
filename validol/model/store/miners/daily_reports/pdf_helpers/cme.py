@@ -30,9 +30,10 @@ class CmeParser(DailyPdfParser):
         return concat(from_files)
 
     def pages(self, content):
-        return zip(get_pages_run(BytesIO(content), self.pdf_helper.name.active),
-                   repeat(self.config['page_area'])), \
-               {'guess': False, 'pandas_options': {'header': None}, 'columns': self.config['columns']}
+        return [(zip(get_pages_run(BytesIO(content), self.pdf_helper.name.active),
+                   repeat(self.config['page_area'])),
+                {'guess': False, 'pandas_options': {'header': None}, 'columns': self.config['columns']},
+                 lambda x: x)]
 
     def process_df(self, pdf_df):
         pdf_df = pdf_df[~pdf_df[0].str.contains('TOTAL').fillna(False)].reset_index(drop=True)

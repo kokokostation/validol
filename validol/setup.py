@@ -20,7 +20,8 @@ SETUP_CONFIG = {
         'python-dateutil',
         'PyPDF2',
         'scipy',
-        'croniter'
+        'croniter',
+        'tendo'
     ],
     'entry_points': {
         'console_scripts': [
@@ -30,4 +31,5 @@ SETUP_CONFIG = {
     }
 }
 
-setup(**SETUP_CONFIG)
+if __name__ == '__main__':
+    setup(**SETUP_CONFIG)

@@ -2,7 +2,7 @@ import datetime as dt
 from io import StringIO
 import pandas as pd
 
-from validol.model.store.resource import Actives, ActiveResource, Platforms, FlavorUpdater, Updatable
+from validol.model.store.resource import Actives, ActiveResource, Platforms, FlavorUpdater, Updater
 from validol.model.utils import group_by
 
 
@@ -53,11 +53,13 @@ class Flavor(FlavorUpdater):
                 (actives_table, ("PlatformCode", "ActiveName"), actives)):
             table.write_df(pd.DataFrame(list(values), columns=columns))
 
+        ranges = []
+
         for code, name in info.groups.keys():
             active_name, _ = Flavor.get_active_platform_name(name)
-            Active(self.model_launcher, flavor, code, active_name, info.get_group((code, name))).update()
+            ranges.append(Active(self.model_launcher, flavor, code, active_name, info.get_group((code, name))).update())
 
-        return df.Date.min(), df.Date.max()
+        return Updater.reduce_ranges(ranges)
 
     def load_csvs(self, flavor):
         raise NotImplementedError

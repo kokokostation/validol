@@ -11,7 +11,7 @@ class IceView(DailyView):
     def __init__(self, flavor):
         DailyView.__init__(self, Active, IceActives, flavor)
 
-    def new_active(self, platform, model_launcher, controller_launcher):
+    def new_active(self, platform, model_launcher):
         actives = IceAllActives(model_launcher, self.flavor['name']).get_actives(platform)
 
         expirations_w = QComboBox()
@@ -40,7 +40,7 @@ class IceView(DailyView):
         actives_w.currentIndexChanged.connect(change_expirations)
         actives_w.activated.connect(change_expirations)
 
-        info = controller_launcher.show_pdf_helper_dialog(self.get_processors(), [actives_w, expirations_w])
+        info = model_launcher.controller_launcher.show_pdf_helper_dialog(self.get_processors(), [actives_w, expirations_w])
 
         if info is None:
             return

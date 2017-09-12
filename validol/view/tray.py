@@ -10,6 +10,7 @@ class MySystemTrayIcon(ViewElement, QSystemTrayIcon):
 
         self.menu = QMenu()
         self.menu.addAction("Quit", self.controller_launcher.quit)
+        self.menu.addAction('Update', self.controller_launcher.pip_update)
 
         self.setContextMenu(self.menu)
 
