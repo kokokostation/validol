@@ -2,26 +2,30 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 
 from validol.view.view_element import ViewElement
 from validol.view.utils.tipped_list import TippedList
+from validol.view.utils.colorful_delegate import ColorfulDelegate
 
 
 class SDTippedList(TippedList):
-    def __init__(self, model_launcher, schedulers):
+    def __init__(self, model_launcher):
         ro_line = QtWidgets.QLineEdit()
         ro_line.setReadOnly(True)
 
+        self.delegate = ColorfulDelegate()
+
         TippedList.__init__(self, model_launcher, ro_line, QtWidgets.QListWidget())
 
-        self.schedulers = schedulers
+        self.list.setItemDelegate(self.delegate)
 
     def get_items(self):
-        return self.model_launcher.read_schedulers()
+        schedulers = self.model_launcher.read_schedulers()
+        self.delegate.set_colors(
+            [QtGui.QColor(0, 255, 0) if scheduler.working else QtGui.QColor(255, 0, 0)
+             for scheduler in schedulers])
+
+        return schedulers
 
     def set_view(self, item):
         self.view.setText(item.cron)
-
-    def set_list_item(self, wi, item):
-        color = QtGui.QColor(0, 255, 0, 150) if item.working else QtGui.QColor(255, 0, 0, 150)
-        wi.setBackground(QtGui.QBrush(color))
 
 
 class SchedulerDialog(ViewElement, QtWidgets.QWidget):
@@ -49,9 +53,9 @@ class SchedulerDialog(ViewElement, QtWidgets.QWidget):
         self.switched_on = QtWidgets.QCheckBox('Switched on by default')
         self.switched_on.setChecked(True)
 
-        self.tipped_list = SDTippedList(self.model_launcher, self.schedulers)
+        self.tipped_list = SDTippedList(self.model_launcher)
 
-        self.switch_button = QtWidgets.QPushButton('Switch')
+        self.switch_button = QtWidgets.QPushButton('Switch on/off')
         self.switch_button.clicked.connect(self.switch)
 
         self.remove_button = QtWidgets.QPushButton('Remove')

@@ -1,8 +1,6 @@
 import sqlite3
-import pandas as pd
 from shutil import copyfile
 
-from validol.model.resource_manager.resource_manager import ResourceManager
 
 
 def main():

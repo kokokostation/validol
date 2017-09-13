@@ -17,6 +17,7 @@ from validol.view.menu.pattern_edit_dialog import PatternEditDialog
 from validol.view.menu.scheduler_dialog import SchedulerDialog
 from validol.view.tray import MySystemTrayIcon
 from validol.view.utils.qcron import QCron
+from validol.view.utils.utils import display_error
 
 
 class ViewLauncher(ViewElement):
@@ -150,3 +151,6 @@ class ViewLauncher(ViewElement):
 
         if update_manager.verbose(source):
             self.notify_update(results)
+
+    def display_error(self, title, error):
+        display_error(title, error)

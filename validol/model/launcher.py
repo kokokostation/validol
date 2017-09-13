@@ -14,6 +14,8 @@ from validol.model.store.structures.pdf_helper import PdfHelpers
 from validol.model.store.structures.scheduler import Schedulers
 from validol.model.store.miners.daily_reports.expirations import Expirations
 from validol.model.store.collectors.ml import MlCurve
+from validol.model.store.structures.db_version import DbVersionManager
+from validol.migration.migrate import migrate
 
 
 class ModelLauncher:
@@ -29,8 +31,12 @@ class ModelLauncher:
         return self
 
     def init_data(self, main_dbh="main.db"):
+        migration_needed = True
+
         if not os.path.exists("data"):
             os.makedirs("data")
+
+            migration_needed = False
 
         os.chdir("data")
 
@@ -44,9 +50,14 @@ class ModelLauncher:
             with sqlite3.connect(main_dbh) as new_db:
                 new_db.executescript("".join(self.main_dbh.iterdump()))
 
+            migration_needed = False
+
         self.main_dbh = sqlite3.connect(main_dbh)
 
         self.cache_engine = create_engine('sqlite:///cache.sqlite')
+
+        if migration_needed:
+            migrate(self)
 
         return self
 
@@ -148,3 +159,9 @@ class ModelLauncher:
 
     def get_update_manager(self):
         return UpdateManager(self)
+
+    def get_db_version(self):
+        return DbVersionManager(self).get_version()
+
+    def write_db_version(self, version):
+        DbVersionManager(self).write_version(version)

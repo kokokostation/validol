@@ -1,4 +1,5 @@
 import pip
+import traceback
 
 from validol.model.launcher import ModelLauncher
 from validol.view.launcher import ViewLauncher
@@ -18,7 +19,15 @@ class ControllerLauncher:
         return self.model_launcher.update(how)
 
     def draw_table(self, table_pattern, actives):
-        df = self.model_launcher.prepare_tables(table_pattern, actives)
+        try:
+            df = self.model_launcher.prepare_tables(table_pattern, actives)
+        except Exception:
+            self.view_launcher.display_error(
+                'Table evaluation failed',
+                'Something badly wrong happened while atoms evaluation. '
+                'Here is the stack trace: \n{}'.format(traceback.format_exc()))
+
+            return
 
         title = ViewFlavor.show_ais(actives, self.model_launcher)
 
@@ -42,7 +51,7 @@ class ControllerLauncher:
         self.view_launcher.show_table_dialog()
 
     def show_pdf_helper_dialog(self, processors, widgets):
-        self.view_launcher.show_pdf_helper_dialog(processors, widgets)
+        return self.view_launcher.show_pdf_helper_dialog(processors, widgets)
 
     def get_chosen_actives(self):
         return self.view_launcher.get_chosen_actives()

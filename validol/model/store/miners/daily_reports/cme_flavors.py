@@ -23,7 +23,8 @@ CME_OPTIONS = {
     'get_df': False,
     'options': True,
     'updater': CmeDaily,
-    'view': CmeView
+    'view': CmeView,
+    'atoms_donor': False
 }
 
 CME_DAILY_FLAVORS = [CME_FUTURES, CME_OPTIONS]

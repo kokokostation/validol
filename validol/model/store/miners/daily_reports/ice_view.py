@@ -5,6 +5,7 @@ from validol.model.store.miners.daily_reports.ice import IceActives, Active, Ice
 from validol.model.store.miners.daily_reports.expirations import Expirations
 from validol.model.store.miners.daily_reports.daily_view import DailyView, active_df_tolist
 from validol.model.store.view.active_info import ActiveInfo
+from validol.view.utils.searchable_combo import SearchableComboBox
 
 
 class IceView(DailyView):
@@ -33,9 +34,9 @@ class IceView(DailyView):
                 index_on=False)
 
             expirations_w.clear()
-            expirations_w.addItems(active_df_tolist(curr_expirations))
+            expirations_w.setItems(active_df_tolist(curr_expirations))
 
-        actives_w = QComboBox()
+        actives_w = SearchableComboBox()
         actives_w.addItems(active_df_tolist(actives))
         actives_w.currentIndexChanged.connect(change_expirations)
         actives_w.activated.connect(change_expirations)
@@ -57,4 +58,4 @@ class IceView(DailyView):
                 'expirations': curr_expirations.iloc[expirations_w.currentIndex()].to_dict()
             })
 
-        controller_launcher.refresh_actives()
+        model_launcher.controller_launcher.refresh_actives()

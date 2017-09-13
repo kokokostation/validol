@@ -57,8 +57,8 @@ class Table:
 class Updater:
     @staticmethod
     def reduce_ranges(ranges):
-        return [f(l) if l else None
-                for f, l in zip((min, max), map(partial(filter, None.__ne__), zip(*ranges)))]
+        return [f(l) if l else None for f, l in
+                zip((min, max), map(lambda x: list(filter(None.__ne__, x)), zip(*ranges)))]
 
     def __init__(self, model_launcher):
         self.model_launcher = model_launcher
@@ -235,6 +235,13 @@ class Resource(Table, Updatable):
     @staticmethod
     def get_atoms(schema):
         return [atom[0] for atom in schema]
+
+    @staticmethod
+    def get_flavor_atoms(flavor):
+        if flavor.get('atoms_donor', True):
+            return Resource.get_atoms(flavor.get("schema", []))
+        else:
+            return []
 
 
 class ResourceUpdater(Resource, Updater):

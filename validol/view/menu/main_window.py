@@ -1,9 +1,9 @@
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtWidgets
 from collections import OrderedDict
 from functools import partial
 
 from validol.view.utils.tipped_list import TextTippedList
-from validol.view.utils.utils import scrollable_area
+from validol.view.utils.utils import scrollable_area, display_error
 from validol.view.view_element import ViewElement
 from validol.view.utils.searchable_list import SearchableList
 from validol.model.store.view.active_info import ActiveInfo
@@ -254,8 +254,6 @@ class Window(ViewElement, QtWidgets.QWidget):
                 wi = QtWidgets.QListWidgetItem(active.ActiveName)
                 self.actives.addItem(wi)
 
-        self.searchable_list.update()
-
     def clear_active(self, vbox):
         i = self.actives_layout_lines.index(vbox)
         self.remove_line(i)
@@ -278,8 +276,12 @@ class Window(ViewElement, QtWidgets.QWidget):
             self.remove_line(i)
 
     def draw_table(self):
-        table_pattern = self.tipped_list.current_item()
-        self.controller_launcher.draw_table(table_pattern, self.chosen_actives)
+        if not self.chosen_actives:
+            display_error('Choose actives',
+                          "Pick at least one active. They would appear under 'Clear all' button")
+        else:
+            table_pattern = self.tipped_list.current_item()
+            self.controller_launcher.draw_table(table_pattern, self.chosen_actives)
 
     def create_table(self):
         self.controller_launcher.show_table_dialog()
@@ -292,11 +294,7 @@ class Window(ViewElement, QtWidgets.QWidget):
         results = action()
 
         if results is None:
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Unable to update due to network error")
-            msg.setWindowTitle("Network error")
-            msg.exec_()
+            display_error("Network error", "Unable to update due to network error")
         else:
             self.controller_launcher.notify_update(results)
 

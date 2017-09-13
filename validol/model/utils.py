@@ -215,3 +215,7 @@ def first_run(items):
 def get_filename(response):
     disposition = response.headers['Content-Disposition']
     return re.search('filename="(.+)"', disposition).group(1)
+
+
+def map_version(s):
+    return [int(n) for n in s.split('.')]

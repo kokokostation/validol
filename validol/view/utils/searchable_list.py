@@ -8,14 +8,11 @@ class SearchableList:
         self.searchbar.textChanged.connect(self.search)
 
         self.list = list_widget
-        self.items = []
-
-    def update(self):
-        self.items = [self.list.item(row).clone() for row in range(self.list.count())]
 
     def search(self):
-        self.list.clear()
+        for row in range(self.list.count()):
+            item = self.list.item(row)
+            item.setHidden(self.searchbar.text().upper() not in item.text().upper())
 
-        for item in self.items:
-            if self.searchbar.text().upper() in item.text().upper():
-                self.list.addItem(item.clone())
+    def update(self):
+        pass

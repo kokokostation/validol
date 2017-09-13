@@ -62,7 +62,7 @@ class ResourceManager:
 
         flavor_atom_names = [name
                              for flavor in REPORT_FLAVORS
-                             for name in Resource.get_atoms(flavor.get("schema", []))]
+                             for name in Resource.get_flavor_atoms(flavor)]
 
         names = sorted(set(flavor_atom_names +
                            Resource.get_atoms(InvestingPrice.SCHEMA)))

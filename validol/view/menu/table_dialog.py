@@ -23,9 +23,6 @@ class TDTippedList(TextTippedList):
 
         self.view.setText("{}: {}".format(atom, formula))
 
-    def on_refresh(self):
-        self.searchable_list.update()
-
 
 class TableDialog(ViewElement, QtWidgets.QWidget):
     def __init__(self, flags, controller_launcher, model_launcher):

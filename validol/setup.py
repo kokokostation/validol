@@ -26,7 +26,7 @@ SETUP_CONFIG = {
     'entry_points': {
         'console_scripts': [
             'validol=validol.main:main',
-            'validol-conf=validol.migration_scripts.atoms_migration:main'
+            'validol-conf=validol.migration.atoms_migration:main'
         ],
     }
 }

@@ -5,6 +5,7 @@ from validol.model.store.miners.daily_reports.cme import CmeActives, Active
 from validol.model.store.miners.daily_reports.expirations import Expirations
 from validol.model.store.miners.daily_reports.daily_view import DailyView, active_df_tolist
 from validol.model.store.view.active_info import ActiveInfo
+from validol.view.utils.searchable_combo import SearchableComboBox
 
 
 class CmeView(DailyView):
@@ -26,8 +27,9 @@ class CmeView(DailyView):
         ORDER BY
             PlatformCode, ActiveCode
         ''', index_on=False)
-        expirations_w = QComboBox()
-        expirations_w.addItems(active_df_tolist(expirations))
+
+        expirations_w = SearchableComboBox()
+        expirations_w.setItems(active_df_tolist(expirations))
 
         info = model_launcher.controller_launcher.show_pdf_helper_dialog(
             self.get_processors(), [active_name, archive_file, expirations_w])

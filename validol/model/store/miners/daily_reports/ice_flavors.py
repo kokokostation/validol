@@ -42,7 +42,8 @@ ICE_OPTIONS = {
     'get_df': False,
     'options': True,
     'updater': IceDaily,
-    'view': IceView
+    'view': IceView,
+    'atoms_donor': False
 }
 
 ICE_DAILY_FLAVORS = [ICE_OPTIONS, ICE_FUTURES]

@@ -26,13 +26,9 @@ class TippedList:
         for item in self.items:
             wi = QtWidgets.QListWidgetItem(item.name)
             wi.setData(4, item)
-            self.set_list_item(wi, item)
             self.list.addItem(wi)
 
         self.list.setCurrentRow(self.list.count() - 1)
-
-        if self.on_refresh is not None:
-            self.on_refresh()
 
     def current_item(self):
         if self.list.currentItem() is None:
@@ -40,14 +36,8 @@ class TippedList:
         else:
             return self.list.currentItem().data(4)
 
-    def on_refresh(self):
-        pass
-
     def set_view(self, item):
         raise NotImplementedError
-
-    def set_list_item(self, wi, item):
-        pass
 
     def get_items(self):
         raise NotImplementedError
