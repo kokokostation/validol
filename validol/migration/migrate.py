@@ -11,9 +11,14 @@ MIGRATION_MAP = [
 ]
 
 
+def init_version(model_launcher):
+    current_version = model_launcher.controller_launcher.current_pip_version()
+    return [version for version, _ in MIGRATION_MAP if map_version(version) < map_version(current_version)][-1]
+
+
 def migrate(model_launcher):
     db_version = model_launcher.get_db_version()
-    current_version = model_launcher.controller_launcher.get_package_config()['version']
+    current_version = model_launcher.controller_launcher.current_pip_version()
 
     for version, migration_functor in MIGRATION_MAP:
         if map_version(db_version) < map_version(version) < map_version(current_version):

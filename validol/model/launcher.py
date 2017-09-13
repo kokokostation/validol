@@ -15,7 +15,7 @@ from validol.model.store.structures.scheduler import Schedulers
 from validol.model.store.miners.daily_reports.expirations import Expirations
 from validol.model.store.collectors.ml import MlCurve
 from validol.model.store.structures.db_version import DbVersionManager
-from validol.migration.migrate import migrate
+from validol.migration.migrate import migrate, init_version
 
 
 class ModelLauncher:
@@ -31,33 +31,36 @@ class ModelLauncher:
         return self
 
     def init_data(self, main_dbh="main.db"):
-        migration_needed = True
+        data_exists = os.path.exists("data")
 
-        if not os.path.exists("data"):
+        if not data_exists:
             os.makedirs("data")
-
-            migration_needed = False
 
         os.chdir("data")
 
+        main_dbh_exists = os.path.isfile(main_dbh)
+
         self.init_user()
-
-        if not os.path.isfile(main_dbh):
-            self.main_dbh = sqlite3.connect(":memory:")
-
-            self.update_weekly()
-
-            with sqlite3.connect(main_dbh) as new_db:
-                new_db.executescript("".join(self.main_dbh.iterdump()))
-
-            migration_needed = False
 
         self.main_dbh = sqlite3.connect(main_dbh)
 
         self.cache_engine = create_engine('sqlite:///cache.sqlite')
 
-        if migration_needed:
+        if data_exists:
             migrate(self)
+        else:
+            self.write_db_version(init_version(self))
+
+        if not main_dbh_exists:
+            real_conn = self.main_dbh
+
+            self.main_dbh = sqlite3.connect(":memory:")
+
+            self.update_weekly()
+
+            real_conn.executescript("".join(self.main_dbh.iterdump()))
+
+            self.main_dbh = real_conn
 
         return self
 

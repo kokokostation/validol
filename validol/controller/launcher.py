@@ -92,3 +92,6 @@ class ControllerLauncher:
     def pip_update(self):
         pip.main(['install', '--extra-index-url', 'https://pypi.python.org/pypi', '--upgrade', 'validol'])
         self.quit()
+
+    def current_pip_version(self):
+        return self.get_package_config()['version']
