@@ -5,6 +5,7 @@ import pandas as pd
 import pyparsing as pp
 
 from validol.model.utils import merge_dfs
+from validol.model.store.structures.structure import PieceNameError
 
 
 class AtomWrap:
@@ -13,6 +14,9 @@ class AtomWrap:
 
     def __repr__(self):
         return self.name
+
+VAR = pp.Word('@', pp.alphas)
+STRING = pp.Word(pp.alphas + '%_' + pp.nums)
 
 class FormulaGrammar:
     def push_first(self, toks):
@@ -25,7 +29,7 @@ class FormulaGrammar:
         if toks and toks[0] == '-':
             self.expr_stack.append('unary -')
 
-    def __init__(self, all_atoms):
+    def __init__(self, all_atoms, var=VAR):
         self.expr_stack = []
 
         point = pp.Literal(".")
@@ -33,7 +37,6 @@ class FormulaGrammar:
         lpar = pp.Literal("(")
         rpar = pp.Literal(")")
 
-        var = pp.Word('@', pp.alphas)
         expr = pp.Forward()
 
         validol_atom = pp.Or([pp.Literal(atom_name) for atom_name in
@@ -46,11 +49,12 @@ class FormulaGrammar:
 
         ident = pp.Word(pp.alphas, pp.alphas + pp.nums + "_$")
 
-        args = lpar + (pp.Optional(pp.Combine(expr)) + pp.ZeroOrMore(pp.Combine(pp.Literal(',') + expr))).setParseAction(self.args_num) + rpar
+        args = lpar + (pp.Optional(pp.Combine(expr)) + pp.ZeroOrMore(pp.Combine(pp.Literal(',') + expr)))\
+            .setParseAction(self.args_num) + rpar
 
         function = (validol_atom + args)
         st_function = ident + args
-        string = pp.Word(pp.alphas + '%_' + pp.nums)
+
         date = pp.Combine(pp.Word(pp.nums, exact=4) + (pp.Literal('-') + pp.Word(pp.nums, exact=2)) * 2)
         none = pp.CaselessLiteral('None').setParseAction(lambda toks: [None])
 
@@ -62,7 +66,7 @@ class FormulaGrammar:
         multop = mult | div
         expop = pp.Literal("^")
         pi = pp.CaselessLiteral("PI")
-        true_atom = (function | st_function | date | pi | e | fnumber | var | none | string)\
+        true_atom = (function | st_function | date | pi | e | fnumber | var | none | STRING)\
             .setParseAction(self.push_first)
         atom = ((pp.Optional(pp.oneOf("- +")) + true_atom) |
                 pp.Optional(pp.oneOf("- +")) + pp.Group(lpar + expr + rpar))\
@@ -86,6 +90,32 @@ class FormulaGrammar:
                    "exp": np.exp,
                    "abs": np.abs,
                    "round": np.round}
+
+
+
+
+
+class AtomGrammar:
+    def __init__(self, all_atoms):
+        self.all_atoms = [atom.name for atom in all_atoms]
+
+        lpar = pp.Literal("(").suppress()
+        rpar = pp.Literal(")").suppress()
+
+        self.bnf = STRING.setResultsName('name') + \
+                   lpar + pp.Optional(pp.delimitedList(VAR)).setResultsName('vars') + rpar
+
+    def parse(self, atom, named_formula):
+        result = self.bnf.parseString(atom)
+        result = {'name': result['name'], 'vars': list(result.get('vars', []))}
+
+        if result['name'] in self.all_atoms:
+            raise PieceNameError
+
+        FormulaGrammar(self.all_atoms, pp.Or([pp.Literal(var) for var in result['vars']]))\
+            .bnf.parseString(named_formula, True)
+
+        return result
 
 
 class NumericStringParser(FormulaGrammar):

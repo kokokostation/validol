@@ -5,7 +5,7 @@ import pandas as pd
 import requests
 from validol.model.mine.downloader import read_url_text
 from validol.model.store.resource import Resource
-from validol.model.store.structures.structure import Structure, Base, with_session
+from validol.model.store.structures.structure import NamedStructure, Base, with_session
 from sqlalchemy import Column, String
 
 
@@ -25,9 +25,9 @@ class InvestingPriceInfo(Base):
         self.url = url
 
 
-class InvestingPrices(Structure):
+class InvestingPrices(NamedStructure):
     def __init__(self, model_launcher):
-        Structure.__init__(self, InvestingPriceInfo, model_launcher)
+        NamedStructure.__init__(self, InvestingPriceInfo, model_launcher)
 
     def get_info_through_url(self, url):
         if url is None:

@@ -18,7 +18,7 @@ class PipChecker(Updater):
 
         versions = list(sorted(map_version(s) for s in info['releases'].keys()))
 
-        if versions[-1] != map_version(config['version']):
+        if max(versions) > map_version(config['version']):
             self.model_launcher.controller_launcher.mark_update_required()
 
     def verbose(self, source):

@@ -4,7 +4,7 @@ from sqlalchemy.orm import reconstructor
 import pandas as pd
 import os
 
-from validol.model.store.structures.structure import Structure, Base, JSONCodec
+from validol.model.store.structures.structure import NamedStructure, Base, JSONCodec
 from validol.model.store.view.active_info import ActiveInfoActiveOnlySchema
 from validol.model.store.miners.daily_reports.expirations import Expirations
 from validol.model.utils import pdf, TempFile
@@ -99,9 +99,9 @@ class PdfHelper(Base):
             return pd.DataFrame()
 
 
-class PdfHelpers(Structure):
+class PdfHelpers(NamedStructure):
     def __init__(self, model_launcher):
-        Structure.__init__(self, PdfHelper, model_launcher)
+        NamedStructure.__init__(self, PdfHelper, model_launcher)
 
     def write_helper(self, ai, info, other_info):
         self.write(PdfHelper(name=ai,

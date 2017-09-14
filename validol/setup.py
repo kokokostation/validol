@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 SETUP_CONFIG = {
     'name': 'validol',
-    'version': '0.0.10',
+    'version': '0.0.8',
     'license': 'MIT',
     'packages': find_packages(),
     'install_requires': [

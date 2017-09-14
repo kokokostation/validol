@@ -4,6 +4,7 @@ from sqlalchemy.types import TypeDecorator
 from sqlalchemy import String
 from functools import wraps
 import json
+from sqlalchemy.exc import IntegrityError
 
 
 class JSONCodec(TypeDecorator):
@@ -56,6 +57,10 @@ def with_session(f):
 Base = declarative_base()
 
 
+class PieceNameError(Exception):
+    pass
+
+
 class Structure:
     def __init__(self, klass, model_launcher, engine=None):
         self.klass = klass
@@ -87,9 +92,9 @@ class Structure:
 
     @with_session
     def remove_by_pred(self, session, pred=None):
-        session\
-            .query(self.klass)\
-            .filter(pred)\
+        session \
+            .query(self.klass) \
+            .filter(pred) \
             .delete(synchronize_session=False)
 
     @with_session
@@ -106,3 +111,11 @@ class Structure:
     @with_session
     def one_or_none(self, session):
         return session.query(self.klass).first()
+
+
+class NamedStructure(Structure):
+    def write(self, item):
+        try:
+            super().write(item)
+        except IntegrityError:
+            raise PieceNameError

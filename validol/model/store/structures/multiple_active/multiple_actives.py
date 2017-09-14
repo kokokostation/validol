@@ -1,12 +1,12 @@
 import pandas as pd
 
-from validol.model.store.structures.structure import Structure
+from validol.model.store.structures.structure import NamedStructure
 from validol.model.store.view.view_flavor import ViewFlavor
 
 
-class MultipleActives(Structure):
+class MultipleActives(NamedStructure):
     def __init__(self, model_launcher, active_cls):
-        Structure.__init__(self, active_cls, model_launcher)
+        NamedStructure.__init__(self, active_cls, model_launcher)
 
     def get_actives(self):
         return pd.DataFrame([active.name for active in self.read()], columns=["ActiveName"])

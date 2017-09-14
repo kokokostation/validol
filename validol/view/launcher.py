@@ -46,6 +46,7 @@ class ViewLauncher(ViewElement):
     def mark_update_required(self):
         self.app.setWindowIcon(self.app_icons['red'])
         self.system_tray_icon.setIcon(self.app_icons['red'])
+        self.main_window.show_update_button()
 
     def event_loop(self):
         sys.exit(self.app.exec())

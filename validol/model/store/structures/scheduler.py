@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Boolean
 from croniter import croniter
 
-from validol.model.store.structures.structure import Structure, Base, with_session
+from validol.model.store.structures.structure import NamedStructure, Base, with_session
 
 
 class Scheduler(Base):
@@ -17,9 +17,9 @@ class Scheduler(Base):
         self.working = working
 
 
-class Schedulers(Structure):
+class Schedulers(NamedStructure):
     def __init__(self, model_launcher):
-        Structure.__init__(self, Scheduler, model_launcher)
+        NamedStructure.__init__(self, Scheduler, model_launcher)
 
     @staticmethod
     def get_cond(scheduler):

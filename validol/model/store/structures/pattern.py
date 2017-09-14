@@ -1,4 +1,4 @@
-from validol.model.store.structures.structure import Structure, Base, JSONCodec
+from validol.model.store.structures.structure import NamedStructure, Base, JSONCodec
 from sqlalchemy import Column, String
 from marshmallow import Schema, fields, post_load, pre_dump
 from sqlalchemy.ext.declarative import declarative_base
@@ -121,10 +121,10 @@ class StrPattern(declarative_base()):
     name = Column(String, primary_key=True)
 
 
-class Patterns(Structure):
+class Patterns(NamedStructure):
     def __init__(self, model_launcher, cls=Pattern):
         self.cls = cls
-        Structure.__init__(self, self.cls, model_launcher)
+        NamedStructure.__init__(self, self.cls, model_launcher)
 
     def get_patterns(self, table_name):
         return self.read(self.cls.table_name == table_name)

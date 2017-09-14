@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, LargeBinary
 from io import BytesIO
 from ftplib import FTP
 
-from validol.model.store.structures.structure import Structure, Base
+from validol.model.store.structures.structure import NamedStructure, Base
 
 
 class FtpCacheEntry(Base):
@@ -18,9 +18,9 @@ class FtpCacheEntry(Base):
         return FtpCacheEntry(name=file, value=data.getvalue())
 
 
-class FtpCache(Structure):
+class FtpCache(NamedStructure):
     def __init__(self, model_launcher):
-        Structure.__init__(self, FtpCacheEntry, model_launcher, model_launcher.cache_engine)
+        NamedStructure.__init__(self, FtpCacheEntry, model_launcher, model_launcher.cache_engine)
 
     def read_file(self, ftp_server, file):
         try:

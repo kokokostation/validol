@@ -61,6 +61,11 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.drawTable = QtWidgets.QPushButton('Draw table')
         self.drawTable.clicked.connect(self.draw_table)
 
+        self.update_app_button = QtWidgets.QPushButton('UPDATE APP')
+        self.update_app_button.setStyleSheet("background-color: red")
+        self.update_app_button.clicked.connect(self.controller_launcher.pip_update)
+        self.update_app_button.hide()
+
         self.clear = QtWidgets.QPushButton('Clear all')
         self.clear.clicked.connect(self.clear_actives)
 
@@ -126,7 +131,8 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.lists_layout.addWidget(scrollable_area(self.actives_layout))
         self.lists_layout.insertLayout(4, self.rightLayout)
 
-        self.main_layout.insertLayout(0, self.lists_layout)
+        self.main_layout.addWidget(self.update_app_button)
+        self.main_layout.insertLayout(1, self.lists_layout)
         self.main_layout.addWidget(self.drawTable)
 
         self.showMaximized()
@@ -302,3 +308,6 @@ class Window(ViewElement, QtWidgets.QWidget):
 
     def closeEvent(self, qce):
         self.controller_launcher.on_main_window_close()
+
+    def show_update_button(self):
+        self.update_app_button.show()

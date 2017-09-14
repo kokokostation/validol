@@ -1,10 +1,12 @@
 from PyQt5 import QtWidgets, QtGui
-from pyparsing import alphas
+from pyparsing import alphas, ParseException
 
 from validol.view.view_element import ViewElement
 from validol.model.resource_manager.atom_flavors import FormulaAtom
 from validol.view.utils.searchable_list import SearchableList
 from validol.view.utils.tipped_list import TextTippedList
+from validol.view.utils.utils import display_error
+from validol.model.store.structures.structure import PieceNameError
 
 
 class TDTippedList(TextTippedList):
@@ -113,13 +115,18 @@ class TableDialog(ViewElement, QtWidgets.QWidget):
         if not self.name.text():
             return
 
-        if self.mode.checkedButton().text() == "Table":
-            text = self.mainEdit.toPlainText().replace(",\n", "\n").strip(",\n")
-            self.model_launcher.write_table(self.name.text(), text)
-            self.controller_launcher.refresh_tables()
-        else:
-            atom_name, named_formula = self.name.text(), self.mainEdit.toPlainText()
-            self.model_launcher.write_atom(atom_name, named_formula)
-            self.tipped_list.refresh()
+        try:
+            if self.mode.checkedButton().text() == "Table":
+                text = self.mainEdit.toPlainText().replace(",\n", "\n").strip(",\n")
+                self.model_launcher.write_table(self.name.text(), text)
+                self.controller_launcher.refresh_tables()
+            else:
+                atom_name, named_formula = self.name.text(), self.mainEdit.toPlainText()
+                self.model_launcher.write_atom(atom_name, named_formula)
+                self.tipped_list.refresh()
 
-        self.clear_edits()
+            self.clear_edits()
+        except ParseException:
+            display_error('Syntax error', 'Are you sure, everyting is ok about syntax?')
+        except PieceNameError:
+            display_error('Name error', 'The name you want to use already exists') #Ещё надо проверить на имя primary атомов

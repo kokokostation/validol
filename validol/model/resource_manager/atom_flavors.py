@@ -127,7 +127,7 @@ class Curr(AtomBase):
 
 class MlCurve(AtomBase, Currable):
     def __init__(self):
-        AtomBase.__init__(self, 'ML_CURVE', [FormulaAtom.LETTER])
+        AtomBase.__init__(self, 'MLCURVE', [FormulaAtom.LETTER])
 
     def evaluate(self, evaluator, params):
         ai = evaluator.letter_map[params[0]]
