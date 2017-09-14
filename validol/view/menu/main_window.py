@@ -244,6 +244,8 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.platforms.setCurrentRow(0)
 
+        self.active_flavors.clear()
+
     def platform_chosen(self):
         if self.platforms.currentItem() is None:
             return
@@ -259,6 +261,8 @@ class Window(ViewElement, QtWidgets.QWidget):
             for _, active in actives.iterrows():
                 wi = QtWidgets.QListWidgetItem(active.ActiveName)
                 self.actives.addItem(wi)
+
+        self.active_flavors.clear()
 
     def clear_active(self, vbox):
         i = self.actives_layout_lines.index(vbox)

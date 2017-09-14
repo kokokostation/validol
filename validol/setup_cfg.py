@@ -1,6 +1,6 @@
 SETUP_CONFIG = {
     'name': 'validol',
-    'version': '0.0.12',
+    'version': '0.0.13',
     'license': 'MIT',
     'install_requires': [
         'pyparsing',
@@ -16,7 +16,6 @@ SETUP_CONFIG = {
         'tabula-py',
         'python-dateutil',
         'PyPDF2',
-        'scipy',
         'croniter',
         'tendo'
     ],

@@ -1,7 +1,6 @@
 from itertools import groupby
 from sqlalchemy import Column, String
 import pandas as pd
-from scipy.interpolate import interp1d
 import numpy as np
 
 from validol.model.store.miners.monetary import Monetary
@@ -160,14 +159,14 @@ class Quantile(AtomBase):
         ml = series[argmin] * (1 + q)
 
         if minmax == 'min':
-            series = series.loc[:argmin]
+            series = series.loc[:argmin].iloc[::-1]
         else:
             series = series.loc[argmin:]
 
         if len(series) < 2:
             return np.NaN
 
-        return interp1d(series.values, series.index)(ml)
+        return np.interp(ml, series.values, series.index)
 
     def evaluate(self, evaluator, params):
         return params[0].apply(lambda curve: Quantile.get_quantile(curve, params[1], params[2]))
