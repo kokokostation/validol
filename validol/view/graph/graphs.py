@@ -116,6 +116,69 @@ class DaysMap:
             return -1, timestamp, "None"
 
 
+class LegendUpdater:
+    DELAY = 200
+
+    def __init__(self, df, pattern, vert_lines, hor_lines, plots, legends, labels, legend_data):
+        self.days_map = DaysMap(df, pattern)
+        self.vert_lines = vert_lines
+        self.hor_lines = hor_lines
+        self.plots = plots
+        self.legends = legends
+        self.labels = labels
+        self.legend_data = legend_data
+
+        self.prevt = dt.datetime.now() - dt.timedelta(microseconds=LegendUpdater.DELAY * 1000)
+
+        self.qtimer = QtCore.QTimer()
+        self.qtimer.setSingleShot(True)
+        self.qtimer.setInterval(LegendUpdater.DELAY)
+        self.qtimer.timeout.connect(lambda: self.set_legend(None))
+
+        self.curr_days_passed = None
+
+    def mouse_moved(self, event):
+        x = self.plots[0].vb.mapSceneToView(event).x()
+        days_passed, x, date = self.days_map.days_passed(int(x))
+
+        self.set_lines(x, date, event)
+
+        if (dt.datetime.now() - self.prevt).microseconds >= LegendUpdater.DELAY * 1000:
+            self.qtimer.stop()
+            self.set_legend(days_passed)
+        else:
+            self.curr_days_passed = days_passed
+            if not self.qtimer.isActive():
+                self.qtimer.start()
+
+    def set_legend(self, days_passed):
+        for i in range(len(self.plots)):
+            while self.legends[i].layout.count() > 0:
+                self.legends[i].removeItem(self.legends[i].items[0][1].text)
+
+            self.legends[i].layout.setColumnSpacing(0, 20)
+            for section in self.legend_data[i]:
+                self.legends[i].addItem(*section[0])
+                for style, key in section[1:]:
+                    value = self.days_map.get_value(days_passed or self.curr_days_passed, key)
+                    if value is not None:
+                        value = "{:.2f}".format(value)
+                    self.legends[i].addItem(
+                        style,
+                        "{} {}".format(key, value))
+
+        self.prevt = dt.datetime.now()
+
+    def set_lines(self, x, date, event):
+        for i, plot in enumerate(self.plots):
+            y = plot.vb.mapSceneToView(event).y()
+
+            self.vert_lines[i].setPos(x)
+            self.hor_lines[i].setPos(y)
+            self.labels[i].setPos(x, plot.vb.viewRange()[1][0])
+            self.labels[i].setText(date)
+
+
 class Graph(pg.GraphicsWindow):
     def __init__(self, df, pattern, table_labels):
         pg.GraphicsWindow.__init__(self)
@@ -124,7 +187,6 @@ class Graph(pg.GraphicsWindow):
         self.legendData = []
 
         self.df = df
-        self.days_map = DaysMap(df, pattern)
         self.pattern = pattern
         self.table_labels = table_labels
         self.scatter_on = False
@@ -233,38 +295,10 @@ class Graph(pg.GraphicsWindow):
             p.addItem(hLines[-1], ignoreBounds=True)
             p.addItem(labels[-1], ignoreBounds=True)
 
-        def mouse_moved(evt):
-            for i in range(len(plots)):
-                mousePoint = plots[i].vb.mapSceneToView(evt)
-                x, y = mousePoint.x(), mousePoint.y()
+        self.legend_updater = LegendUpdater(self.df, self.pattern, vLines, hLines,
+                                            plots, legends, labels, self.legendData)
 
-                days_passed, x, date = self.days_map.days_passed(int(x))
-
-                if x == mouse_moved.prevx:
-                    return
-
-                vLines[i].setPos(x)
-                hLines[i].setPos(y)
-                labels[i].setPos(x, plots[i].vb.viewRange()[1][0])
-                labels[i].setText(date)
-
-                while legends[i].layout.count() > 0:
-                    legends[i].removeItem(legends[i].items[0][1].text)
-
-                legends[i].layout.setColumnSpacing(0, 20)
-                for section in self.legendData[i]:
-                    legends[i].addItem(*section[0])
-                    for style, key in section[1:]:
-                        value = self.days_map.get_value(days_passed, key)
-                        if value is not None:
-                            value = "{:.2f}".format(value)
-                        legends[i].addItem(
-                            style,
-                            "{} {}".format(key, value))
-
-        mouse_moved.prevx = None
-
-        self.scene().sigMouseMoved.connect(mouse_moved)
+        self.scene().sigMouseMoved.connect(self.legend_updater.mouse_moved)
 
 
 class CheckedGraph(QtWidgets.QWidget):

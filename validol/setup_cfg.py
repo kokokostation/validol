@@ -1,10 +1,7 @@
-from setuptools import setup, find_packages
-
 SETUP_CONFIG = {
     'name': 'validol',
-    'version': '0.0.8',
+    'version': '0.0.12',
     'license': 'MIT',
-    'packages': find_packages(),
     'install_requires': [
         'pyparsing',
         'numpy',
@@ -25,11 +22,7 @@ SETUP_CONFIG = {
     ],
     'entry_points': {
         'console_scripts': [
-            'validol=validol.main:main',
-            'validol-conf=validol.migration.atoms_migration:main'
+            'validol=validol.main:main'
         ],
     }
 }
-
-if __name__ == '__main__':
-    setup(**SETUP_CONFIG)

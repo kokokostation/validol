@@ -1,10 +1,11 @@
-import pip
 import traceback
 
+import pip
+
+from validol.setup_cfg import SETUP_CONFIG
 from validol.model.launcher import ModelLauncher
-from validol.view.launcher import ViewLauncher
 from validol.model.store.view.view_flavor import ViewFlavor
-from validol.setup import SETUP_CONFIG
+from validol.view.launcher import ViewLauncher
 
 
 class ControllerLauncher:
