@@ -1,6 +1,5 @@
-from validol.model.utils import date_range
+from validol.model.utils.utils import date_range, concat
 from validol.model.store.resource import ActiveResource
-from validol.model.utils import concat
 
 
 class DailyResource(ActiveResource):

@@ -1,4 +1,6 @@
 from setuptools import setup, find_packages
+import os
+
 from validol.setup_cfg import SETUP_CONFIG
 
 

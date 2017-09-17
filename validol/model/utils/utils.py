@@ -206,6 +206,8 @@ def get_pages_run(fobj, phrase):
         elif result:
             return result
 
+    return result
+
 
 def first_run(items):
     for k, g in groupby(enumerate(items), lambda ix: ix[0] - ix[1]):

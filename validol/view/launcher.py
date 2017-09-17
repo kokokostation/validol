@@ -16,7 +16,7 @@ from validol.view.menu.glued_active_dialog import GluedActiveDialog
 from validol.view.menu.pattern_edit_dialog import PatternEditDialog
 from validol.view.menu.scheduler_dialog import SchedulerDialog
 from validol.view.tray import MySystemTrayIcon
-from validol.view.utils.qcron import QCron
+from validol.controller.qcron_manager import QCronManager
 from validol.view.utils.utils import display_error
 
 
@@ -39,14 +39,14 @@ class ViewLauncher(ViewElement):
         self.main_window = Window(self.app, self.controller_launcher, self.model_launcher)
 
         self.windows = []
-        self.qcrons = []
+        self.qcron_manager = QCronManager(self.model_launcher, self)
 
-        self.refresh_schedulers()
+        self.qcron_manager.refresh()
 
     def mark_update_required(self):
         self.app.setWindowIcon(self.app_icons['red'])
         self.system_tray_icon.setIcon(self.app_icons['red'])
-        self.main_window.show_update_button()
+        self.main_window.show_update_app_button()
 
     def event_loop(self):
         sys.exit(self.app.exec())
@@ -57,13 +57,14 @@ class ViewLauncher(ViewElement):
     def get_icons(self):
         resolution = re.compile('^(\d+)x(\d+)(.*)?.png$')
         app_icons = defaultdict(QtGui.QIcon)
-        icons_dir = '../validol/view/icons'
+        icons_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'icons')
 
         for icon in os.listdir(icons_dir):
             match = resolution.match(icon)
-            x, y, name = int(match.group(1)), int(match.group(2)), match.group(3)
+            if match is not None:
+                x, y, name = int(match.group(1)), int(match.group(2)), match.group(3)
 
-            app_icons[name].addFile(os.path.join(icons_dir, icon), QtCore.QSize(x, y))
+                app_icons[name].addFile(os.path.join(icons_dir, icon), QtCore.QSize(x, y))
 
         return app_icons
 
@@ -121,37 +122,20 @@ class ViewLauncher(ViewElement):
             message = '\n'.join(map(ViewLauncher.show_update_result, results))
             self.system_tray_icon.showMessage('Update', message)
 
-    def refresh_schedulers(self):
-        schedulers = [scheduler for scheduler in self.model_launcher.read_schedulers()
-                      if scheduler.working]
-
-        update_manager = self.model_launcher.get_update_manager()
-
-        for qcron in self.qcrons:
-            qcron.stop()
-
-        self.qcrons = [QCron(scheduler.cron, lambda: self.update_wrapper(update_manager, scheduler.name))
-                       for scheduler in schedulers]
-
     def notify(self, message):
         self.system_tray_icon.showMessage('Message', message)
 
     def show_scheduler_dialog(self):
         self.windows.append(SchedulerDialog(self.controller_launcher, self.model_launcher))
 
-    def update_wrapper(self, update_manager, source):
-        if update_manager.verbose(source):
-            self.notify('Update of {} started'.format(source))
-
-        try:
-            results = update_manager.update_source(source)
-        except requests.exceptions.ConnectionError:
-            if update_manager.verbose(source):
-                self.notify('Update of {} failed due to network error'.format(source))
-            return
-
-        if update_manager.verbose(source):
-            self.notify_update(results)
-
     def display_error(self, title, error):
         display_error(title, error)
+
+    def set_update_missed(self, needed):
+        self.main_window.show_update_missed_schedulers_button(needed)
+
+    def update_missed_schedulers(self):
+        self.qcron_manager.update_missed()
+
+    def register_update(self, source):
+        self.qcron_manager.register_update(source)

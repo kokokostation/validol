@@ -13,15 +13,17 @@ class QCron:
         self.qtimer.setSingleShot(True)
         self.qtimer.timeout.connect(self.act)
 
+        self.next_event = None
+
         self.set_qtimer()
 
     def act(self):
-        self.action()
         self.set_qtimer()
+        self.action()
 
     def set_qtimer(self):
-        next_event = self.iter.get_next(dt.datetime)
-        self.qtimer.setInterval((next_event - dt.datetime.now()).seconds * 1000)
+        self.next_event = self.iter.get_next(dt.datetime)
+        self.qtimer.setInterval((self.next_event - dt.datetime.now()).seconds * 1000)
         self.qtimer.start()
 
     def stop(self):

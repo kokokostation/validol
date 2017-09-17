@@ -8,7 +8,7 @@ from validol.model.store.resource import Resource
 from validol.model.resource_manager.atom_flavors import MonetaryAtom, MBDeltaAtom, \
     LazyAtom, FormulaAtom, AtomBase, Apply, Merge, Curr, MlCurve, ArgMin, Quantile, Min
 from validol.model.store.miners.report_flavors import REPORT_FLAVORS
-from validol.model.utils import merge_dfs
+from validol.model.utils.utils import merge_dfs
 
 
 class ResourceManager:

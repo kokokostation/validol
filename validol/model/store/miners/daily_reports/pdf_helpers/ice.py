@@ -6,7 +6,7 @@ import locale
 from locale import atof
 
 from validol.model.store.miners.daily_reports.pdf_helpers.utils import filter_rows, DailyPdfParser
-from validol.model.utils import concat
+from validol.model.utils.utils import concat
 
 
 class IceParser(DailyPdfParser):

@@ -8,7 +8,7 @@ import re
 
 from validol.model.store.miners.daily_reports.cme import Active
 from validol.model.store.miners.daily_reports.pdf_helpers.utils import filter_rows, DailyPdfParser, is_contract
-from validol.model.utils import concat, get_pages_run
+from validol.model.utils.utils import concat, get_pages_run
 
 
 class CmeParser(DailyPdfParser):

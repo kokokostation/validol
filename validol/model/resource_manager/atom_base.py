@@ -1,6 +1,6 @@
 from functools import wraps
 
-from validol.model.utils import parse_isoformat_date
+from validol.model.utils.utils import parse_isoformat_date
 
 class AtomBase:
     def __init__(self, name, params):

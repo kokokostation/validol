@@ -96,3 +96,6 @@ class ControllerLauncher:
 
     def current_pip_version(self):
         return self.get_package_config()['version']
+
+    def register_update(self, source):
+        self.view_launcher.register_update(source)

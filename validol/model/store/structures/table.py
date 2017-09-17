@@ -1,6 +1,6 @@
 from validol.model.store.structures.pattern import Patterns
 from validol.model.store.structures.structure import NamedStructure, Base, JSONCodec
-from validol.model.utils import flatten
+from validol.model.utils.utils import flatten
 from validol.model.resource_manager.evaluator import FormulaGrammar
 
 from sqlalchemy import Column, String

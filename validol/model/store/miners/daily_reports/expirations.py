@@ -7,7 +7,7 @@ import requests
 from dateutil.relativedelta import relativedelta
 
 from validol.model.store.resource import ResourceUpdater
-from validol.model.utils import concat
+from validol.model.utils.utils import concat
 
 
 class Expirations(ResourceUpdater):
@@ -146,6 +146,6 @@ class Expirations(ResourceUpdater):
             FROM 
                 "{table}" 
             WHERE
-                Source = ?'''.format(table=self.table), (str(ai)))
+                Source = ?'''.format(table=self.table), (str(ai),))
 
         self.dbh.commit()

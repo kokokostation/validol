@@ -3,7 +3,7 @@ from functools import partial
 from PyQt5 import QtWidgets, QtGui
 
 from validol.model.store.structures.pattern import Graph, Line, Bar, Pattern
-from validol.model.utils import remove_duplications
+from validol.model.utils.utils import remove_duplications
 from validol.view.utils.utils import scrollable_area, set_title
 from validol.view.utils.tipped_list import TippedList
 from validol.view.utils.button_group import ButtonGroup

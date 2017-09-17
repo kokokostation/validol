@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean
+from sqlalchemy import Column, String, Boolean, DateTime
 from croniter import croniter
 
 from validol.model.store.structures.structure import NamedStructure, Base, with_session
@@ -10,6 +10,7 @@ class Scheduler(Base):
     name = Column(String, primary_key=True)
     cron = Column(String, primary_key=True)
     working = Column(Boolean)
+    next_time = Column(DateTime)
 
     def __init__(self, name, cron, working):
         self.name = name
@@ -26,10 +27,19 @@ class Schedulers(NamedStructure):
         return (Scheduler.name == scheduler.name) & \
                (Scheduler.cron == scheduler.cron)
 
+    @staticmethod
+    def get_scheduler(session, scheduler):
+        return session.query(Scheduler).filter(Schedulers.get_cond(scheduler)).one()
+
     @with_session
     def switch(self, session, scheduler):
-        dbo = session.query(Scheduler).filter(Schedulers.get_cond(scheduler)).one()
+        dbo = Schedulers.get_scheduler(session, scheduler)
         dbo.working = not dbo.working
+
+    @with_session
+    def set_next_time(self, session, scheduler, next_time):
+        dbo = Schedulers.get_scheduler(session, scheduler)
+        dbo.next_time = next_time
 
     def write_scheduler(self, name, cron, working):
         if croniter.is_valid(cron):

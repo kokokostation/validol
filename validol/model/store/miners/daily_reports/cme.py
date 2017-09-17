@@ -9,10 +9,9 @@ from validol.model.store.resource import Actives, Platforms
 from validol.model.store.view.active_info import ActiveInfo
 from validol.model.store.structures.pdf_helper import PdfHelpers
 from validol.model.store.miners.daily_reports.daily import DailyResource
-from validol.model.utils import isfile
+from validol.model.utils.utils import isfile
 from validol.model.store.structures.ftp_cache import FtpCache
 from validol.model.store.resource import Updater
-
 
 class CmeDaily:
     def __init__(self, model_launcher, flavor):

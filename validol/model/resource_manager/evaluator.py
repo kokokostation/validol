@@ -4,7 +4,7 @@ import math
 import pandas as pd
 import pyparsing as pp
 
-from validol.model.utils import merge_dfs
+from validol.model.utils.utils import merge_dfs
 from validol.model.store.structures.structure import PieceNameError
 
 

@@ -3,7 +3,7 @@ from io import StringIO
 import pandas as pd
 import requests
 from validol.model.store.resource import ResourceUpdater
-from validol.model.utils import parse_isoformat_date
+from validol.model.utils.utils import parse_isoformat_date
 
 
 class Monetary(ResourceUpdater):

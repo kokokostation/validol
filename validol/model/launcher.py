@@ -168,3 +168,9 @@ class ModelLauncher:
 
     def write_db_version(self, version):
         DbVersionManager(self).write_version(version)
+
+    def set_scheduler_next_time(self, scheduler, next_time):
+        Schedulers(self).set_next_time(scheduler, next_time)
+
+    def register_update(self, source):
+        self.controller_launcher.register_update(source)

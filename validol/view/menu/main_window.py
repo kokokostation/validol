@@ -66,6 +66,11 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.update_app_button.clicked.connect(self.controller_launcher.pip_update)
         self.update_app_button.hide()
 
+        self.update_missed_schedulers_button = QtWidgets.QPushButton('Update missed schedulers')
+        self.update_missed_schedulers_button.setStyleSheet("background-color: green")
+        self.update_missed_schedulers_button.clicked.connect(
+            self.on_update(self.model_launcher.update_missed_schedulers, self.update_missed_schedulers_button))
+
         self.clear = QtWidgets.QPushButton('Clear all')
         self.clear.clicked.connect(self.clear_actives)
 
@@ -74,11 +79,11 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.updateButton = QtWidgets.QPushButton('Update')
         self.updateButton.clicked.connect(
-            lambda: self.on_update(self.model_launcher.update_weekly, self.updateButton))
+            self.on_update(self.model_launcher.update_weekly, self.updateButton))
 
         self.update_daily_button = QtWidgets.QPushButton('Update daily')
         self.update_daily_button.clicked.connect(
-            lambda: self.on_update(self.model_launcher.update_daily, self.update_daily_button))
+            self.on_update(self.model_launcher.update_daily, self.update_daily_button))
 
         self.create_scheduler_button = QtWidgets.QPushButton('Create scheduler')
         self.create_scheduler_button.clicked.connect(self.controller_launcher.show_scheduler_dialog)
@@ -297,21 +302,30 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.controller_launcher.show_table_dialog()
 
     def on_update(self, action, button):
-        text = button.text()
-        button.setText("Wait a sec. Updating the data...")
-        self.app.processEvents()
+        def shot():
+            text = button.text()
+            button.setText("Wait a sec. Updating the data...")
+            self.app.processEvents()
 
-        results = action()
+            results = action()
 
-        if results is None:
-            display_error("Network error", "Unable to update due to network error")
-        else:
-            self.controller_launcher.notify_update(results)
+            if results is None:
+                display_error("Network error", "Unable to update due to network error")
+            else:
+                self.controller_launcher.notify_update(results)
 
-        button.setText(text)
+            button.setText(text)
+
+        return shot
 
     def closeEvent(self, qce):
         self.controller_launcher.on_main_window_close()
 
-    def show_update_button(self):
+    def show_update_app_button(self):
         self.update_app_button.show()
+
+    def show_update_missed_schedulers_button(self, needed):
+        if needed:
+            self.update_missed_schedulers_button.show()
+        else:
+            self.update_missed_schedulers_button.hide()

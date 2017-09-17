@@ -3,7 +3,7 @@ from io import StringIO
 import pandas as pd
 
 from validol.model.store.resource import Actives, ActiveResource, Platforms, FlavorUpdater, Updater
-from validol.model.utils import group_by
+from validol.model.utils.utils import group_by
 
 
 class Flavor(FlavorUpdater):

@@ -1,9 +1,8 @@
 import pandas as pd
 
-from validol.model.utils import to_timestamp
+from validol.model.utils.utils import to_timestamp, group_by
 from validol.model.store.resource import ActiveResource, FlavorUpdater, check_empty, Updater
 from validol.model.store.miners.daily_reports.flavors import DAILY_REPORT_FLAVORS
-from validol.model.utils import group_by
 
 
 @check_empty

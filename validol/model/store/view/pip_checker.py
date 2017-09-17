@@ -3,7 +3,7 @@ import json
 
 from validol.model.mine.downloader import read_url_text
 from validol.model.store.resource import Updater
-from validol.model.utils import map_version
+from validol.model.utils.utils import map_version
 
 
 class PipChecker(Updater):

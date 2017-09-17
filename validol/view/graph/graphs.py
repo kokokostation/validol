@@ -8,11 +8,9 @@ from PyQt5 import QtCore, QtWidgets
 
 import validol.pyqtgraph as pg
 from validol.model.store.structures.pattern import Line, Bar
-from validol.model.utils import remove_duplications
-from validol.model.utils import to_timestamp
+from validol.model.utils.utils import remove_duplications, to_timestamp, merge_dfs
 from validol.view.utils.utils import set_title
 from validol.view.utils.pattern_tree import PatternTree
-from validol.model.utils import merge_dfs
 
 
 def negate(color):

@@ -1,9 +1,9 @@
 import datetime as dt
 import pandas as pd
 import numpy as np
-from functools import wraps, partial
+from functools import wraps
 
-from validol.model.utils import date_to_timestamp, to_timestamp
+from validol.model.utils.utils import date_to_timestamp, to_timestamp
 
 
 class Table:
@@ -76,6 +76,8 @@ class Updater:
             else:
                 for source in sources:
                     results.extend(updater.update_source(source))
+
+        self.model_launcher.register_update(source)
 
         return results
 

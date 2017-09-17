@@ -86,13 +86,14 @@ class PdfHelper(Base):
 
             for pages, kwargs, post_processor in self.processor.pages(content):
                 try:
-                    df = post_processor(pdf(file.name, pages, kwargs))
+                    if pages:
+                        df = post_processor(pdf(file.name, pages, kwargs))
 
-                    df = self.processor.process_df(df)
+                        df = self.processor.process_df(df)
 
-                    df['Date'] = date
+                        df['Date'] = date
 
-                    return df
+                        return df
                 except:
                     pass
 

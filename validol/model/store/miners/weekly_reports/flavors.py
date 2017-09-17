@@ -2,7 +2,7 @@ from datetime import date
 
 from validol.model.mine.downloader import read_url_one_filed_zip, read_url_text
 from validol.model.store.miners.weekly_reports.flavor import Flavor
-from validol.model.utils import group_by, flatten
+from validol.model.utils.utils import group_by, flatten
 
 
 def fix_atoms(df):

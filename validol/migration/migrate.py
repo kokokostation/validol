@@ -1,5 +1,5 @@
 from validol.migration.scripts.expirations_pdf_helper_fix import main as zzn_main
-from validol.model.utils import map_version
+from validol.model.utils.utils import map_version
 
 
 # В базе записан последний прокинутый апдейт
