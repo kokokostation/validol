@@ -18,6 +18,15 @@ class IceDaily:
         self.model_launcher = model_launcher
         self.flavor = flavor
 
+        self.session_obj = None
+
+    @property
+    def session(self):
+        if self.session_obj is None:
+            self.session_obj = self.prepare_update()
+
+        return self.session_obj
+
     def update_actives(self, df):
         df['PlatformCode'] = 'IFEU'
 
@@ -59,8 +68,6 @@ class IceDaily:
         return session
 
     def update(self):
-        session = self.prepare_update()
-
         from validol.model.store.miners.daily_reports.ice_view import IceView
 
         ranges = []
@@ -70,18 +77,18 @@ class IceDaily:
                 ActiveInfo(IceView(self.flavor), active.PlatformCode, active.ActiveName))
 
             ranges.append(Active(self.model_launcher, active.PlatformCode, active.ActiveName,
-                                 self.flavor, session, pdf_helper).update())
+                                 self.flavor, self, pdf_helper).update())
 
         return Updater.reduce_ranges(ranges)
 
 
 class Active(DailyResource):
     def __init__(self, model_launcher, platform_code, active_name, flavor,
-                 session=None, pdf_helper=None):
+                 updater=None, pdf_helper=None):
         DailyResource.__init__(self, model_launcher, platform_code, active_name, IceActives,
                                flavor, pdf_helper)
 
-        self.session = session
+        self.updater = updater
 
         self.web_active_code, self.active_code = IceActives(model_launcher, flavor['name'])\
             .get_fields(platform_code, active_name, ('WebActiveCode', 'ActiveCode'))
@@ -103,19 +110,19 @@ class Active(DailyResource):
                     'optionRequest': self.ice_active.flavor['optionRequest'],
                     'selectedDate': date.strftime("%m/%d/%Y"),
                     'submit': 'Download',
-                    'smpbss': self.ice_active.session.cookies['smpbss']
+                    'smpbss': self.ice_active.updater.session.cookies['smpbss']
                 }
             )
 
-            request = self.ice_active.session.prepare_request(request)
+            request = self.ice_active.updater.session.prepare_request(request)
 
             return request
 
         def get(self, date, with_cache=True):
             request = self.make_request(date)
 
-            with dummy_ctx_mgr() if with_cache else self.ice_active.session.cache_disabled():
-                response = self.ice_active.session.send(request)
+            with dummy_ctx_mgr() if with_cache else self.ice_active.updater.session.cache_disabled():
+                response = self.ice_active.updater.session.send(request)
 
             if response.content[1:4] != b'PDF':
                 self.delete(date)
@@ -125,8 +132,8 @@ class Active(DailyResource):
             return get_filename(response), response.content
 
         def delete(self, date):
-            key = self.ice_active.session.cache.create_key(self.make_request(date))
-            self.ice_active.session.cache.delete(key)
+            key = self.ice_active.updater.session.cache.create_key(self.make_request(date))
+            self.ice_active.updater.session.cache.delete(key)
 
         def file(self, date):
             return '{}_{}.pdf'.format(self.ice_active.active_code, date.strftime('%Y_%m_%d'))
@@ -147,8 +154,8 @@ class Active(DailyResource):
         fs_cache = FsCache(self.pdf_helper.active_folder)
         self.cache = Cache(ice_cache, fs_cache)
 
-        with self.session.cache_disabled():
-            response = self.session.post(
+        with self.updater.session.cache_disabled():
+            response = self.updater.session.post(
                 url='https://www.theice.com/marketdata/reports/datawarehouse/ConsolidatedEndOfDayReportPDF.shtml',
                 headers={
                     'User-Agent': 'Mozilla/5.0',
@@ -159,7 +166,7 @@ class Active(DailyResource):
                     'exchangeCode': self.platform_code,
                     'optionRequest': self.flavor['optionRequest'],
                     'exchangeCodeAndContract': self.web_active_code,
-                    'smpbss': self.session.cookies['smpbss'],
+                    'smpbss': self.updater.session.cookies['smpbss'],
                 }
             )
 
