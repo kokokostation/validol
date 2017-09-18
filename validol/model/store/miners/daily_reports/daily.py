@@ -2,6 +2,65 @@ from validol.model.utils.utils import date_range, concat
 from validol.model.store.resource import ActiveResource
 
 
+class NetCache:
+    def get(self, handle, with_cache):
+        raise NotImplementedError
+
+    def delete(self, handle):
+        raise NotImplementedError
+
+    def file(self, handle):
+        return handle
+
+    def one(self):
+        raise NotImplementedError
+
+
+class Cache:
+    def __init__(self, net_cache, fs_cache):
+        self.net_cache = net_cache
+        self.fs_cache = fs_cache
+
+    def get(self, handle):
+        if self.fs_cache.available():
+            filename = self.net_cache.file(handle)
+
+            if filename is not None:
+                content = self.fs_cache.read_file(filename)
+            else:
+                content = None
+
+            if content is None:
+                filename, content = self.net_cache.get(handle, False)
+                if filename is not None:
+                    self.fs_cache.write_file(filename, content)
+
+            return content
+        else:
+            filename, content = self.net_cache.get(handle, True)
+
+            return content
+
+    def delete(self, handle):
+        if self.fs_cache.available():
+            filename = self.net_cache.file(handle)
+            if filename is not None:
+                self.fs_cache.delete(filename)
+        else:
+            self.net_cache.delete(handle)
+
+    def one(self):
+        content = None
+
+        if self.fs_cache.available():
+            content = self.fs_cache.one()
+
+        if content is None:
+            content = self.net_cache.one()
+
+        return content
+
+
 class DailyResource(ActiveResource):
     def __init__(self, model_launcher, platform_code, active_name, actives_cls, flavor,
                  pdf_helper):

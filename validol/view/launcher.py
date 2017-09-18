@@ -139,3 +139,6 @@ class ViewLauncher(ViewElement):
 
     def register_update(self, source):
         self.qcron_manager.register_update(source)
+
+    def refresh_schedulers(self):
+        self.qcron_manager.refresh()

@@ -25,20 +25,31 @@ class CmeParser(DailyPdfParser):
 
         for file in os.listdir(active_folder):
             from_files.append(self.pdf_helper.parse_file(os.path.join(active_folder, file),
-                                                         Active.file_to_date(file)))
+                                                         Active.CmeCache.file_to_date(file)))
 
         return concat(from_files)
 
-    def pages(self, content):
-        return [(zip(get_pages_run(BytesIO(content), self.pdf_helper.name.active),
-                   repeat(self.config['page_area'])),
-                {'guess': False, 'pandas_options': {'header': None}, 'columns': self.config['columns']},
-                 lambda x: x)]
+    def config(self, content):
+        return [
+            {
+                'pages': list(zip(get_pages_run(BytesIO(content), self.pdf_helper.name.active),
+                                  repeat(self.parser_config['page_area']))),
+                'processors': [
+                    {
+                        'kwargs': {
+                            'guess': False,
+                            'pandas_options': {'header': None},
+                            'columns': self.parser_config['columns']
+                        }
+                    }
+                ]
+            }
+        ]
 
     def process_df(self, pdf_df):
         pdf_df = pdf_df[~pdf_df[0].str.contains('TOTAL').fillna(False)].reset_index(drop=True)
 
-        headers = pdf_df[pdf_df[0].str.contains(self.config['header_regex']).fillna(False)].index.tolist()
+        headers = pdf_df[pdf_df[0].str.contains(self.parser_config['header_regex']).fillna(False)].index.tolist()
 
         result = pd.DataFrame()
 

@@ -37,6 +37,8 @@ class SearchableComboBox(QComboBox):
             self.setCurrentIndex(self.findText(text))
 
     def setItems(self, items):
+        self.clear()
+
         model = QStandardItemModel()
 
         for i, word in enumerate(items):

@@ -174,3 +174,6 @@ class ModelLauncher:
 
     def register_update(self, source):
         self.controller_launcher.register_update(source)
+
+    def get_expirations(self):
+        return Expirations(self).get_expirations()

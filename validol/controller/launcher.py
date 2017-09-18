@@ -99,3 +99,6 @@ class ControllerLauncher:
 
     def register_update(self, source):
         self.view_launcher.register_update(source)
+
+    def update_missed_schedulers(self):
+        self.view_launcher.update_missed_schedulers()

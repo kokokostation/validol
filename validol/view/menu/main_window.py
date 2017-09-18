@@ -69,7 +69,8 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.update_missed_schedulers_button = QtWidgets.QPushButton('Update missed schedulers')
         self.update_missed_schedulers_button.setStyleSheet("background-color: green")
         self.update_missed_schedulers_button.clicked.connect(
-            self.on_update(self.model_launcher.update_missed_schedulers, self.update_missed_schedulers_button))
+            self.on_update(self.controller_launcher.update_missed_schedulers, self.update_missed_schedulers_button))
+        self.update_missed_schedulers_button.hide()
 
         self.clear = QtWidgets.QPushButton('Clear all')
         self.clear.clicked.connect(self.clear_actives)
@@ -94,6 +95,7 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.leftLayout = QtWidgets.QVBoxLayout()
         self.leftLayout.addWidget(self.flavors)
         self.leftLayout.addWidget(self.active_flavors)
+        self.leftLayout.addWidget(self.update_missed_schedulers_button)
         self.leftLayout.addWidget(self.updateButton)
         self.leftLayout.addWidget(self.update_daily_button)
         self.leftLayout.addWidget(self.create_scheduler_button)
@@ -291,12 +293,8 @@ class Window(ViewElement, QtWidgets.QWidget):
             self.remove_line(i)
 
     def draw_table(self):
-        if not self.chosen_actives:
-            display_error('Choose actives',
-                          "Pick at least one active. They would appear under 'Clear all' button")
-        else:
-            table_pattern = self.tipped_list.current_item()
-            self.controller_launcher.draw_table(table_pattern, self.chosen_actives)
+        table_pattern = self.tipped_list.current_item()
+        self.controller_launcher.draw_table(table_pattern, self.chosen_actives)
 
     def create_table(self):
         self.controller_launcher.show_table_dialog()
@@ -309,10 +307,7 @@ class Window(ViewElement, QtWidgets.QWidget):
 
             results = action()
 
-            if results is None:
-                display_error("Network error", "Unable to update due to network error")
-            else:
-                self.controller_launcher.notify_update(results)
+            self.controller_launcher.notify_update(results)
 
             button.setText(text)
 

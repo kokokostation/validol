@@ -88,18 +88,16 @@ class Updater:
         raise NotImplementedError
 
     def update_entire(self):
-        results = []
-
-        for source in self.get_sources():
-            results.extend(self.update_source(source['name']))
-
-        return results
+        return sum([self.update_source(source['name']) for source in self.get_sources()], [])
 
     def dependencies(self, source):
         return []
 
-    def verbose(self, source):
-        return True
+    def config(self, source):
+        return {
+            'verbose': True,
+            'important': True
+        }
 
 
 class FlavorUpdater(Updater):
@@ -232,7 +230,7 @@ class Resource(Table, Updatable):
         if info.empty:
             return None, None
         else:
-            return [info.iloc[i].Date for i in (0, -1)]
+            return min(info.Date), max(info.Date)
 
     @staticmethod
     def get_atoms(schema):

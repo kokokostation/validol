@@ -7,14 +7,14 @@ import os
 from validol.model.store.structures.structure import NamedStructure, Base, JSONCodec
 from validol.model.store.view.active_info import ActiveInfoActiveOnlySchema
 from validol.model.store.miners.daily_reports.expirations import Expirations
-from validol.model.utils import pdf, TempFile
+from validol.model.utils.utils import pdf, TempFile
 
 
 class PdfParser:
     def __init__(self, pdf_helper):
         self.pdf_helper = pdf_helper
 
-    def pages(self, content):
+    def config(self, content):
         raise NotImplementedError
 
     def map_content(self, content):
@@ -69,33 +69,24 @@ class PdfHelper(Base):
         with open(filename, 'rb') as file:
             return self.parse_content(file.read(), date)
 
-    def process_loaded(self, filename, content, date):
-        df = self.parse_content(content, date)
-
-        if filename not in os.listdir(self.active_folder):
-            with open(os.path.join(self.active_folder, filename), 'wb') as file:
-                file.write(content)
-
-        return df
-
     def parse_content(self, content, date):
         content = self.processor.map_content(content)
 
         with TempFile() as file:
             file.write(content)
 
-            for pages, kwargs, post_processor in self.processor.pages(content):
-                try:
-                    if pages:
-                        df = post_processor(pdf(file.name, pages, kwargs))
+            for config in self.processor.config(content):
+                if config['pages']:
+                    try:
+                        df = pdf(file.name, config)
+                    except:
+                        continue
 
-                        df = self.processor.process_df(df)
+                    df = self.processor.process_df(df)
 
-                        df['Date'] = date
+                    df['Date'] = date
 
-                        return df
-                except:
-                    pass
+                    return df
 
             return pd.DataFrame()
 

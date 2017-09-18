@@ -1,4 +1,5 @@
 import pandas as pd
+import datetime as dt
 
 from validol.model.utils.utils import to_timestamp, group_by
 from validol.model.store.resource import ActiveResource, FlavorUpdater, check_empty, Updater
@@ -21,9 +22,16 @@ def post_load(df):
 class MlCurves(FlavorUpdater):
     def __init__(self, model_launcher):
         FlavorUpdater.__init__(self, model_launcher,
-                               [flavor for flavor in DAILY_REPORT_FLAVORS if flavor['options']])
+                               [
+                                   {
+                                       'name': MlCurve.flavor(flavor['name']),
+                                       'flavor': flavor
+                                   } for flavor in DAILY_REPORT_FLAVORS if flavor['options']
+                               ])
 
     def update_flavor(self, flavor):
+        flavor = flavor['flavor']
+
         ranges = [
             MlCurve(self.model_launcher, ai).update()
             for ai in flavor['view'](flavor).all_actives(self.model_launcher, with_flavors=False)
@@ -38,13 +46,17 @@ class MlCurve(ActiveResource):
         ('CURVE', 'TEXT')
     ]
 
+    @staticmethod
+    def flavor(flavor):
+        return 'mlcurve_{}'.format(flavor)
+
     def __init__(self, model_launcher, ai):
         ActiveResource.__init__(self,
                                 MlCurve.SCHEMA,
                                 model_launcher,
                                 ai.platform,
                                 ai.active,
-                                'mlcurve_{view}'.format(view=ai.flavor.name()),
+                                MlCurve.flavor(ai.flavor.name()),
                                 actives_cls=ai.flavor.actives_cls,
                                 modifier='UNIQUE (Date, CONTRACT) ON CONFLICT IGNORE',
                                 pre_dump=pre_dump,
@@ -92,3 +104,11 @@ class MlCurve(ActiveResource):
             return self.read_df('SELECT Date, CURVE FROM "{table}" WHERE CONTRACT = ?', params=(self.ai.active_flavor,)).CURVE
         else:
             return self.read_df()
+
+    def get_range(self, info):
+        result = super().get_range(info)
+
+        if result != (None, None):
+            return [dt.date.fromtimestamp(ts) for ts in result]
+        else:
+            return result

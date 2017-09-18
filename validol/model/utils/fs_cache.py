@@ -2,20 +2,37 @@ import os
 
 
 class FsCache:
-    def __init__(self, directory, mapping):
+    def __init__(self, directory):
         self.directory = directory
-        self.mapping = mapping
 
-    def get(self, date, getter):
-        date_map = {self.mapping(file): file for file in os.listdir(self.directory)}
-
-        if date in date_map.keys():
-            with open(os.path.join(self.directory, date_map[date]), 'rb') as file:
+    def read_file(self, file):
+        if file in self.get_filenames():
+            with open(os.path.join(self.directory, file), 'rb') as file:
                 return file.read()
         else:
-            filename, content = getter()
+            return None
 
-            with open(os.path.join(self.directory, filename), 'wb') as file:
-                file.write(content)
+    def write_file(self, file, content):
+        with open(os.path.join(self.directory, file), 'wb') as file:
+            file.write(content)
 
-            return content
+    def one(self):
+        files = self.get_filenames()
+
+        if files:
+            return self.read_file(files[0])
+        else:
+            return None
+
+    def available(self):
+        return self.directory != ''
+
+    def delete(self, file):
+        if file in self.get_filenames():
+            os.remove(os.path.join(self.directory, file))
+
+    def get_filenames(self):
+        if self.available():
+            return os.listdir(self.directory)
+        else:
+            return []

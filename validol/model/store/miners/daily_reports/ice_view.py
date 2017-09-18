@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import QComboBox
 import pandas as pd
 
 from validol.model.store.miners.daily_reports.ice import IceActives, Active, IceAllActives
-from validol.model.store.miners.daily_reports.expirations import Expirations
 from validol.model.store.miners.daily_reports.daily_view import DailyView, active_df_tolist
 from validol.model.store.view.active_info import ActiveInfo
 from validol.view.utils.searchable_combo import SearchableComboBox
@@ -13,33 +12,15 @@ class IceView(DailyView):
         DailyView.__init__(self, Active, IceActives, flavor)
 
     def new_active(self, platform, model_launcher):
+        expirations = model_launcher.get_expirations()
+
+        expirations_w = SearchableComboBox()
+        expirations_w.setItems(active_df_tolist(expirations))
+
         actives = IceAllActives(model_launcher, self.flavor['name']).get_actives(platform)
 
-        expirations_w = QComboBox()
-
-        curr_expirations = pd.DataFrame()
-
-        def change_expirations(a0):
-            nonlocal curr_expirations
-
-            curr_expirations = Expirations(model_launcher).read_df(
-                '''
-                SELECT DISTINCT
-                    PlatformCode, ActiveCode, ActiveName
-                FROM
-                    {table}
-                WHERE
-                    PlatformCode = ? AND ActiveCode = ?''',
-                params=(actives.loc[a0, 'PlatformCode'], actives.loc[a0, 'ActiveCode']),
-                index_on=False)
-
-            expirations_w.clear()
-            expirations_w.setItems(active_df_tolist(curr_expirations))
-
         actives_w = SearchableComboBox()
-        actives_w.addItems(active_df_tolist(actives))
-        actives_w.currentIndexChanged.connect(change_expirations)
-        actives_w.activated.connect(change_expirations)
+        actives_w.setItems(active_df_tolist(actives))
 
         info = model_launcher.controller_launcher.show_pdf_helper_dialog(self.get_processors(), [actives_w, expirations_w])
 
@@ -55,7 +36,7 @@ class IceView(DailyView):
             info,
             {
                 'active_code': active.ActiveCode,
-                'expirations': curr_expirations.iloc[expirations_w.currentIndex()].to_dict()
+                'expirations': expirations.iloc[expirations_w.currentIndex()].to_dict()
             })
 
         model_launcher.controller_launcher.refresh_actives()

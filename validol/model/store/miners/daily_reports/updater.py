@@ -1,5 +1,5 @@
 from validol.model.store.resource import FlavorUpdater
-from validol.model.store.collectors.ml import MlCurves
+from validol.model.store.collectors.ml import MlCurves, MlCurve
 from validol.model.store.miners.daily_reports.flavors import DAILY_REPORT_FLAVORS
 
 
@@ -12,6 +12,6 @@ class DailyReports(FlavorUpdater):
 
     def flavor_dependencies(self, flavor):
         if flavor['options']:
-            return [(MlCurves, [flavor['name']])]
+            return [(MlCurves, [MlCurve.flavor(flavor['name'])])]
         else:
             return []

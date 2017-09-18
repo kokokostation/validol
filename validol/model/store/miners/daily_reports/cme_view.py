@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import QComboBox, QLineEdit
 import pandas as pd
 
 from validol.model.store.miners.daily_reports.cme import CmeActives, Active
-from validol.model.store.miners.daily_reports.expirations import Expirations
 from validol.model.store.miners.daily_reports.daily_view import DailyView, active_df_tolist
 from validol.model.store.view.active_info import ActiveInfo
 from validol.view.utils.searchable_combo import SearchableComboBox
@@ -16,17 +15,10 @@ class CmeView(DailyView):
         active_name = QLineEdit()
         active_name.setPlaceholderText("Active Name")
 
-        archive_file = QComboBox()
-        archive_file.addItems(Active.get_archive_files(model_launcher))
+        archive_file = SearchableComboBox()
+        archive_file.setItems(Active.get_archive_files(model_launcher))
 
-        expirations = Expirations(model_launcher).read_df('''
-        SELECT DISTINCT
-            PlatformCode, ActiveCode, ActiveName
-        FROM
-            {table}
-        ORDER BY
-            PlatformCode, ActiveCode
-        ''', index_on=False)
+        expirations = model_launcher.get_expirations()
 
         expirations_w = SearchableComboBox()
         expirations_w.setItems(active_df_tolist(expirations))

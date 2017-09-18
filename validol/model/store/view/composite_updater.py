@@ -6,7 +6,6 @@ from validol.model.store.miners.monetary import Monetary
 from validol.model.store.view.pip_checker import PipChecker
 
 
-
 class CompositeUpdater(Updater):
     def __init__(self, model_launcher, name, clss):
         Updater.__init__(self, model_launcher)
@@ -54,5 +53,5 @@ class UpdateManager(Updater):
     def get_sources(self):
         return sum([updater.get_sources() for updater in self.updaters], [])
 
-    def verbose(self, source):
-        return self.source_map[source].verbose(source)
+    def config(self, source):
+        return self.source_map[source].config(source)

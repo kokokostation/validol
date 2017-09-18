@@ -8,10 +8,12 @@ from io import BytesIO
 from validol.model.store.resource import Actives, Platforms
 from validol.model.store.view.active_info import ActiveInfo
 from validol.model.store.structures.pdf_helper import PdfHelpers
-from validol.model.store.miners.daily_reports.daily import DailyResource
+from validol.model.store.miners.daily_reports.daily import DailyResource, Cache, NetCache
 from validol.model.utils.utils import isfile
 from validol.model.store.structures.ftp_cache import FtpCache
 from validol.model.store.resource import Updater
+from validol.model.utils.fs_cache import FsCache
+
 
 class CmeDaily:
     def __init__(self, model_launcher, flavor):
@@ -46,31 +48,46 @@ class Active(DailyResource):
         DailyResource.__init__(self, model_launcher, platform_code, active_name, CmeActives,
                                flavor, pdf_helper)
 
-        self.available_dates_cache = None
+    class CmeCache(NetCache):
+        def __init__(self, cme_active, fs_cache):
+            self.cme_active = cme_active
 
-    @staticmethod
-    def file_to_date(file):
-        start = len('DailyBulletin_pdf_')
-        return dt.datetime.strptime(os.path.basename(file)[start:start + 8], '%Y%m%d').date()
+            self.available_dates = {Active.CmeCache.file_to_date(file): file
+                                    for file in Active.CmeCache.get_files() +
+                                    fs_cache.get_filenames()}
 
-    @staticmethod
-    def get_files():
-        with FTP(Active.FTP_SERVER) as ftp:
-            ftp.login()
-            files = [file for file in ftp.nlst(Active.FTP_DIR) if isfile(ftp, file)]
+        @staticmethod
+        def file_to_date(file):
+            start = len('DailyBulletin_pdf_')
+            return dt.datetime.strptime(file[start:start + 8], '%Y%m%d').date()
 
-        return files
+        @staticmethod
+        def get_files():
+            with FTP(Active.FTP_SERVER) as ftp:
+                ftp.login()
+                ftp.cwd(Active.FTP_DIR)
+                files = [file for file in ftp.nlst() if isfile(ftp, file)]
 
-    @staticmethod
-    def read_file(model_launcher, file):
-        return FtpCache(model_launcher).read_file(Active.FTP_SERVER, file)
+            return files
+
+        @staticmethod
+        def read_file(model_launcher, filename, with_cache=True):
+            return FtpCache(model_launcher) \
+                .get(Active.FTP_SERVER, os.path.join(Active.FTP_DIR, filename), with_cache)
+
+        def file(self, handle):
+            return self.available_dates[handle]
+
+        def get(self, handle, with_cache):
+            filename = self.file(handle)
+            return filename, Active.CmeCache.read_file(self.cme_active.model_launcher, filename, with_cache)
 
     @staticmethod
     def get_archive_files(model_launcher):
         item = FtpCache(model_launcher).one_or_none()
         if item is None:
-            file = Active.get_files()[0]
-            item = Active.read_file(model_launcher, file)
+            file = Active.CmeCache.get_files()[0]
+            item = Active.CmeCache.read_file(model_launcher, file)
         else:
             item = item.value
 
@@ -78,14 +95,15 @@ class Active(DailyResource):
             return zip_file.namelist()
 
     def available_dates(self):
-        self.available_dates_cache = {Active.file_to_date(file): file for file in Active.get_files()}
+        fs_cache = FsCache(self.pdf_helper.active_folder)
+        cme_cache = Active.CmeCache(self, fs_cache)
+        self.cache = Cache(cme_cache, fs_cache)
 
-        return self.available_dates_cache.keys()
+        return cme_cache.available_dates.keys()
 
     def download_date(self, date):
-        filename = self.available_dates_cache[date]
-        content = Active.read_file(self.model_launcher, filename)
-        return self.pdf_helper.process_loaded(os.path.basename(filename), content, date)
+        content = self.cache.get(date)
+        return self.pdf_helper.parse_content(content, date)
 
 
 class CmeActives(Actives):

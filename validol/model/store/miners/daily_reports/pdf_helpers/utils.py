@@ -34,7 +34,7 @@ class DailyPdfParser(PdfParser):
     def __init__(self, pdf_helper):
         PdfParser.__init__(self, pdf_helper)
 
-        self.config = self.get_config()
+        self.parser_config = self.get_config()
 
     def get_config(self):
         raise NotImplementedError
@@ -42,12 +42,12 @@ class DailyPdfParser(PdfParser):
     def read_expirations(self, expirations_file):
         result = pd.DataFrame()
 
-        types = [self.config['exp_prefix'].format(tp) for tp in self.config['exp_types']]
+        types = [self.parser_config['exp_prefix'].format(tp) for tp in self.parser_config['exp_types']]
 
         df = pd.read_csv(expirations_file, parse_dates=types, date_parser=date_parser) \
             .rename(columns={'CONTRACT SYMBOL': 'Contract'})
 
-        for tp, true_tp in zip(types, self.config['exp_types']):
+        for tp, true_tp in zip(types, self.parser_config['exp_types']):
             new = df[['Contract', tp]].rename(columns={tp: 'Date'})
             new['Event'] = true_tp
 

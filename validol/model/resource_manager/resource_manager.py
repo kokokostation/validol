@@ -39,11 +39,13 @@ class ResourceManager:
         if not pure_actives:
             for letter, ai in zip(alphas, actives_info):
                 pair_id = self.model_launcher.get_prices_info(ai.price_url).get('pair_id', None)
-                prices = InvestingPrice(self.model_launcher, pair_id)
 
-                prices_df = prices.read_dates(begin, end)
+                if pair_id is not None:
+                    prices = InvestingPrice(self.model_launcher, pair_id)
 
-                df = merge_dfs(df, ResourceManager.add_letter(prices_df, letter))
+                    prices_df = prices.read_dates(begin, end)
+
+                    df = merge_dfs(df, ResourceManager.add_letter(prices_df, letter))
 
         return df, (begin, end)
 

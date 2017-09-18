@@ -12,6 +12,7 @@ from PyPDF2 import PdfFileReader
 from itertools import groupby
 from operator import itemgetter
 import re
+from contextlib import contextmanager
 
 
 def to_timestamp(date):
@@ -119,10 +120,10 @@ def remove_duplications(arr):
     return result
 
 
-def pdf(fname, pages, kwargs):
+def pdf(fname, config):
     df = pd.DataFrame()
 
-    for page, area in pages:
+    for page, area in config['pages']:
         if isinstance(page, int) or page == 'all':
             pgs = [page]
         else:
@@ -131,10 +132,20 @@ def pdf(fname, pages, kwargs):
             pgs = range(begin, end + 1)
 
         for i in pgs:
-            df = df.append(read_pdf(fname,
-                                    pages=i,
-                                    area=area,
-                                    **kwargs))
+            success = False
+
+            for processor in config['processors']:
+                try:
+                    df = df.append(processor.get('postprocessor', lambda x: x)(
+                        read_pdf(fname, pages=i, area=area, **processor['kwargs'])))
+
+                    success = True
+                    break
+                except:
+                    pass
+
+            if not success:
+                raise ValueError
 
     return df
 
@@ -221,3 +232,8 @@ def get_filename(response):
 
 def map_version(s):
     return [int(n) for n in s.split('.')]
+
+
+@contextmanager
+def dummy_ctx_mgr():
+    yield

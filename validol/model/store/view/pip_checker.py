@@ -21,6 +21,9 @@ class PipChecker(Updater):
         if max(versions) > map_version(config['version']):
             self.model_launcher.controller_launcher.mark_update_required()
 
-    def verbose(self, source):
-        return False
+    def config(self, source):
+        return {
+            'verbose': False,
+            'important': False
+        }
 

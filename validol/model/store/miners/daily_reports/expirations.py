@@ -149,3 +149,13 @@ class Expirations(ResourceUpdater):
                 Source = ?'''.format(table=self.table), (str(ai),))
 
         self.dbh.commit()
+
+    def get_expirations(self):
+        return self.read_df('''
+            SELECT DISTINCT
+                PlatformCode, ActiveCode, ActiveName
+            FROM
+                {table}
+            ORDER BY
+                PlatformCode, ActiveCode
+            ''', index_on=False)

@@ -7,8 +7,9 @@ import pandas as pd
 from validol.model.store.resource import Actives, Platforms
 from validol.model.store.view.active_info import ActiveInfo
 from validol.model.store.structures.pdf_helper import PdfHelpers
-from validol.model.store.miners.daily_reports.daily import DailyResource
-from validol.model.utils.utils import get_filename
+from validol.model.store.miners.daily_reports.daily import DailyResource, Cache, NetCache
+from validol.model.utils.utils import get_filename, dummy_ctx_mgr
+from validol.model.utils.fs_cache import FsCache
 from validol.model.store.resource import Updater
 
 
@@ -82,44 +83,70 @@ class Active(DailyResource):
 
         self.session = session
 
-        self.active_code = IceActives(model_launcher, flavor['name'])\
-            .get_fields(platform_code, active_name, ('WebActiveCode',))[0]
+        self.web_active_code, self.active_code = IceActives(model_launcher, flavor['name'])\
+            .get_fields(platform_code, active_name, ('WebActiveCode', 'ActiveCode'))
         self.platform_code = platform_code
         self.flavor = flavor
 
+    class IceCache(NetCache):
+        def __init__(self, ice_active):
+            self.ice_active = ice_active
+
+        def make_request(self, date):
+            request = Request(
+                method='POST',
+                url='https://www.theice.com/marketdata/reports/datawarehouse/ConsolidatedEndOfDayReportPDF.shtml',
+                params={
+                    'generateReport': '',
+                    'exchangeCode': self.ice_active.platform_code,
+                    'exchangeCodeAndContract': self.ice_active.web_active_code,
+                    'optionRequest': self.ice_active.flavor['optionRequest'],
+                    'selectedDate': date.strftime("%m/%d/%Y"),
+                    'submit': 'Download',
+                    'smpbss': self.ice_active.session.cookies['smpbss']
+                }
+            )
+
+            request = self.ice_active.session.prepare_request(request)
+
+            return request
+
+        def get(self, date, with_cache=True):
+            request = self.make_request(date)
+
+            with dummy_ctx_mgr() if with_cache else self.ice_active.session.cache_disabled():
+                response = self.ice_active.session.send(request)
+
+            if response.content[1:4] != b'PDF':
+                self.delete(date)
+
+                return None, None
+
+            return get_filename(response), response.content
+
+        def delete(self, date):
+            key = self.ice_active.session.cache.create_key(self.make_request(date))
+            self.ice_active.session.cache.delete(key)
+
+        def file(self, date):
+            return '{}_{}.pdf'.format(self.ice_active.active_code, date.strftime('%Y_%m_%d'))
+
     def download_date(self, date):
-        request = Request(
-            method='POST',
-            url='https://www.theice.com/marketdata/reports/datawarehouse/ConsolidatedEndOfDayReportPDF.shtml',
-            params={
-                'generateReport': '',
-                'exchangeCode': self.platform_code,
-                'exchangeCodeAndContract': self.active_code,
-                'optionRequest': self.flavor['optionRequest'],
-                'selectedDate': date.strftime("%m/%d/%Y"),
-                'submit': 'Download',
-                'smpbss': self.session.cookies['smpbss']
-            }
-        )
+        content = self.cache.get(date)
 
-        request = self.session.prepare_request(request)
+        if content is not None:
+            try:
+                return self.pdf_helper.parse_content(content, date)
+            except ValueError:
+                self.cache.delete(date)
 
-        def bad_response():
-            key = self.session.cache.create_key(request)
-            self.session.cache.delete(key)
-            return pd.DataFrame()
-
-        response = self.session.send(request)
-
-        if response.content[1:4] != b'PDF':
-            return bad_response()
-
-        try:
-            return self.pdf_helper.process_loaded(get_filename(response), response.content, date)
-        except ValueError:
-            return bad_response()
+                return pd.DataFrame()
 
     def available_dates(self):
+        ice_cache = Active.IceCache(self)
+        fs_cache = FsCache(self.pdf_helper.active_folder)
+        self.cache = Cache(ice_cache, fs_cache)
+
         with self.session.cache_disabled():
             response = self.session.post(
                 url='https://www.theice.com/marketdata/reports/datawarehouse/ConsolidatedEndOfDayReportPDF.shtml',
@@ -131,7 +158,7 @@ class Active(DailyResource):
                     'selectionForm': '',
                     'exchangeCode': self.platform_code,
                     'optionRequest': self.flavor['optionRequest'],
-                    'exchangeCodeAndContract': self.active_code,
+                    'exchangeCodeAndContract': self.web_active_code,
                     'smpbss': self.session.cookies['smpbss'],
                 }
             )

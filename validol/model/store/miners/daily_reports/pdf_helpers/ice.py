@@ -13,10 +13,28 @@ class IceParser(DailyPdfParser):
     def parsing_map(self):
         raise NotImplementedError
 
-    def pages(self, content):
-        return [([('all', None)], {'lattice': True, 'pandas_options': {'header': None}}, lambda x: x),
-                ([('all', None)], {'lattice': True}, lambda df: pd.DataFrame([df.iloc[i].name for i in range(len(df))]))]
+    def config(self, content):
+        name_processor = {
+            'kwargs': {'lattice': True},
+            'postprocessor': lambda df: pd.DataFrame([df.iloc[i].name for i in range(len(df))])
+        }
 
+        plain_processor = {
+            'kwargs': {'lattice': True, 'pandas_options': {'header': None}}
+        }
+
+        processors = [plain_processor, name_processor]
+
+        return [
+            {
+                'pages': [('all', None)],
+                'processors': processors
+            },
+            {
+                'pages': [('start-end', None)],
+                'processors': processors
+            }
+        ]
 
     def process_df(self, df):
         df = filter_rows(df.rename(columns=self.parsing_map())[list(self.parsing_map().values())])

@@ -17,7 +17,8 @@ SETUP_CONFIG = {
         'python-dateutil',
         'PyPDF2',
         'croniter',
-        'tendo'
+        'tendo',
+        'psutil'
     ],
     'entry_points': {
         'console_scripts': [
