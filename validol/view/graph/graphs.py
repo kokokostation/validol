@@ -238,48 +238,50 @@ class Graph(pg.GraphicsWindow):
                 if isinstance(chunk, ScatteredPlot):
                     chunk.toogle_scatter()
 
-    def draw_axis(self, label, plot_item, graph_num, lr, pieces):
-        self.legendData[graph_num][lr].append((ItemData(None, None), "____" + label + "____"))
-
-        bars = [piece for piece in pieces if type(piece) == Bar]
+    def draw_axis(self, plot_items, graph_num, graph_pieces):
+        bars = [piece for pieces in graph_pieces for piece in pieces if isinstance(piece, Bar)]
         if bars:
-            week = pd.Series(self.df[[piece.atom_id for piece in bars]].dropna(how='all').index).diff().min()
+            week = pd.Series(
+                self.df[[piece.atom_id for piece in bars]].dropna(how='all').index).diff().min()
             bases_num = max([piece.base for piece in bars]) + 1
             bar_width = 0.95 * week / bases_num
 
-        for piece in pieces:
-            xs = pd.Series(self.df.index).as_matrix()
-            ys = self.df[piece.atom_id].as_matrix().astype(np.float64)
+        for lr, (plot_item, pieces, label) in enumerate(zip(plot_items, graph_pieces, ('left', 'right'))):
+            self.legendData[graph_num][lr].append((ItemData(None, None), "____" + label + "____"))
 
-            if isinstance(piece, Line):
-                pen = {'color': piece.color, 'width': 2}
-                chunk = ScatteredPlot(
-                    plot_item,
-                    pg.PlotDataItem(xs, ys, pen=pen),
-                    pg.ScatterPlotItem(xs, ys, pen=pen, size=5,
-                                       brush=pg.mkBrush(color=negate(piece.color))), 'line')
-                legend_color = piece.color
-            elif isinstance(piece, Bar):
-                positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) // 2
-                ys = piece.sign * ys
-                if not positive:
-                    ys = -ys
+            for piece in pieces:
+                xs = pd.Series(self.df.index).as_matrix()
+                ys = self.df[piece.atom_id].as_matrix().astype(np.float64)
 
-                chunk = Showable(
-                    plot_item,
-                    pg.BarGraphItem(
-                        x=xs + bar_width * piece.base,
-                        height=ys,
-                        width=bar_width,
-                        brush=pg.mkBrush(piece.color + [130]),
-                        pen=pg.mkPen('k')),
-                    True,
-                    'bar'
-                )
-                legend_color = piece.color + [200]
+                if isinstance(piece, Line):
+                    pen = {'color': piece.color, 'width': 2}
+                    chunk = ScatteredPlot(
+                        plot_item,
+                        pg.PlotDataItem(xs, ys, pen=pen),
+                        pg.ScatterPlotItem(xs, ys, pen=pen, size=5,
+                                           brush=pg.mkBrush(color=negate(piece.color))), 'line')
+                    legend_color = piece.color
+                elif isinstance(piece, Bar):
+                    positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) // 2
+                    ys = piece.sign * ys
+                    if not positive:
+                        ys = -ys
 
-            self.widgets[graph_num][piece.atom_id] = chunk
-            self.legendData[graph_num][lr].append((ItemData('s', legend_color), piece.atom_id))
+                    chunk = Showable(
+                        plot_item,
+                        pg.BarGraphItem(
+                            x=xs + bar_width * piece.base,
+                            height=ys,
+                            width=bar_width,
+                            brush=pg.mkBrush(piece.color + [130]),
+                            pen=pg.mkPen('k')),
+                        True,
+                        'bar'
+                    )
+                    legend_color = piece.color + [200]
+
+                self.widgets[graph_num][piece.atom_id] = chunk
+                self.legendData[graph_num][lr].append((ItemData('s', legend_color), piece.atom_id))
 
         self.fix_background(graph_num)
 
@@ -290,7 +292,6 @@ class Graph(pg.GraphicsWindow):
         legends = []
 
         for i, graph in enumerate(self.pattern.graphs):
-            left, right = graph.pieces
             self.legendData.append([[] for _ in range(2)])
 
             self.nextRow()
@@ -298,8 +299,6 @@ class Graph(pg.GraphicsWindow):
             self.addItem(item=plots[-1])
             legends.append(pg.LegendItem(offset=(100, 20)))
             legends[-1].setParentItem(plots[-1])
-
-            self.draw_axis("left", plots[-1], i, 0, left)
 
             twins.append(pg.ViewBox())
             plots[-1].showAxis('right')
@@ -316,7 +315,7 @@ class Graph(pg.GraphicsWindow):
             updateViews(twins[-1], plots[-1])
             plots[-1].vb.sigResized.connect(partial(updateViews, twins[-1], plots[-1]))
 
-            self.draw_axis("right", twins[-1], i, 1, right)
+            self.draw_axis([plots[-1], twins[-1]], i, graph.pieces)
 
         for i in range(len(plots)):
             for j in range(i + 1, len(plots)):
