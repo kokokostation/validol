@@ -1,10 +1,10 @@
 import datetime as dt
 import math
 from functools import partial
-
 import numpy as np
 import pandas as pd
 from PyQt5 import QtCore, QtWidgets
+from collections import defaultdict
 
 import validol.pyqtgraph as pg
 from validol.model.store.structures.pattern import Line, Bar
@@ -46,29 +46,52 @@ class ItemData():
         self.opts = {'symbol': symbol, 'brush': brush, 'pen': None, 'size': 20}
 
 
-class Showable:
-    def __init__(self, plot_item, chunk, showed):
+class GraphItem:
+    def __init__(self, flavor):
+        self.flavor = flavor
+
+    def showed(self):
+        raise NotImplementedError
+
+    def toogle(self):
+        raise NotImplementedError
+
+    def redraw(self):
+        if self.showed():
+            for _ in range(2):
+                self.toogle()
+
+
+class Showable(GraphItem):
+    def __init__(self, plot_item, chunk, showed, flavor=None):
+        GraphItem.__init__(self, flavor)
+
         self.plot_item = plot_item
         self.chunk = chunk
-        self.showed = False
+        self.showed_ = False
 
         self.set(showed)
 
     def set(self, showed):
-        if self.showed != showed:
+        if self.showed_ != showed:
             if showed:
                 self.plot_item.addItem(self.chunk)
             else:
                 self.plot_item.removeItem(self.chunk)
 
-            self.showed = showed
+            self.showed_ = showed
 
     def toogle(self):
-        self.set(not self.showed)
+        self.set(not self.showed_)
+
+    def showed(self):
+        return self.showed_
 
 
-class ScatteredPlot:
-    def __init__(self, plot_item, plot, scatter):
+class ScatteredPlot(GraphItem):
+    def __init__(self, plot_item, plot, scatter, flavor):
+        GraphItem.__init__(self, flavor)
+
         self.plot = Showable(plot_item, plot, True)
         self.scatter = Showable(plot_item, scatter, False)
         self.scatter_state = False
@@ -80,13 +103,16 @@ class ScatteredPlot:
             self.scatter.set(showed)
 
     def toogle(self):
-        self.set(not self.plot.showed)
+        self.set(not self.plot.showed_)
 
     def toogle_scatter(self):
         self.scatter_state = not self.scatter_state
 
-        if self.plot.showed:
+        if self.plot.showed_:
             self.scatter.set(self.scatter_state)
+
+    def showed(self):
+        return self.plot.showed_
 
 
 class DaysMap:
@@ -181,7 +207,7 @@ class Graph(pg.GraphicsWindow):
     def __init__(self, df, pattern, table_labels):
         pg.GraphicsWindow.__init__(self)
 
-        self.widgets = {}
+        self.widgets = defaultdict(dict)
         self.legendData = []
 
         self.df = df
@@ -192,12 +218,25 @@ class Graph(pg.GraphicsWindow):
         self.draw_graph()
 
     def fix(self, index):
-        self.widgets[index].toogle()
+        graph_num, atom_id = index
+
+        wi = self.widgets[graph_num][atom_id]
+
+        wi.toogle()
+
+        if wi.flavor == 'bar' and wi.showed():
+            self.fix_background(graph_num)
+
+    def fix_background(self, graph_num):
+        for w in self.widgets[graph_num].values():
+            if w.flavor == 'line':
+                w.redraw()
 
     def toogle_scatter(self):
-        for chunk in self.widgets.values():
-            if isinstance(chunk, ScatteredPlot):
-                chunk.toogle_scatter()
+        for d in self.widgets.values():
+            for chunk in d.values():
+                if isinstance(chunk, ScatteredPlot):
+                    chunk.toogle_scatter()
 
     def draw_axis(self, label, plot_item, graph_num, lr, pieces):
         self.legendData[graph_num][lr].append((ItemData(None, None), "____" + label + "____"))
@@ -218,7 +257,7 @@ class Graph(pg.GraphicsWindow):
                     plot_item,
                     pg.PlotDataItem(xs, ys, pen=pen),
                     pg.ScatterPlotItem(xs, ys, pen=pen, size=5,
-                                       brush=pg.mkBrush(color=negate(piece.color))))
+                                       brush=pg.mkBrush(color=negate(piece.color))), 'line')
                 legend_color = piece.color
             elif isinstance(piece, Bar):
                 positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) // 2
@@ -234,11 +273,15 @@ class Graph(pg.GraphicsWindow):
                         width=bar_width,
                         brush=pg.mkBrush(piece.color + [130]),
                         pen=pg.mkPen('k')),
-                    True)
+                    True,
+                    'bar'
+                )
                 legend_color = piece.color + [200]
 
-            self.widgets[(graph_num, piece.atom_id)] = chunk
+            self.widgets[graph_num][piece.atom_id] = chunk
             self.legendData[graph_num][lr].append((ItemData('s', legend_color), piece.atom_id))
+
+        self.fix_background(graph_num)
 
     def draw_graph(self):
         pg.setConfigOption('foreground', 'w')
