@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QWidget, QLayout
 from PyQt5.QtCore import Qt
 
 
@@ -11,7 +11,10 @@ class MyDialog(QDialog):
         self.main_layout = QVBoxLayout(self)
 
         for wi in widgets:
-            self.main_layout.addWidget(wi)
+            if isinstance(wi, QWidget):
+                self.main_layout.addWidget(wi)
+            elif isinstance(wi, QLayout):
+                self.main_layout.addLayout(wi)
 
         self.ready_button = QPushButton('Ready')
         self.ready_button.clicked.connect(lambda: self.accept())

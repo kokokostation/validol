@@ -1,10 +1,9 @@
-from PyQt5.QtWidgets import QComboBox
 import pandas as pd
 
 from validol.model.store.miners.daily_reports.ice import IceActives, Active, IceAllActives
-from validol.model.store.miners.daily_reports.daily_view import DailyView, active_df_tolist
+from validol.model.store.miners.daily_reports.daily_view import DailyView, active_df_tolist, \
+    expirations_layout, searchable_with_mark
 from validol.model.store.view.active_info import ActiveInfo
-from validol.view.utils.searchable_combo import SearchableComboBox
 
 
 class IceView(DailyView):
@@ -12,17 +11,13 @@ class IceView(DailyView):
         DailyView.__init__(self, Active, IceActives, flavor)
 
     def new_active(self, platform, model_launcher):
-        expirations = model_launcher.get_expirations()
-
-        expirations_w = SearchableComboBox()
-        expirations_w.setItems(active_df_tolist(expirations))
+        expirations, expirations_w, expirations_l = expirations_layout(model_launcher)
 
         actives = IceAllActives(model_launcher, self.flavor['name']).get_actives(platform)
 
-        actives_w = SearchableComboBox()
-        actives_w.setItems(active_df_tolist(actives))
+        actives_w, actives_l = searchable_with_mark('Active', active_df_tolist(actives))
 
-        info = model_launcher.controller_launcher.show_pdf_helper_dialog(self.get_processors(), [actives_w, expirations_w])
+        info = model_launcher.controller_launcher.show_pdf_helper_dialog(self.get_processors(), [actives_l, expirations_l])
 
         if info is None:
             return

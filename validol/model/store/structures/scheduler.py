@@ -12,10 +12,11 @@ class Scheduler(Base):
     working = Column(Boolean)
     next_time = Column(DateTime)
 
-    def __init__(self, name, cron, working):
+    def __init__(self, name, cron, working, next_time):
         self.name = name
         self.cron = cron
         self.working = working
+        self.next_time = next_time
 
 
 class Schedulers(NamedStructure):
@@ -36,6 +37,9 @@ class Schedulers(NamedStructure):
         dbo = Schedulers.get_scheduler(session, scheduler)
         dbo.working = not dbo.working
 
+        if dbo.working:
+            dbo.next_time = None
+
     @with_session
     def set_next_time(self, session, scheduler, next_time):
         dbo = Schedulers.get_scheduler(session, scheduler)
@@ -43,7 +47,7 @@ class Schedulers(NamedStructure):
 
     def write_scheduler(self, name, cron, working):
         if croniter.is_valid(cron):
-            self.write(Scheduler(name, cron, working))
+            self.write(Scheduler(name, cron, working, None))
 
     def remove_scheduler(self, scheduler):
         self.remove_by_pred(Schedulers.get_cond(scheduler))

@@ -34,4 +34,13 @@ def display_error(title, text):
     msg.exec_()
 
 
+def mark(text, widget):
+    layout = QtWidgets.QHBoxLayout()
+
+    layout.addWidget(QtWidgets.QLabel(text), stretch=1)
+    layout.addWidget(widget, stretch=8)
+
+    return layout
+
+
 

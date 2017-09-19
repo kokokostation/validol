@@ -5,6 +5,8 @@ import pandas as pd
 
 from validol.model.store.view.view_flavor import ViewFlavor
 from validol.model.store.miners.weekly_reports.flavor import Platforms
+from validol.view.utils.searchable_combo import SearchableComboBox
+from validol.view.utils.utils import mark
 
 
 class DailyView(ViewFlavor):
@@ -66,3 +68,18 @@ def get_pages(fname, phrase):
 def first_run(items):
     for k, g in groupby(enumerate(items), lambda ix: ix[0] - ix[1]):
         return map(itemgetter(1), g)
+
+
+def searchable_with_mark(text, content):
+    scb = SearchableComboBox()
+    scb.setItems(content)
+
+    return scb, mark(text, scb)
+
+
+def expirations_layout(model_launcher):
+    expirations = model_launcher.get_expirations()
+
+    widget, layout = searchable_with_mark('Ice expirations', active_df_tolist(expirations))
+
+    return expirations, widget, layout

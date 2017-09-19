@@ -61,8 +61,9 @@ class QCronManager:
                        for scheduler in schedulers]
 
         for qcron in self.qcrons:
-            if qcron.next_event != qcron.scheduler.next_time and \
-                    update_manager.config(qcron.scheduler.name)['important']:
+            if qcron.scheduler.next_time != None \
+                    and qcron.next_event != qcron.scheduler.next_time \
+                    and update_manager.config(qcron.scheduler.name)['important']:
                 self.update_needed.add(qcron.scheduler.name)
 
         self.refresh_main_window()

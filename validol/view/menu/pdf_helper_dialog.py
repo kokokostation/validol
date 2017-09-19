@@ -9,8 +9,8 @@ class PdfHelperDialog(MyDialog):
         self.processors = QComboBox()
         self.processors.addItems(processors)
 
-        self.expirations_file = FilePicker('Expire', True)
-        self.active_folder = FilePicker('Active', False)
+        self.expirations_file = FilePicker('Expirations history', True)
+        self.active_folder = FilePicker('Active history', False)
 
         MyDialog.__init__(self, [self.processors, self.expirations_file, self.active_folder] +
                           widgets)

@@ -16,9 +16,7 @@ SETUP_CONFIG = {
         'tabula-py',
         'python-dateutil',
         'PyPDF2',
-        'croniter',
-        'tendo',
-        'psutil'
+        'croniter'
     ],
     'entry_points': {
         'console_scripts': [

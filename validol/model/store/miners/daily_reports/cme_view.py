@@ -1,10 +1,10 @@
-from PyQt5.QtWidgets import QComboBox, QLineEdit
+from PyQt5.QtWidgets import QLineEdit
 import pandas as pd
 
 from validol.model.store.miners.daily_reports.cme import CmeActives, Active
-from validol.model.store.miners.daily_reports.daily_view import DailyView, active_df_tolist
+from validol.model.store.miners.daily_reports.daily_view import DailyView, expirations_layout, \
+    searchable_with_mark
 from validol.model.store.view.active_info import ActiveInfo
-from validol.view.utils.searchable_combo import SearchableComboBox
 
 
 class CmeView(DailyView):
@@ -15,16 +15,12 @@ class CmeView(DailyView):
         active_name = QLineEdit()
         active_name.setPlaceholderText("Active Name")
 
-        archive_file = SearchableComboBox()
-        archive_file.setItems(Active.get_archive_files(model_launcher))
+        archive_file, archive_file_l = searchable_with_mark('Section', Active.get_archive_files(model_launcher))
 
-        expirations = model_launcher.get_expirations()
-
-        expirations_w = SearchableComboBox()
-        expirations_w.setItems(active_df_tolist(expirations))
+        expirations, expirations_w, expirations_l = expirations_layout(model_launcher)
 
         info = model_launcher.controller_launcher.show_pdf_helper_dialog(
-            self.get_processors(), [active_name, archive_file, expirations_w])
+            self.get_processors(), [active_name, archive_file_l, expirations_l])
 
         if info is None:
             return
