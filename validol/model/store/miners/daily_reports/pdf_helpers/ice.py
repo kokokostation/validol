@@ -2,8 +2,6 @@ import pandas as pd
 import datetime as dt
 import os
 import re
-import locale
-from locale import atof
 
 from validol.model.store.miners.daily_reports.pdf_helpers.utils import filter_rows, DailyPdfParser
 from validol.model.utils.utils import concat
@@ -43,13 +41,11 @@ class IceParser(DailyPdfParser):
             if df[col].isnull().sum() > 20:
                 raise ValueError
 
-        locale.setlocale(locale.LC_NUMERIC, '')
-
         from validol.model.store.miners.daily_reports.ice_flavors import ICE_DAILY_FLAVORS_MAP
         schema = ICE_DAILY_FLAVORS_MAP[self.pdf_helper.name.flavor.name()]['schema']
 
         cols = [a for a, b in schema if b == 'INTEGER']
-        df[cols] = df[cols].applymap(lambda x: atof(str(x)) if not pd.isnull(x) else x)
+        df[cols] = df[cols].applymap(lambda x: int(str(x).replace(',', '')) if not pd.isnull(x) else x)
 
         return df
 

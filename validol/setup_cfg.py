@@ -1,6 +1,6 @@
 SETUP_CONFIG = {
     'name': 'validol',
-    'version': '0.0.20',
+    'version': '0.0.21',
     'license': 'MIT',
     'install_requires': [
         'pyparsing',

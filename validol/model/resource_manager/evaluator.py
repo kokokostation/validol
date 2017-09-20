@@ -33,7 +33,6 @@ class FormulaGrammar:
         self.expr_stack = []
 
         point = pp.Literal(".")
-        e = pp.CaselessLiteral("E")
         lpar = pp.Literal("(")
         rpar = pp.Literal(")")
 
@@ -43,8 +42,7 @@ class FormulaGrammar:
                               sorted(all_atoms, key=lambda x: -len(x))]).setParseAction(lambda toks: AtomWrap(toks[0]))
 
         fnumber = pp.Combine(pp.Word("+-" + pp.nums, pp.nums) +
-                             pp.Optional(point + pp.Optional(pp.Word(pp.nums))) +
-                             pp.Optional(e + pp.Word("+-" + pp.nums, pp.nums))) \
+                             pp.Optional(point + pp.Optional(pp.Word(pp.nums))))\
             .setParseAction(lambda toks: [float(toks[0])])
 
         ident = pp.Word(pp.alphas, pp.alphas + pp.nums + "_$")
@@ -65,8 +63,7 @@ class FormulaGrammar:
         addop = plus | minus
         multop = mult | div
         expop = pp.Literal("^")
-        pi = pp.CaselessLiteral("PI")
-        true_atom = (function | st_function | date | pi | e | fnumber | var | none | STRING)\
+        true_atom = (function | st_function | date | fnumber | var | none | STRING)\
             .setParseAction(self.push_first)
         atom = ((pp.Optional(pp.oneOf("- +")) + true_atom) |
                 pp.Optional(pp.oneOf("- +")) + pp.Group(lpar + expr + rpar))\
@@ -90,9 +87,6 @@ class FormulaGrammar:
                    "exp": np.exp,
                    "abs": np.abs,
                    "round": np.round}
-
-
-
 
 
 class AtomGrammar:
@@ -155,10 +149,6 @@ class NumericStringParser(FormulaGrammar):
             op1 = self.evaluate_stack(stack, params_map)
 
             return self.opn[op](op1, op2)
-        elif op == "PI":
-            return math.pi
-        elif op == "E":
-            return math.e
         elif op in self.fn:
             args_num = stack.pop()
 
