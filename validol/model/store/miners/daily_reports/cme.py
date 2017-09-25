@@ -55,7 +55,7 @@ class Active(DailyResource):
         @property
         @lru_cache()
         def available_dates_cache(self):
-            return {self.handle(file): file for file in Active.Cache.get_files()}
+            return {self.handle(file): file for file in Active.Cache.get_files() if self.handle(file) is not None}
 
         def handle(self, file):
             start = len('DailyBulletin_pdf_')

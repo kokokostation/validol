@@ -149,10 +149,11 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
             "color: white; background-color: rgb" + str(GraphDialog.COLORS[color]))
 
     def draw_graph(self):
-        self.controller_launcher.draw_graph(self.df,
-                                            self.tipped_list.current_item(),
-                                            self.table_labels,
-                                            self.title)
+        if self.tipped_list.current_item() is not None:
+            self.controller_launcher.draw_graph(self.df,
+                                                self.tipped_list.current_item(),
+                                                self.table_labels,
+                                                self.title)
 
     def submit_graph(self):
         base_colors = []
