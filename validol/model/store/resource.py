@@ -215,8 +215,9 @@ class Resource(Table, Updatable):
         if index_on:
             df.sort_index(inplace=True)
 
-        for col, typ in self.schema[1:]:
-            if typ == 'REAL' or typ == 'INTEGER':
+        types = dict(self.schema)
+        for col in df:
+            if any(types.get(col, None) == typ for typ in ('REAL', 'INTEGER')):
                 df[col] = pd.to_numeric(df[col])
 
         return df
