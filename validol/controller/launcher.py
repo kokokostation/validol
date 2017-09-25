@@ -30,6 +30,12 @@ class ControllerLauncher:
 
             return
 
+        if df.empty:
+            self.view_launcher.display_error(
+                "No data",
+                "There is no data for configuration you've chosen so there is nothing to show")
+            return
+
         title = ViewFlavor.show_ais(actives, self.model_launcher)
 
         for i, labels in enumerate(table_pattern.formula_groups):
