@@ -52,23 +52,6 @@ class IceParser(DailyPdfParser):
     def fix_df(self, df):
         return df
 
-    def read_data(self, active_folder):
-        from_files = []
-
-        pure_active_code = self.pdf_helper.other_info['active_code']
-
-        regex = re.compile('{ac}_(\d{{4}}(?:_\d{{2}}){{2}})\.pdf'.format(ac=pure_active_code))
-
-        for file in os.listdir(active_folder):
-            match = regex.match(file)
-            if match is not None:
-                from_files.append(
-                    self.pdf_helper.parse_file(
-                        os.path.join(active_folder, file),
-                        dt.datetime.strptime(match.group(1), '%Y_%m_%d').date()))
-
-        return concat(from_files)
-
 
 class IceFuturesParser(IceParser):
     NAME = 'ice'

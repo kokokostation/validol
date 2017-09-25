@@ -1,5 +1,8 @@
+from functools import lru_cache
+
 from validol.model.utils.utils import date_range, concat
 from validol.model.store.resource import ActiveResource
+from validol.model.utils.fs_cache import FsCache
 
 
 class NetCache:
@@ -15,15 +18,23 @@ class NetCache:
     def one(self):
         raise NotImplementedError
 
+    def handle(self, file):
+        return file
+
+    def available_handles(self):
+        raise NotImplementedError
+
 
 class Cache:
     def __init__(self, net_cache, fs_cache):
         self.net_cache = net_cache
         self.fs_cache = fs_cache
 
+        self.fs_handle_map = {self.net_cache.handle(file): file for file in self.fs_cache.get_filenames()}
+
     def get(self, handle):
         if self.fs_cache.available():
-            filename = self.net_cache.file(handle)
+            filename = self.file(handle)
 
             if filename is not None:
                 content = self.fs_cache.read_file(filename)
@@ -43,7 +54,7 @@ class Cache:
 
     def delete(self, handle):
         if self.fs_cache.available():
-            filename = self.net_cache.file(handle)
+            filename = self.file(handle)
             if filename is not None:
                 self.fs_cache.delete(filename)
         else:
@@ -60,10 +71,21 @@ class Cache:
 
         return content
 
+    def file(self, handle):
+        filename = self.net_cache.file(handle)
+
+        if filename is None:
+            filename = self.fs_handle_map[handle]
+
+        return filename
+
+    def available_handles(self):
+        return set(self.fs_handle_map.keys()) | set(self.net_cache.available_handles())
+
 
 class DailyResource(ActiveResource):
     def __init__(self, model_launcher, platform_code, active_name, actives_cls, flavor,
-                 pdf_helper):
+                 pdf_helper, active_cache):
         ActiveResource.__init__(self,
                                 flavor["schema"],
                                 model_launcher,
@@ -75,6 +97,7 @@ class DailyResource(ActiveResource):
 
         self.model_launcher = model_launcher
         self.pdf_helper = pdf_helper
+        self.active_cache = active_cache
 
     def get_flavors(self):
         df = self.read_df('SELECT DISTINCT CONTRACT AS active_flavor FROM "{table}"', index_on=False)
@@ -101,7 +124,10 @@ class DailyResource(ActiveResource):
         return self.download_dates(set(self.available_dates()) & set(date_range(first, last)))
 
     def available_dates(self):
-        raise NotImplementedError
+        fs_cache = FsCache(self.pdf_helper.active_folder)
+        self.cache = Cache(self.active_cache, fs_cache)
+
+        return self.cache.available_handles()
 
     def download_date(self, date):
         raise NotImplementedError

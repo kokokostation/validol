@@ -2,6 +2,7 @@ import os
 import sqlite3
 import requests
 from sqlalchemy import create_engine
+import socket
 
 from validol.model.store.view.composite_updater import DailyUpdater, EntireUpdater, UpdateManager
 from validol.model.store.view.view_flavors import ALL_VIEW_FLAVORS
@@ -68,6 +69,8 @@ class ModelLauncher:
         try:
             return cls(self).update_entire()
         except requests.exceptions.ConnectionError:
+            return None
+        except socket.gaierror:
             return None
 
     def update_daily(self):

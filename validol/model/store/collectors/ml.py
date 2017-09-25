@@ -81,16 +81,21 @@ class MlCurve(ActiveResource):
         return result.drop_duplicates()
 
     def process_dates(self, mapping):
-        info = group_by(mapping(self.ai.flavor.get_full_df(self.ai, self.model_launcher)), ['Date', 'CONTRACT'])
+        df = self.ai.flavor.get_full_df(self.ai, self.model_launcher)
 
-        result = pd.DataFrame()
+        if not df.empty:
+            info = group_by(mapping(df).reset_index(), ['Date', 'CONTRACT'])
 
-        for date, contract in info.groups.keys():
-            result = result.append(pd.DataFrame(
-                [[date, contract, MlCurve.ml(info.get_group((date, contract)))]],
-                columns=['Date', 'CONTRACT', 'CURVE']))
+            result = pd.DataFrame()
 
-        return result
+            for date, contract in info.groups.keys():
+                result = result.append(pd.DataFrame(
+                    [[date, contract, MlCurve.ml(info.get_group((date, contract)))]],
+                    columns=['Date', 'CONTRACT', 'CURVE']))
+
+            return result
+        else:
+            return df
 
     def fill(self, first, last):
         return self.process_dates(lambda df: df[(to_timestamp(first) <= df.index) &

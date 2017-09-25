@@ -4,15 +4,15 @@ from ftplib import FTP
 import os
 from zipfile import ZipFile
 from io import BytesIO
+from functools import lru_cache
 
 from validol.model.store.resource import Actives, Platforms
 from validol.model.store.view.active_info import ActiveInfo
 from validol.model.store.structures.pdf_helper import PdfHelpers
-from validol.model.store.miners.daily_reports.daily import DailyResource, Cache, NetCache
+from validol.model.store.miners.daily_reports.daily import DailyResource, NetCache
 from validol.model.utils.utils import isfile
 from validol.model.store.structures.ftp_cache import FtpCache
 from validol.model.store.resource import Updater
-from validol.model.utils.fs_cache import FsCache
 
 
 class CmeDaily:
@@ -46,18 +46,18 @@ class Active(DailyResource):
 
     def __init__(self, model_launcher, platform_code, active_name, flavor, pdf_helper=None):
         DailyResource.__init__(self, model_launcher, platform_code, active_name, CmeActives,
-                               flavor, pdf_helper)
+                               flavor, pdf_helper, Active.Cache(self))
 
-    class CmeCache(NetCache):
-        def __init__(self, cme_active, fs_cache):
+    class Cache(NetCache):
+        def __init__(self, cme_active):
             self.cme_active = cme_active
 
-            self.available_dates = {Active.CmeCache.file_to_date(file): file
-                                    for file in Active.CmeCache.get_files() +
-                                    fs_cache.get_filenames()}
+        @property
+        @lru_cache()
+        def available_dates_cache(self):
+            return {self.handle(file): file for file in Active.Cache.get_files()}
 
-        @staticmethod
-        def file_to_date(file):
+        def handle(self, file):
             start = len('DailyBulletin_pdf_')
             return dt.datetime.strptime(file[start:start + 8], '%Y%m%d').date()
 
@@ -76,30 +76,26 @@ class Active(DailyResource):
                 .get(Active.FTP_SERVER, os.path.join(Active.FTP_DIR, filename), with_cache)
 
         def file(self, handle):
-            return self.available_dates[handle]
+            return self.available_dates_cache.get(handle, None)
 
         def get(self, handle, with_cache):
             filename = self.file(handle)
-            return filename, Active.CmeCache.read_file(self.cme_active.model_launcher, filename, with_cache)
+            return filename, Active.Cache.read_file(self.cme_active.model_launcher, filename, with_cache)
+
+        def available_handles(self):
+            return self.available_dates_cache.keys()
 
     @staticmethod
     def get_archive_files(model_launcher):
         item = FtpCache(model_launcher).one_or_none()
         if item is None:
-            file = Active.CmeCache.get_files()[0]
-            item = Active.CmeCache.read_file(model_launcher, file)
+            file = Active.Cache.get_files()[0]
+            item = Active.Cache.read_file(model_launcher, file)
         else:
             item = item.value
 
         with ZipFile(BytesIO(item), 'r') as zip_file:
             return zip_file.namelist()
-
-    def available_dates(self):
-        fs_cache = FsCache(self.pdf_helper.active_folder)
-        cme_cache = Active.CmeCache(self, fs_cache)
-        self.cache = Cache(cme_cache, fs_cache)
-
-        return cme_cache.available_dates.keys()
 
     def download_date(self, date):
         content = self.cache.get(date)

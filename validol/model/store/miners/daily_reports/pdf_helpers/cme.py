@@ -1,4 +1,3 @@
-import os
 from io import BytesIO
 from zipfile import ZipFile
 import numpy as np
@@ -6,9 +5,8 @@ import pandas as pd
 from itertools import repeat
 import re
 
-from validol.model.store.miners.daily_reports.cme import Active
 from validol.model.store.miners.daily_reports.pdf_helpers.utils import filter_rows, DailyPdfParser, is_contract
-from validol.model.utils.utils import concat, get_pages_run
+from validol.model.utils.utils import get_pages_run
 
 
 class CmeParser(DailyPdfParser):
@@ -19,15 +17,6 @@ class CmeParser(DailyPdfParser):
     def map_content(self, content):
         with ZipFile(BytesIO(content), 'r') as zip_file:
             return zip_file.read(self.pdf_helper.other_info['archive_file'])
-
-    def read_data(self, active_folder):
-        from_files = []
-
-        for file in os.listdir(active_folder):
-            from_files.append(self.pdf_helper.parse_file(os.path.join(active_folder, file),
-                                                         Active.CmeCache.file_to_date(file)))
-
-        return concat(from_files)
 
     def config(self, content):
         return [
@@ -108,7 +97,7 @@ class CmeOptionsParser(CmeParser):
     NAME = 'cme_options'
 
     def process_section(self, head, section):
-        if head[2] == self.pdf_helper.name.active:
+        if head[2] == self.pdf_helper.name.active and not section.empty:
             pc = 'P' if re.match('^.*PUT$', head[0]) else 'C'
 
             section_result = pd.DataFrame()

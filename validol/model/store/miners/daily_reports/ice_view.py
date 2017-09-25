@@ -30,7 +30,6 @@ class IceView(DailyView):
             ActiveInfo(self, platform, active.ActiveName),
             info,
             {
-                'active_code': active.ActiveCode,
                 'expirations': expirations.iloc[expirations_w.currentIndex()].to_dict()
             })
 
