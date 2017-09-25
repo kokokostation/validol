@@ -30,7 +30,9 @@ class Cache:
         self.net_cache = net_cache
         self.fs_cache = fs_cache
 
-        self.fs_handle_map = {self.net_cache.handle(file): file for file in self.fs_cache.get_filenames()}
+        self.fs_handle_map = {self.net_cache.handle(file): file
+                              for file in self.fs_cache.get_filenames()
+                              if self.net_cache.handle(file) is not None}
 
     def get(self, handle):
         if self.fs_cache.available():

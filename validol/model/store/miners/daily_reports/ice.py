@@ -140,7 +140,11 @@ class Active(DailyResource):
 
         def handle(self, file):
             match = re.match('{ac}_(\d{{4}}(?:_\d{{2}}){{2}})\.pdf'.format(ac=self.ice_active.active_code), file)
-            return dt.datetime.strptime(match.group(1), '%Y_%m_%d').date()
+
+            try:
+                return dt.datetime.strptime(match.group(1), '%Y_%m_%d').date()
+            except:
+                return None
 
         def available_handles(self):
             if not IceDaily.RECAPTCHA:

@@ -59,7 +59,10 @@ class Active(DailyResource):
 
         def handle(self, file):
             start = len('DailyBulletin_pdf_')
-            return dt.datetime.strptime(file[start:start + 8], '%Y%m%d').date()
+            try:
+                return dt.datetime.strptime(file[start:start + 8], '%Y%m%d').date()
+            except:
+                return None
 
         @staticmethod
         def get_files():

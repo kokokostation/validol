@@ -36,9 +36,10 @@ class Table(QtWidgets.QWidget):
             min_val, max_val = col_without_nan.min(), col_without_nan.max()
 
             for j in range(len(filtered_df)):
-                norm = (filtered_df.iloc[j, i] - min_val) / (max_val - min_val)
+                value = filtered_df.iloc[j, i]
 
-                if not pd.isnull(norm):
+                if value is not None and not pd.isnull(value):
+                    norm = (value - min_val) / (max_val - min_val)
                     table.item(j, i + 1).setBackground(
                         QtGui.QBrush(QtGui.QColor(*map(int, [255 * norm, 0, 255 * (1 - norm), 100]))))
 

@@ -215,6 +215,10 @@ class Resource(Table, Updatable):
         if index_on:
             df.sort_index(inplace=True)
 
+        for col, typ in self.schema[1:]:
+            if typ == 'REAL' or typ == 'INTEGER':
+                df[col] = pd.to_numeric(df[col])
+
         return df
 
     def write_df(self, df):
