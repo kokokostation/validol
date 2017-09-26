@@ -57,6 +57,9 @@ class Table:
 class Updater:
     @staticmethod
     def reduce_ranges(ranges):
+        if not ranges:
+            return [None, None]
+
         return [f(l) if l else None for f, l in
                 zip((min, max), map(lambda x: list(filter(None.__ne__, x)), zip(*ranges)))]
 
@@ -125,10 +128,7 @@ class FlavorUpdater(Updater):
 class Updatable:
     @staticmethod
     def range_from_timestamp(range):
-        if range != (None, None):
-            return map(dt.date.fromtimestamp, range)
-        else:
-            return range
+        return [None if ts is None else dt.date.fromtimestamp(ts) for ts in range]
 
     def update(self):
         first, last = self.range()
@@ -137,7 +137,7 @@ class Updatable:
             if last != dt.date.today():
                 info = self.fill(last + dt.timedelta(days=1), dt.date.today())
             else:
-                return None, None
+                return [None, None]
         else:
             info = self.initial_fill()
 
@@ -233,9 +233,9 @@ class Resource(Table, Updatable):
 
     def get_range(self, info):
         if info.empty:
-            return None, None
+            return [None, None]
         else:
-            return min(info.Date), max(info.Date)
+            return [min(info.Date), max(info.Date)]
 
     @staticmethod
     def get_atoms(schema):

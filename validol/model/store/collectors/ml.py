@@ -1,8 +1,7 @@
 import pandas as pd
-import datetime as dt
 
 from validol.model.utils.utils import to_timestamp, group_by
-from validol.model.store.resource import ActiveResource, FlavorUpdater, check_empty, Updater
+from validol.model.store.resource import ActiveResource, FlavorUpdater, check_empty, Updater, Updatable
 from validol.model.store.miners.daily_reports.flavors import DAILY_REPORT_FLAVORS
 
 
@@ -111,9 +110,4 @@ class MlCurve(ActiveResource):
             return self.read_df()
 
     def get_range(self, info):
-        result = super().get_range(info)
-
-        if result != (None, None):
-            return [dt.date.fromtimestamp(ts) for ts in result]
-        else:
-            return result
+        return Updatable.range_from_timestamp(super().get_range(info))
