@@ -1,1 +1,2 @@
 include validol/view/icons/*.png
+include validol/model/store/miners/daily_reports/data/*.csv

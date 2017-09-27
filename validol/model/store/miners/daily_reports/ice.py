@@ -5,6 +5,7 @@ from requests import Request
 import pandas as pd
 import re
 from functools import lru_cache
+import os
 
 from validol.model.store.resource import Actives, Platforms
 from validol.model.store.view.active_info import ActiveInfo
@@ -194,3 +195,11 @@ class IceActives(Actives):
 class IceAllActives(IceActives):
     def __init__(self, model_launcher, flavor):
         IceActives.__init__(self, model_launcher, "all_{}".format(flavor))
+
+        if IceDaily.RECAPTCHA and self.read_df().empty:
+            filename = '{}.csv'.format(flavor)
+
+            df = pd.read_csv(
+                os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data', filename))
+
+            self.write_df(df)

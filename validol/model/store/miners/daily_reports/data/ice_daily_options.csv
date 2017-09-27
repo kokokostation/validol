@@ -1,0 +1,302 @@
+PlatformCode,ActiveName,ActiveCode,WebActiveCode
+IFEU,AAM-Aberdeen Asset Management PLC - ex-event (Std Option/Amer/Dlv),AAM,IFLO|AAM
+IFEU,AAT-Accor (Flex Option/Amer/Dlv),AAT,IFLO|AAT
+IFEU,ABQ-ABB Ltd (Flex Option/Amer/Dlv),ABQ,IFLO|ABQ
+IFEU,ABR-Associated British Foods plc (Std Option/Amer/Dlv),ABR,IFLO|ABR
+IFEU,ACQ-Credit Agricole SA (Flex Option/Amer/Dlv),ACQ,IFLO|ACQ
+IFEU,AER-BAE Systems plc (Std Option/Amer/Dlv),AER,IFLO|AER
+IFEU,AFQ-Aegon NV (Flex Option/Amer/Dlv),AFQ,IFLO|AFQ
+IFEU,AGK-Aggreko Plc (Std Option/Amer/Dlv),AGK,IFLO|AGK
+IFEU,AH-Ashtead Group Plc (Std Option/Amer/Dlv),AH,IFLO|AH
+IFEU,AHA-Anglo American plc (Std Option/Amer/Dlv),AHA,IFLO|AHA
+IFEU,AHO-Anglo American plc (Flex Option/Amer/Dlv),AHO,IFLO|AHO
+IFEU,AHQ-Koninklijke Ahold Delhaize NV (Flex Option/Amer/Dlv),AHQ,IFLO|AHQ
+IFEU,AIP-ASM International NV (Flex Option/Euro/Dlv),AIP,IFLO|AIP
+IFEU,AKQ-Akzo Nobel NV (Flex Option/Amer/Dlv),AKQ,IFLO|AKQ
+IFEU,AME-Amec Foster Wheeler PLC (Std Option/Amer/Dlv),AME,IFLO|AME
+IFEU,AMO-ArcelorMittal (Flex Option/Amer/Dlv),AMO,IFLO|AMO
+IFEU,AQQ-Svenska Handelsbanken ser. A (Flex Option/Amer/Dlv),AQQ,IFLO|AQQ
+IFEU,AT1-ICE Futures Rotterdam Coal Early (122 days) Single Expiry Options,AT1,IFEU|AT1
+IFEU,ATA-ICE Futures API 2 Rotterdam Coal Average Price Options,ATA,IFEU|ATA
+IFEU,ATC-Calendar One Time Option on Rotterdam Calendar One Time Future,ATC,IFEU|ATC
+IFEU,ATQ-Atlas Copco AB A shares (Flex Option/Amer/Dlv),ATQ,IFLO|ATQ
+IFEU,ATT-Antofagasta plc (Std Option/Amer/Dlv),ATT,IFLO|ATT
+IFEU,AVU-Aviva plc (Flex Option/Amer/Cash),AVU,IFLO|AVU
+IFEU,AWS-International Consolidated Airlines Group SA (Britsh Airways Ex-Event) (Std Option/Amer/Dlv),AWS,IFLO|AWS
+IFEU,AZA-AstraZeneca plc (Std Option/Amer/Dlv),AZA,IFLO|AZA
+IFEU,AZU-AstraZeneca plc (Flex Option/Amer/Cash),AZU,IFLO|AZU
+IFEU,B-Option on Brent Crude Future,B,IFEU|B
+IFEU,BAU-BAE Systems plc (Flex Option/Amer/Cash),BAU,IFLO|BAU
+IFEU,BBL-Barclays plc (Std Option/Amer/Dlv),BBL,IFLO|BBL
+IFEU,BDV-Barratt Developments Plc (Std Option/Amer/Dlv),BDV,IFLO|BDV
+IFEU,BGG-BG Group plc ex-event (Std Option/Amer/Dlv),BGG,IFLO|BGG
+IFEU,BIG-Babcock International Group Plc (Std Option/Amer/Dlv),BIG,IFLO|BIG
+IFEU,BIQ-Intesa Sanpaolo SpA (Flex Option/Amer/Dlv),BIQ,IFLO|BIQ
+IFEU,BIX-Intesa Sanpaolo SpA (Flex Option/Euro/Dlv),BIX,IFLO|BIX
+IFEU,BJQ-BASF AG (Flex Option/Amer/Dlv),BJQ,IFLO|BJQ
+IFEU,BKQ-Groupe Danone (Flex Option/Amer/Dlv),BKQ,IFLO|BKQ
+IFEU,BLC-British Land Company PLC (Std Option/Amer/Dlv),BLC,IFLO|BLC
+IFEU,BLT-BHP Billiton plc - ex event package (Std Option/Amer/Dlv),BLT,IFLO|BLT
+IFEU,BNJ-BNP Paribas (Flex Option/Euro/Cash),BNJ,IFLO|BNJ
+IFEU,BNQ-BNP Paribas (Flex Option/Amer/Dlv),BNQ,IFLO|BNQ
+IFEU,BNZ-Bunzl Plc (Std Option/Amer/Dlv),BNZ,IFLO|BNZ
+IFEU,BP-BP plc (Std Option/Amer/Dlv),BP,IFLO|BP
+IFEU,BPX-BP plc (Flex Option/Euro/Dlv),BPX,IFLO|BPX
+IFEU,BQQ-Bayer AG (Flex Option/Amer/Dlv),BQQ,IFLO|BQQ
+IFEU,BRW-Burberry Group (Std Option/Amer/Dlv),BRW,IFLO|BRW
+IFEU,BSK-Sky PLC (Std Option/Amer/Dlv),BSK,IFLO|BSK
+IFEU,BT2-BHP Billiton plc (Flex Option/Amer/Dlv),BT2,IFLO|BT2
+IFEU,BT4-BHP Billiton plc (Flex Option/Euro/Dlv),BT4,IFLO|BT4
+IFEU,BTB-BHP Billiton plc (Std Option/Amer/Dlv),BTB,IFLO|BTB
+IFEU,BTG-BT Group plc (Std Option/Amer/Dlv),BTG,IFLO|BTG
+IFEU,BTU-BT Group plc (Flex Option/Amer/Cash),BTU,IFLO|BTU
+IFEU,BZ5-Bunzl Plc (Flex Option/Amer/Cash),BZ5,IFLO|BZ5
+IFEU,C-London Cocoa Option,C,IFLX|C
+IFEU,C-Option on EUA Future,C,IFEU|C
+IFEU,CBQ-Commerzbank AG (Flex Option/Amer/Dlv),CBQ,IFLO|CBQ
+IFEU,CJQ-AXA SA (Flex Option/Amer/Dlv),CJQ,IFLO|CJQ
+IFEU,CMB-Comcast Corp (Flex Option/Amer/Dlv),CMB,IFLO|CMB
+IFEU,CMQ-Carrefour SA (Flex Option/Amer/Dlv),CMQ,IFLO|CMQ
+IFEU,CMX-Carrefour SA (Flex Option/Euro/Dlv),CMX,IFLO|CMX
+IFEU,CNG-Cairn Energy plc (Std Option/Amer/Dlv),CNG,IFLO|CNG
+IFEU,CPG-Compass Group plc (Std Option/Amer/Dlv),CPG,IFLO|CPG
+IFEU,CPI-Capita Plc (Std Option/Amer/Dlv),CPI,IFLO|CPI
+IFEU,CPX-Compass Group plc (Flex Option/Euro/Dlv),CPX,IFLO|CPX
+IFEU,CRM-CRH PLC (UK) (Std Option/Amer/Dlv),CRM,IFLO|CRM
+IFEU,CRU-Centrica plc (Flex Option/Amer/Cash),CRU,IFLO|CRU
+IFEU,CTR-Centrica plc (Std Option/Amer/Dlv),CTR,IFLO|CTR
+IFEU,CUA-Aviva plc (Std Option/Amer/Dlv),CUA,IFLO|CUA
+IFEU,CXQ-Snam SpA Ex Event Package (Flex Option/Amer/Dlv),CXQ,IFLO|CXQ
+IFEU,DBQ-Deutsche Bank AG (Flex Option/Amer/Dlv),DBQ,IFLO|DBQ
+IFEU,DBU-Deutsche Bank AG (Flex Option/Amer/Cash),DBU,IFLO|DBU
+IFEU,DDQ-DNB NOR ASA (Flex Option/Amer/Dlv),DDQ,IFLO|DDQ
+IFEU,DFQ-Vinci SA (Flex Option/Amer/Dlv),DFQ,IFLO|DFQ
+IFEU,DFU-Vinci SA (Flex Option/Amer/Cash),DFU,IFLO|DFU
+IFEU,DGU-Diageo plc (Flex Option/Amer/Cash),DGU,IFLO|DGU
+IFEU,DGX-Diageo plc (Flex Option/Euro/Dlv),DGX,IFLO|DGX
+IFEU,DIX-Dixons Carphone Group plc (Std Option/Amer/Dlv),DIX,IFLO|DIX
+IFEU,DKQ-Stora Enso Oyj (Flex Option/Amer/Dlv),DKQ,IFLO|DKQ
+IFEU,DLE-Direct Line Insurance Group Plc (Std Option/Amer/Dlv),DLE,IFLO|DLE
+IFEU,DPQ-Deutsche Post AG (Flex Option/Amer/Dlv),DPQ,IFLO|DPQ
+IFEU,DPU-Deutsche Post AG (Flex Option/Amer/Cash),DPU,IFLO|DPU
+IFEU,DTQ-Deutsche Telekom AG (Flex Option/Amer/Dlv),DTQ,IFLO|DTQ
+IFEU,EAQ-Airbus (Flex Option/Amer/Dlv),EAQ,IFLO|EAQ
+IFEU,ECQ-Enel SpA (Flex Option/Amer/Dlv),ECQ,IFLO|ECQ
+IFEU,ECX-Enel SpA (Flex Option/Euro/Dlv),ECX,IFLO|ECX
+IFEU,EHQ-Bouygues (Flex Option/Amer/Dlv),EHQ,IFLO|EHQ
+IFEU,EHX-Bouygues (Flex Option/Euro/Dlv),EHX,IFLO|EHX
+IFEU,EMG-Man Group plc (Std Option/Amer/Dlv),EMG,IFLO|EMG
+IFEU,ENX-ENI SpA (Flex Option/Euro/Dlv),ENX,IFLO|ENX
+IFEU,EOL-E.ON SE (Flex Option/Amer/Dlv),EOL,IFLO|EOL
+IFEU,ERQ-Ericsson Telefona L M ser. B (Flex Option/Amer/Dlv),ERQ,IFLO|ERQ
+IFEU,ESX-FTSE 100 Index Option (European),ESX,IFLO|ESX
+IFEU,EVR-Evraz Plc (Std Option/Amer/Dlv),EVR,IFLO|EVR
+IFEU,EXP-Experian Plc (Std Option/Amer/Dlv),EXP,IFLO|EXP
+IFEU,EXQ-Vivendi SA (Flex Option/Amer/Dlv),EXQ,IFLO|EXQ
+IFEU,EXX-Vivendi SA (Flex Option/Euro/Dlv),EXX,IFLO|EXX
+IFEU,EZJ-Easyjet Plc (Std Option/Amer/Dlv),EZJ,IFLO|EZJ
+IFEU,FAU-Sampo Oyj (Flex Option/Amer/Cash),FAU,IFLO|FAU
+IFEU,FDQ-ASML Holding NV (Flex Option/Amer/Dlv),FDQ,IFLO|FDQ
+IFEU,FI6-Fiat Chrysler Automobiles NV (Flex Option/Amer/Dlv),FI6,IFLO|FI6
+IFEU,FLX-FTSE 100 Index Option (Flex European),FLX,IFLO|FLX
+IFEU,FRN-Fresnillo Plc (Std Option/Amer/Dlv),FRN,IFLO|FRN
+IFEU,FSQ-Swedbank AB (Flex Option/Amer/Dlv),FSQ,IFLO|FSQ
+IFEU,FTQ-Orange SA (Flex Option/Amer/Dlv),FTQ,IFLO|FTQ
+IFEU,FVU-Deutsche Boerse AG (Flex Option/Amer/Cash),FVU,IFLO|FVU
+IFEU,FYQ-Electrolux AB ser. B (Flex Option/Amer/Dlv),FYQ,IFLO|FYQ
+IFEU,G-Option on Gasoil Future (Low Sulphur Gasoil Futures from February 2015 contract month),G,IFEU|G
+IFEU,GDQ-Engie (Flex Option/Amer/Dlv),GDQ,IFLO|GDQ
+IFEU,GKN-GKN Plc (Std Option/Amer/Dlv),GKN,IFLO|GKN
+IFEU,GL-Glencore plc (Std Option/Amer/Dlv),GL,IFLO|GL
+IFEU,GLO-Glencore plc (Flex Option/Amer/Dlv),GLO,IFLO|GLO
+IFEU,GLQ-Societe Generale (Flex Option/Amer/Dlv),GLQ,IFLO|GLQ
+IFEU,GME-ITV plc (Std Option/Amer/Dlv),GME,IFLO|GME
+IFEU,GNS-Diageo plc (Std Option/Amer/Dlv),GNS,IFLO|GNS
+IFEU,GSX-GlaxoSmithKline plc (Flex Option/Euro/Dlv),GSX,IFLO|GSX
+IFEU,GXO-GlaxoSmithKline plc (Std Option/Amer/Dlv),GXO,IFLO|GXO
+IFEU,GXX-Assicurazioni Generali SpA (Flex Option/Euro/Dlv),GXX,IFLO|GXX
+IFEU,GZU-GlaxoSmithKline plc (Flex Option/Amer/Cash),GZU,IFLO|GZU
+IFEU,HEQ-Heineken NV (Flex Option/Amer/Dlv),HEQ,IFLO|HEQ
+IFEU,HEX-Heineken NV (Flex Option/Euro/Dlv),HEX,IFLO|HEX
+IFEU,HMQ-Hennes & Mauritz AB ser. B (Flex Option/Amer/Dlv),HMQ,IFLO|HMQ
+IFEU,HMS-Hammerson Plc (Std Option/Amer/Dlv),HMS,IFLO|HMS
+IFEU,HRL-Hargreaves Lansdown Plc (Std Option/Amer/Dlv),HRL,IFLO|HRL
+IFEU,HSB-HSBC Holdings plc (Std Option/Amer/Dlv),HSB,IFLO|HSB
+IFEU,HSJ-HSBC Holdings plc (Flex Option/Euro/Cash),HSJ,IFLO|HSJ
+IFEU,HSU-HSBC Holdings plc (Flex Option/Amer/Cash),HSU,IFLO|HSU
+IFEU,HSX-HSBC Holdings plc (Flex Option/Euro/Dlv),HSX,IFLO|HSX
+IFEU,I-Three Month Euro (Euribor) Option,I,IFLL|I
+IFEU,IAQ-ING Groep NV (Flex Option/Amer/Dlv),IAQ,IFLO|IAQ
+IFEU,ICA-NEX Group PLC Ex Event Package (Std Option/Amer/Dlv),ICA,IFLO|ICA
+IFEU,IHG-Intercontinental Hotels Group plc (Std Option/Amer/Dlv),IHG,IFLO|IHG
+IFEU,III-3i Group plc (Std Option/Amer/Dlv),III,IFLO|III
+IFEU,IJQ-Inditex SA (Flex Option/Amer/Dlv),IJQ,IFLO|IJQ
+IFEU,IMI-Imi Plc (Std Option/Amer/Dlv),IMI,IFLO|IMI
+IFEU,IMP-Imperial Brands Plc (Std Option/Amer/Dlv),IMP,IFLO|IMP
+IFEU,IMX-Imperial Brands Plc (Flex Option/Euro/Dlv),IMX,IFLO|IMX
+IFEU,INR-Indivior Plc (Std Option/Amer/Dlv),INR,IFLO|INR
+IFEU,INS-Investec plc (Std Option/Amer/Dlv),INS,IFLO|INS
+IFEU,ITR-Intertek Group (Std Option/Amer/Dlv),ITR,IFLO|ITR
+IFEU,IYQ-Intel Corp (Flex Option/Amer/Dlv),IYQ,IFLO|IYQ
+IFEU,JCW-Ferrovial SA (Flex Option/Amer/Cash),JCW,IFLO|JCW
+IFEU,JMA-Johnson Matthey Plc (Std Option/Amer/Dlv),JMA,IFLO|JMA
+IFEU,JVT-Amgen Inc (Flex Option/Amer/Dlv),JVT,IFLO|JVT
+IFEU,K-Three Month Euro (Euribor) 1yr Mid-Curve,K,IFLL|K
+IFEU,K2-Three Month Euro (Euribor) 2yr Mid-Curve,K2,IFLL|K2
+IFEU,K3-Three Month Euro (Euribor) 3yr Mid-Curve,K3,IFLL|K3
+IFEU,K4-Three Month Euro (EURIBOR) 4yr Mid-Curve,K4,IFLL|K4
+IFEU,KBX-KBC Groep NV (Flex Option/Euro/Dlv),KBX,IFLO|KBX
+IFEU,KE3-Kering SA (Flex Option/Amer/Dlv),KE3,IFLO|KE3
+IFEU,KGF-Kingfisher plc (Std Option/Amer/Dlv),KGF,IFLO|KGF
+IFEU,"KPQ-KPN NV, Koninklijke (Flex Option/Amer/Dlv)",KPQ,IFLO|KPQ
+IFEU,KZK-Kaz Minerals plc (Std Option/Amer/Dlv),KZK,IFLO|KZK
+IFEU,L-Three Month Sterling Option,L,IFLL|L
+IFEU,LDB-Ladbrokes Coral Group PLC (Std Option/Amer/Dlv),LDB,IFLO|LDB
+IFEU,LFI-Standard Life Aberdeen plc (Std Option/Amer/Dlv),LFI,IFLO|LFI
+IFEU,LFU-Standard Life Aberdeen plc (Flex Option/Amer/Cash),LFU,IFLO|LFU
+IFEU,LGE-Legal & General Group plc (Std Option/Amer/Dlv),LGE,IFLO|LGE
+IFEU,LGU-Legal & General Group plc (Flex Option/Amer/Cash),LGU,IFLO|LGU
+IFEU,LIQ-Linde AG (Flex Option/Amer/Dlv),LIQ,IFLO|LIQ
+IFEU,LIX-Linde AG (Flex Option/Euro/Dlv),LIX,IFLO|LIX
+IFEU,LLU-Lloyds Banking Group plc (Flex Option/Amer/Cash),LLU,IFLO|LLU
+IFEU,LNM-Lonmin plc (Std Option/Amer/Dlv),LNM,IFLO|LNM
+IFEU,LS-Land Securities Group plc (Std Option/Amer/Dlv),LS,IFLO|LS
+IFEU,LSE-London Stock Exchange Group plc (Std Option/Amer/Dlv),LSE,IFLO|LSE
+IFEU,M+S-Marks & Spencer Group plc (Std Option/Amer/Dlv),M+S,IFLO|M+S
+IFEU,M-Option on UK Natural Gas NBP Future,M,IFEU|M
+IFEU,M-Three Month Sterling 1yr Mid-Curve,M,IFLL|M
+IFEU,M2-Three Month Sterling 2yr Mid-Curve,M2,IFLL|M2
+IFEU,M3-Three Month Sterling 3yr Mid-Curve,M3,IFLL|M3
+IFEU,MDI-Mondi Plc (Std Option/Amer/Dlv),MDI,IFLO|MDI
+IFEU,MDQ-LVMH Moet Hennessy Louis Vuitton SE (Flex Option/Amer/Dlv),MDQ,IFLO|MDQ
+IFEU,MDX-LVMH Moet Hennessy Louis Vuitton SE (Flex Option/Euro/Dlv),MDX,IFLO|MDX
+IFEU,MGG-Meggitt Plc (Std Option/Amer/Dlv),MGG,IFLO|MGG
+IFEU,MLX-Michelin (Flex Option/Euro/Dlv),MLX,IFLO|MLX
+IFEU,MOV-PJSC MMC Norilsk Nickel ADR (Flex Option/Euro/Dlv),MOV,IFLO|MOV
+IFEU,MRL-Merlin Entertainments Plc (Std Option/Amer/Dlv),MRL,IFLO|MRL
+IFEU,MUU-Muenchener Rueckversicherung (Flex Option/Amer/Cash),MUU,IFLO|MUU
+IFEU,MWR-Morrison (WM) Supermarkets plc (Std Option/Amer/Dlv),MWR,IFLO|MWR
+IFEU,NAU-Novartis AG (Flex Option/Amer/Cash),NAU,IFLO|NAU
+IFEU,NBQ-Nokia OYJ (Flex Option/Amer/Dlv),NBQ,IFLO|NBQ
+IFEU,NCC-Option on gcNewcastle Coal Calendar One Time Future,NCC,IFEU|NCC
+IFEU,NCQ-Option on gcNewcastle Coal Quarter One Time Future,NCQ,IFEU|NCQ
+IFEU,NDQ-Nordea Bank AB (Flex Option/Amer/Dlv),NDQ,IFLO|NDQ
+IFEU,NEQ-Nestle SA (Flex Option/Amer/Dlv),NEQ,IFLO|NEQ
+IFEU,NEU-Nestle SA (Flex Option/Amer/Cash),NEU,IFLO|NEU
+IFEU,NFQ-Novo-Nordisk A/S (Flex Option/Amer/Dlv),NFQ,IFLO|NFQ
+IFEU,NGG-National Grid plc (Std Option/Amer/Dlv),NGG,IFLO|NGG
+IFEU,NGU-National Grid plc (Flex Option/Amer/Cash),NGU,IFLO|NGU
+IFEU,NGX-National Grid plc (Flex Option/Euro/Dlv),NGX,IFLO|NGX
+IFEU,NXT-Next plc (Std Option/Amer/Dlv),NXT,IFLO|NXT
+IFEU,OCA-Ocado Group Plc (Std Option/Amer/Dlv),OCA,IFLO|OCA
+IFEU,OGQ-Danske Bank A/S (Flex Option/Amer/Dlv),OGQ,IFLO|OGQ
+IFEU,OMT-Old Mutual plc (Std Option/Amer/Dlv),OMT,IFLO|OMT
+IFEU,PET-Petrofac Ltd. (Std Option/Amer/Dlv),PET,IFLO|PET
+IFEU,"PHQ-Philips NV, Kon. (Flex Option/Amer/Dlv)",PHQ,IFLO|PHQ
+IFEU,PMO-Premier Oil Plc (Std Option/Amer/Dlv),PMO,IFLO|PMO
+IFEU,POC-Carnival plc (Std Option/Amer/Dlv),POC,IFLO|POC
+IFEU,PP4-Paddy Power Betfair Plc (Std Option/Amer/Dlv),PP4,IFLO|PP4
+IFEU,PRU-Prudential plc (Std Option/Amer/Dlv),PRU,IFLO|PRU
+IFEU,PRX-Prudential plc (Flex Option/Euro/Dlv),PRX,IFLO|PRX
+IFEU,PSO-Pearson plc (Std Option/Amer/Dlv),PSO,IFLO|PSO
+IFEU,PUQ-Publicis Groupe (Flex Option/Amer/Dlv),PUQ,IFLO|PUQ
+IFEU,QIQ-Capgemini SA (Flex Option/Amer/Dlv),QIQ,IFLO|QIQ
+IFEU,QQO-Suez (Flex Option/Amer/Dlv),QQO,IFLO|QQO
+IFEU,QSQ-Skandinaviska Ensk Bk ser. A (Flex Option/Amer/Dlv),QSQ,IFLO|QSQ
+IFEU,RAQ-Repsol YPF SA (Flex Option/Amer/Dlv),RAQ,IFLO|RAQ
+IFEU,RAR-Randgold Resources LTD (Std Option/Amer/Dlv),RAR,IFLO|RAR
+IFEU,RB6-Reckitt Benckiser Group Plc (Flex Option/Amer/Cash),RB6,IFLO|RB6
+IFEU,RBE-Reckitt Benckiser Group Plc (Std Option/Amer/Dlv),RBE,IFLO|RBE
+IFEU,RBS-Royal Bank of Scotland Group plc (Std Option/Amer/Dlv),RBS,IFLO|RBS
+IFEU,RC-Robusta Coffee Option,RC,IFLX|RC
+IFEU,RDQ-Royal Dutch Shell plc A Euro (Flex Option/Amer/Dlv),RDQ,IFLO|RDQ
+IFEU,REI-Relx plc (Std Option/Amer/Dlv),REI,IFLO|REI
+IFEU,RIQ-Rio Tinto plc (Flex Option/Amer/Dlv),RIQ,IFLO|RIQ
+IFEU,RIU-Rio Tinto plc (Flex Option/Amer/Cash),RIU,IFLO|RIU
+IFEU,RKU-Relx NV (Flex Option/Amer/Cash),RKU,IFLO|RKU
+IFEU,RMU-Royal Mail Plc (Std Option/Amer/Dlv),RMU,IFLO|RMU
+IFEU,RMY-Royal Mail Plc (Flex Option/Amer/Cash),RMY,IFLO|RMY
+IFEU,RNQ-Renault SA (Flex Option/Amer/Dlv),RNQ,IFLO|RNQ
+IFEU,ROU-Roche Holding AG (Flex Option/Amer/Cash),ROU,IFLO|ROU
+IFEU,ROX-Roche Holding AG (Flex Option/Euro/Dlv),ROX,IFLO|ROX
+IFEU,RR-Rolls-Royce Group plc (Std Option/Amer/Dlv),RR,IFLO|RR
+IFEU,RSU-RSA Insurance Group Plc (Flex Option/Amer/Cash),RSU,IFLO|RSU
+IFEU,RTO-Rentokil Initial plc (Std Option/Amer/Dlv),RTO,IFLO|RTO
+IFEU,RTZ-Rio Tinto plc (Std Option/Amer/Dlv),RTZ,IFLO|RTZ
+IFEU,RWQ-RWE AG (Flex Option/Amer/Dlv),RWQ,IFLO|RWQ
+IFEU,RYL-RSA Insurance Group Plc (Std Option/Amer/Dlv),RYL,IFLO|RYL
+IFEU,RZU-Royal Dutch Shell plc A share (Flex Option/Amer/Cash),RZU,IFLO|RZU
+IFEU,SAN-Sainsbury (J) Plc (Std Option/Amer/Dlv),SAN,IFLO|SAN
+IFEU,SCB-Standard Chartered plc (Std Option/Amer/Dlv),SCB,IFLO|SCB
+IFEU,SCR-G4S Plc (Std Option/Amer/Dlv),SCR,IFLO|SCR
+IFEU,SDS-Schroders Plc (Std Option/Amer/Dlv),SDS,IFLO|SDS
+IFEU,SFU-Sanofi (Flex Option/Amer/Cash),SFU,IFLO|SFU
+IFEU,SGE-Sage Group plc (the) (Std Option/Amer/Dlv),SGE,IFLO|SGE
+IFEU,SGQ-Cie de Saint-Gobain (Flex Option/Amer/Dlv),SGQ,IFLO|SGQ
+IFEU,SHA-Royal Dutch Shell plc A share (Std Option/Amer/Dlv),SHA,IFLO|SHA
+IFEU,SHH-South32 (Std Option/Amer/Dlv),SHH,IFLO|SHH
+IFEU,SHL-Royal Dutch Shell plc B share (Std Option/Amer/Dlv),SHL,IFLO|SHL
+IFEU,SHP-Shire PLC (Std Option/Amer/Dlv),SHP,IFLO|SHP
+IFEU,SHX-Royal Dutch Shell plc B share (Flex Option/Euro/Dlv),SHX,IFLO|SHX
+IFEU,SI-Sports Direct International Plc (Std Option/Amer/Dlv),SI,IFLO|SI
+IFEU,SJO-SSAB AB (Flex Option/Amer/Dlv),SJO,IFLO|SJO
+IFEU,SJQ-Banco Santander SA (Flex Option/Amer/Dlv),SJQ,IFLO|SJQ
+IFEU,SKQ-SAP SE (Flex Option/Amer/Dlv),SKQ,IFLO|SKQ
+IFEU,SM2-Siemens AG (Flex Option/Amer/Cash),SM2,IFLO|SM2
+IFEU,SM3-Siemens AG (Flex Option/Amer/Dlv),SM3,IFLO|SM3
+IFEU,SMS-Smiths Group Plc (Std Option/Amer/Dlv),SMS,IFLO|SMS
+IFEU,SNP-Smith & Nephew plc (Std Option/Amer/Dlv),SNP,IFLO|SNP
+IFEU,SQQ-Statoil ASA (Flex Option/Amer/Dlv),SQQ,IFLO|SQQ
+IFEU,SRP-Serco Group (Std Option/Amer/Dlv),SRP,IFLO|SRP
+IFEU,SSE-SSE Plc (Std Option/Amer/Dlv),SSE,IFLO|SSE
+IFEU,SSU-SSE Plc (Flex Option/Amer/Cash),SSU,IFLO|SSU
+IFEU,SUQ-Schneider Electric SA (Flex Option/Amer/Dlv),SUQ,IFLO|SUQ
+IFEU,SVT-Severn Trent plc (Std Option/Amer/Dlv),SVT,IFLO|SVT
+IFEU,T-Option on West Texas Intermediate Light Sweet Crude Future,T,IFEU|T
+IFEU,T-UK Feed Wheat Option,T,IFLX|T
+IFEU,TAB-British American Tobacco plc (Std Option/Amer/Dlv),TAB,IFLO|TAB
+IFEU,TAT-Tate & Lyle plc (Std Option/Amer/Dlv),TAT,IFLO|TAT
+IFEU,TBU-British American Tobacco plc (Flex Option/Amer/Cash),TBU,IFLO|TBU
+IFEU,TCO-Tesco plc (Std Option/Amer/Dlv),TCO,IFLO|TCO
+IFEU,TEQ-Telefonica SA (Flex Option/Amer/Dlv),TEQ,IFLO|TEQ
+IFEU,TJX-Telecom Italia SpA (Flex Option/Euro/Dlv),TJX,IFLO|TJX
+IFEU,TLO-Tullow Oil plc (Std Option/Amer/Dlv),TLO,IFLO|TLO
+IFEU,TPK-Travis Perkins Plc (Std Option/Amer/Dlv),TPK,IFLO|TPK
+IFEU,TSB-Lloyds Banking Group plc (Std Option/Amer/Dlv),TSB,IFLO|TSB
+IFEU,TSQ-Tele2 AB ser. B (Flex Option/Amer/Dlv),TSQ,IFLO|TSQ
+IFEU,TTO-Amazon.Com Inc (Flex Option/Amer/Dlv),TTO,IFLO|TTO
+IFEU,UCX-Unicredit SpA (Flex Option/Euro/Dlv),UCX,IFLO|UCX
+IFEU,ULU-Unilever plc (Flex Option/Amer/Cash),ULU,IFLO|ULU
+IFEU,ULV-Unilever plc (Std Option/Amer/Dlv),ULV,IFLO|ULV
+IFEU,ULX-Unilever plc (Flex Option/Euro/Dlv),ULX,IFLO|ULX
+IFEU,UUL-United Utilities plc (Std Option/Amer/Dlv),UUL,IFLO|UUL
+IFEU,UZQ-Bankinter SA (Flex Option/Amer/Dlv),UZQ,IFLO|UZQ
+IFEU,VCQ-Volvo AB - B shares (Flex Option/Amer/Dlv),VCQ,IFLO|VCQ
+IFEU,VOD-Vodafone Group plc (Std Option/Amer/Dlv),VOD,IFLO|VOD
+IFEU,VOX-Vodafone Group plc (Flex Option/Euro/Dlv),VOX,IFLO|VOX
+IFEU,VRS-Vedanta Resources plc (Std Option/Amer/Dlv),VRS,IFLO|VRS
+IFEU,VS0-Visa Inc (Flex Option/Amer/Dlv),VS0,IFLO|VS0
+IFEU,VWQ-Volkswagen AG - PFD (Flex Option/Amer/Dlv),VWQ,IFLO|VWQ
+IFEU,W-White Sugar Option,W,IFLX|W
+IFEU,WAB-ICE Brent Crude Weekly American Option,WAB,IFEU|WAB
+IFEU,WEI-Weir Group Plc (Std Option/Amer/Dlv),WEI,IFLO|WEI
+IFEU,WHL-William Hill plc (Std Option/Amer/Dlv),WHL,IFLO|WHL
+IFEU,WKM-Severn Trent plc (Flex Option/Amer/Cash),WKM,IFLO|WKM
+IFEU,WKU-Wolters Kluwer NV (Flex Option/Amer/Cash),WKU,IFLO|WKU
+IFEU,WOS-Ferguson Plc (Std Option/Amer/Dlv),WSY,IFLO|WSY
+IFEU,WPP-WPP plc (Std Option/Amer/Dlv),WPP,IFLO|WPP
+IFEU,WTB-Whitbread plc (Std Option/Amer/Dlv),WTB,IFLO|WTB
+IFEU,WVW-Red Electrica Corporacion SA (Flex Option/Amer/Cash),WVW,IFLO|WVW
+IFEU,XBW-British Land Company PLC (Flex Option/Amer/Cash),XBW,IFLO|XBW
+IFEU,XDO-Caterpillar Inc (Flex Option/Amer/Dlv),XDO,IFLO|XDO
+IFEU,XGQ-SKF B (Flex Option/Amer/Dlv),XGQ,IFLO|XGQ
+IFEU,XKQ-STMicroelectronics NV (Flex Option/Amer/Dlv),XKQ,IFLO|XKQ
+IFEU,YAO-Yara International ASA (Flex Option/Amer/Dlv),YAO,IFLO|YAO
+IFEU,YFS-FTSE 250 Index 2GBP Option (Flexible),YFS,IFLO|YFS
+IFEU,YPW-SCOR SE (Flex Option/Amer/Cash),YPW,IFLO|YPW
+IFEU,ZAO-Safran SA (Flex Option/Amer/Dlv),ZAO,IFLO|ZAO
+IFEU,ZBW-Associated British Foods plc (Flex Option/Amer/Cash),ZBW,IFLO|ZBW
+IFEU,ZOX-Fresenius SE & Co. KGaA (Flex Option/Euro/Dlv),ZOX,IFLO|ZOX
+IFEU,ZUU-Zurich Insurance Group AG (Flex Option/Amer/Cash),ZUU,IFLO|ZUU
+IFEU,ZUX-Zurich Insurance Group AG (Flex Option/Euro/Dlv),ZUX,IFLO|ZUX
+IFEU,ZOQ-Fresenius SE & Co. KGaA (Flex Option/Amer/Dlv),ZOQ,IFLO|ZOQ

@@ -311,6 +311,8 @@ class Window(ViewElement, QtWidgets.QWidget):
 
             button.setText(text)
 
+            self.active_chosen()
+
         return shot
 
     def closeEvent(self, qce):

@@ -137,7 +137,11 @@ def pdf(fname, config):
             for processor in config['processors']:
                 try:
                     df = df.append(processor.get('postprocessor', lambda x: x)(
-                        read_pdf(fname, pages=i, area=area, **processor['kwargs'])))
+                        read_pdf(fname,
+                                 pages=i,
+                                 area=area,
+                                 encoding='cp1251' if os.name == 'nt' else 'utf-8',
+                                 **processor['kwargs'])))
 
                     success = True
                     break

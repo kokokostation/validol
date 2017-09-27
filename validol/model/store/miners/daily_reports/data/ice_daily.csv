@@ -1,0 +1,1217 @@
+PlatformCode,ActiveName,ActiveCode,WebActiveCode
+IFEU,0A0-Roche Holding AG (Flex Div Adj Future Cash),0A0,IFLO|0A0
+IFEU,0A1-SCOR SE (Flex Div Adj Future Cash),0A1,IFLO|0A1
+IFEU,0A2-Wendel (Flex Div Adj Future Cash),0A2,IFLO|0A2
+IFEU,0A3-Orange SA (Flex Div Adj Future Cash),0A3,IFLO|0A3
+IFEU,0A4-Societe Generale (Flex Div Adj Future Cash),0A4,IFLO|0A4
+IFEU,0A5-Groupe Eurotunnel SE (Flex Div Adj Future Cash),0A5,IFLO|0A5
+IFEU,0A6-LafargeHolcim Ltd (Flex Div Adj Future Cash),0A6,IFLO|0A6
+IFEU,0A7-Kuehne & Nagel International AG (Flex Div Adj Future Cash),0A7,IFLO|0A7
+IFEU,0A8-Lonza Group AG (Flex Div Adj Future Cash),0A8,IFLO|0A8
+IFEU,0A9-Sonova Holding AG (Flex Div Adj Future Cash),0A9,IFLO|0A9
+IFEU,0AA-Anglo American plc (Flex Div Adj Future Cash),0AA,IFLO|0AA
+IFEU,0AB-Andritz AG (Flex Div Adj Future Cash),0AB,IFLO|0AB
+IFEU,0AC-Aristocrat Leisure Ltd  (Flex Div Adj Future Cash),0AC,IFLO|0AC
+IFEU,0AD-STMicroelectronics NV (Flex Div Adj Future Cash),0AD,IFLO|0AD
+IFEU,0AE-Ageas NV/SA (Flex Div Adj Future Cash),0AE,IFLO|0AE
+IFEU,0AH-Atlantia SpA (Flex Div Adj Future Cash),0AH,IFLO|0AH
+IFEU,0AI-American International Group Inc (Flex Div Adj Future Cash),0AI,IFLO|0AI
+IFEU,0AJ-PJSC Tatneft ADR (Flex Div Adj Future Cash),0AJ,IFLO|0AJ
+IFEU,0AK-Akbank TAS (Flex Div Adj Future Cash),0AK,IFLO|0AK
+IFEU,0AL-Alfa Laval AB (Flex Div Adj Future Cash),0AL,IFLO|0AL
+IFEU,0AM-Anglo American Platinum Ltd (SA) (Flex Div Adj Future Cash),0AM,IFLO|0AM
+IFEU,0AP-Antofagasta plc (Flex Div Adj Future Cash),0AP,IFLO|0AP
+IFEU,0AQ-Thales SA (Flex Div Adj Future Cash),0AQ,IFLO|0AQ
+IFEU,0AR-Abertis Infraestructuras SA (Flex Div Adj Future Cash),0AR,IFLO|0AR
+IFEU,0AT-Cobham (Flex Div Adj Future Cash),0AT,IFLO|0AT
+IFEU,0AU-Anadolu Efes Biracilik Ve Malt Sanayii AS (Flex Div Adj Future Cash),0AU,IFLO|0AU
+IFEU,0AV-Aviva plc (Flex Div Adj Future Cash),0AV,IFLO|0AV
+IFEU,0AW-Michelin (Flex Div Adj Future Cash),0AW,IFLO|0AW
+IFEU,0AZ-Assa Abloy AB (Flex Div Adj Future Cash),0AZ,IFLO|0AZ
+IFEU,0B0-Husqvarna AB (Flex Div Adj Future Cash),0B0,IFLO|0B0
+IFEU,0B1-UBS Group AG (Flex Div Adj Future Cash),0B1,IFLO|0B1
+IFEU,0B2-Swatch Group AG (Bearer Shs) (Flex Div Adj Future Cash),0B2,IFLO|0B2
+IFEU,0B3-Zurich Insurance Group AG (Flex Div Adj Future Cash),0B3,IFLO|0B3
+IFEU,0B4-Alimentation Couche-Tard Inc (Flex Div Adj Future Cash),0B4,IFLO|0B4
+IFEU,0B5-ARC Resources Ltd (Flex Div Adj Future Cash),0B5,IFLO|0B5
+IFEU,0B6-Toronto-Dominion Bank/The (Flex Div Adj Future Cash),0B6,IFLO|0B6
+IFEU,0B7-Teck Resources Ltd (Flex Div Adj Future Cash),0B7,IFLO|0B7
+IFEU,0B8-Thomson Reuters Corp (Flex Div Adj Future Cash),0B8,IFLO|0B8
+IFEU,0B9-Bombardier Inc (Flex Div Adj Future Cash),0B9,IFLO|0B9
+IFEU,0BB-Bpost SA (Flex Div Adj Future Cash),0BB,IFLO|0BB
+IFEU,0BE-Banco Bilbao Vizcaya Argent (Flex Div Adj Future Cash),0BE,IFLO|0BE
+IFEU,0BF-Banco Comercial Portugues (Flex Div Adj Future Cash),0BF,IFLO|0BF
+IFEU,0BI-BIM Birlesik Magazalar AS (Flex Div Adj Future Cash),0BI,IFLO|0BI
+IFEU,0BL-Proximus SA (Flex Div Adj Future Cash),0BL,IFLO|0BL
+IFEU,0BM-Bayerische Motoren Werke AG (Flex Div Adj Future Cash),0BM,IFLO|0BM
+IFEU,0BN-Erste Bank der Oesterr Spks (Flex Div Adj Future Cash),0BN,IFLO|0BN
+IFEU,0BQ-Schindler Holding AG (Flex Div Adj Future Cash),0BQ,IFLO|0BQ
+IFEU,0BU-Swiss Re AG (Flex Div Adj Future Cash),0BU,IFLO|0BU
+IFEU,0BV-Swiss Life Holding (Flex Div Adj Future Cash),0BV,IFLO|0BV
+IFEU,0BX-Swisscom AG (Flex Div Adj Future Cash),0BX,IFLO|0BX
+IFEU,0BZ-Bank Zachodni WBK SA (Flex Div Adj Future Cash),0BZ,IFLO|0BZ
+IFEU,0C0-Lundin Petroleum AB (Flex Div Adj Future Cash),0C0,IFLO|0C0
+IFEU,0C1-BCE Inc (Flex Div Adj Future Cash),0C1,IFLO|0C1
+IFEU,0C2-Bank of Montreal (Flex Div Adj Future Cash),0C2,IFLO|0C2
+IFEU,0C3-Brookfield Asset Management Inc (Flex Div Adj Future Cash),0C3,IFLO|0C3
+IFEU,0C4-Bank of Nova Scotia (Flex Div Adj Future Cash),0C4,IFLO|0C4
+IFEU,0C5-Canadian Utilities Ltd (Flex Div Adj Future Cash),0C5,IFLO|0C5
+IFEU,0C6-Gildan Activewear Inc (Flex Div Adj Future Cash),0C6,IFLO|0C6
+IFEU,0C7-Turquoise Hill Resources Ltd (Flex Div Adj Future Cash),0C7,IFLO|0C7
+IFEU,0C8-Saputo Inc (Flex Div Adj Future Cash),0C8,IFLO|0C8
+IFEU,0C9-Cameco Corp (Flex Div Adj Future Cash),0C9,IFLO|0C9
+IFEU,0CA-Carlsberg A/S B (Flex Div Adj Future Cash),0CA,IFLO|0CA
+IFEU,0CB-Commerzbank AG (Flex Div Adj Future Cash),0CB,IFLO|0CB
+IFEU,0CF-CRH PLC (Flex Div Adj Future Cash),0CF,IFLO|0CF
+IFEU,0CH-Coloplast A/S (Flex Div Adj Future Cash),0CH,IFLO|0CH
+IFEU,0CI-Victrex (Flex Div Adj Future Cash),0CI,IFLO|0CI
+IFEU,0CO-Cochlear Ltd  (Flex Div Adj Future Cash),0CO,IFLO|0CO
+IFEU,0CU-CGI Group Inc (Flex Div Adj Future Cash),0CU,IFLO|0CU
+IFEU,0CY-CNP Assurances (Flex Div Adj Future Cash),0CY,IFLO|0CY
+IFEU,0CZ-CI Financial Corp (Flex Div Adj Future Cash),0CZ,IFLO|0CZ
+IFEU,0D0-Ackermans & Van Haaren (Flex Div Adj Future Cash),0D0,IFLO|0D0
+IFEU,0D1-Canadian Imperial Bank of Commerce (Flex Div Adj Future Cash),0D1,IFLO|0D1
+IFEU,0D2-Canadian Natural Resources Ltd (Flex Div Adj Future Cash),0D2,IFLO|0D2
+IFEU,0D3-Tourmaline Oil Corp (Flex Div Adj Future Cash),0D3,IFLO|0D3
+IFEU,0D4-TransCanada Corp (Flex Div Adj Future Cash),0D4,IFLO|0D4
+IFEU,0D5-TELUS Corp (Flex Div Adj Future Cash),0D5,IFLO|0D5
+IFEU,0D6-George Weston Ltd (Flex Div Adj Future Cash),0D6,IFLO|0D6
+IFEU,0D7-Enbridge Inc (Flex Div Adj Future Cash),0D7,IFLO|0D7
+IFEU,0D8-Canadian National Railway Co (Flex Div Adj Future Cash),0D8,IFLO|0D8
+IFEU,0D9-Crescent Point Energy Corp (Flex Div Adj Future Cash),0D9,IFLO|0D9
+IFEU,0DA-Danske Bank A/S (Flex Div Adj Future Cash),0DA,IFLO|0DA
+IFEU,0DB-Deutsche Bank AG (Flex Div Adj Future Cash),0DB,IFLO|0DB
+IFEU,0DF-DNB NOR ASA (Flex Div Adj Future Cash),0DF,IFLO|0DF
+IFEU,0DG-Energias de Portugal SA (Flex Div Adj Future Cash),0DG,IFLO|0DG
+IFEU,0DI-Kingspan Group Plc (Flex Div Adj Future Cash),0DI,IFLO|0DI
+IFEU,0DL-Delta Air Lines Inc (Flex Div Adj Future Cash),0DL,IFLO|0DL
+IFEU,0DP-Deutsche Post AG (Flex Div Adj Future Cash),0DP,IFLO|0DP
+IFEU,0DS-Canadian Tire Corp Ltd (Flex Div Adj Future Cash),0DS,IFLO|0DS
+IFEU,0DU-Cenovus Energy Inc (Flex Div Adj Future Cash),0DU,IFLO|0DU
+IFEU,0DX-Dollarama Inc (Flex Div Adj Future Cash),0DX,IFLO|0DX
+IFEU,0EA-TDC A/S (Flex Div Adj Future Cash),0EA,IFLO|0EA
+IFEU,0EC-Novozymes A/S (Flex Div Adj Future Cash),0EC,IFLO|0EC
+IFEU,0ED-Consolidated Edison Inc (Flex Div Adj Future Cash),0ED,IFLO|0ED
+IFEU,0EF-Oesterreichische Post AG (Flex Div Adj Future Cash),0EF,IFLO|0EF
+IFEU,0EG-Emlak Konut Gayrimenkul Yatirim Ortakligi AS (Flex Div Adj Future Cash),0EG,IFLO|0EG
+IFEU,0EH-Exor NV (Flex Div Adj Future Cash),0EH,IFLO|0EH
+IFEU,0EI-E.ON SE (Flex Div Adj Future Cash),0EI,IFLO|0EI
+IFEU,0EL-Elisa Oyj (Flex Div Adj Future Cash),0EL,IFLO|0EL
+IFEU,0EM-Arkema (Flex Div Adj Future Cash),0EM,IFLO|0EM
+IFEU,0EN-Pandora A/S (Flex Div Adj Future Cash),0EN,IFLO|0EN
+IFEU,0ER-Eregli Demir ve Celik Fabrikalari TAS (Flex Div Adj Future Cash),0ER,IFLO|0ER
+IFEU,0ET-Nokia OYJ (Flex Div Adj Future Cash),0ET,IFLO|0ET
+IFEU,0EU-Eurazeo SE (Flex Div Adj Future Cash),0EU,IFLO|0EU
+IFEU,0EV-Alstom SA (Flex Div Adj Future Cash),0EV,IFLO|0EV
+IFEU,0EX-Accor (Flex Div Adj Future Cash),0EX,IFLO|0EX
+IFEU,0EY-Air Liquide (Flex Div Adj Future Cash),0EY,IFLO|0EY
+IFEU,0EZ-CEZ AS (Flex Div Adj Future Cash),0EZ,IFLO|0EZ
+IFEU,0F0-TalkTalk Telecom Group PLC (Flex Div Adj Future Cash),0F0,IFLO|0F0
+IFEU,0F1-IGM Financial Inc (Flex Div Adj Future Cash),0F1,IFLO|0F1
+IFEU,0F2-Inter Pipeline Ltd (Flex Div Adj Future Cash),0F2,IFLO|0F2
+IFEU,0F3-Keyera Corp (Flex Div Adj Future Cash),0F3,IFLO|0F3
+IFEU,0F4-Loblaw Cos Ltd (Flex Div Adj Future Cash),0F4,IFLO|0F4
+IFEU,0F5-Metro Inc (Flex Div Adj Future Cash),0F5,IFLO|0F5
+IFEU,0F6-Manulife Financial Corp (Flex Div Adj Future Cash),0F6,IFLO|0F6
+IFEU,0F7-Magna International Inc (Flex Div Adj Future Cash),0F7,IFLO|0F7
+IFEU,0F8-National Bank of Canada (Flex Div Adj Future Cash),0F8,IFLO|0F8
+IFEU,0F9-Onex Corp (Flex Div Adj Future Cash),0F9,IFLO|0F9
+IFEU,0FA-Associated British Foods plc (Flex Div Adj Future Cash),0FA,IFLO|0FA
+IFEU,0FB-Admiral Group plc (Flex Div Adj Future Cash),0FB,IFLO|0FB
+IFEU,0FC-Leonardo SpA (Flex Div Adj Future Cash),0FC,IFLO|0FC
+IFEU,0FD-Polska Grupa Energetyczna (Flex Div Adj Future Cash),0FD,IFLO|0FD
+IFEU,0FE-FirstRand Ltd (Flex Div Adj Future Cash),0FE,IFLO|0FE
+IFEU,0FH-Smurfit Kappa Group PLC (Flex Div Adj Future Cash),0FH,IFLO|0FH
+IFEU,0FI-NCC AB (Flex Div Adj Future Cash),0FI,IFLO|0FI
+IFEU,0FJ-Telia Company AB (Flex Div Adj Future Cash),0FJ,IFLO|0FJ
+IFEU,0FK-Polski Koncern Naftowy (Flex Div Adj Future Cash),0FK,IFLO|0FK
+IFEU,0FL-Open Text Corp (Flex Div Adj Future Cash),0FL,IFLO|0FL
+IFEU,0FM-Fonciere Des Regions (Flex Div Adj Future Cash),0FM,IFLO|0FM
+IFEU,0FN-International Consolidated Airlines Group SA (Britsh Airways Ex-Event) (Flex Div Adj Future Cash),0FN,IFLO|0FN
+IFEU,0FP-Total SA (Flex Div Adj Future Cash),0FP,IFLO|0FP
+IFEU,0FQ-Tele2 AB ser. B (Flex Div Adj Future Cash),0FQ,IFLO|0FQ
+IFEU,0FR-Fortum Oyj (Flex Div Adj Future Cash),0FR,IFLO|0FR
+IFEU,0FS-Pembina Pipeline Corp (Flex Div Adj Future Cash),0FS,IFLO|0FS
+IFEU,0FU-Swedish Match AB (Flex Div Adj Future Cash),0FU,IFLO|0FU
+IFEU,0FV-Polish Oil & Gas Co (PGNiG) (Flex Div Adj Future Cash),0FV,IFLO|0FV
+IFEU,0FY-Volvo AB - B shares (Flex Div Adj Future Cash),0FY,IFLO|0FY
+IFEU,0FZ-KGHM Polska Miedz SA (Flex Div Adj Future Cash),0FZ,IFLO|0FZ
+IFEU,0G1-First Quantum Minerals Ltd (Flex Div Adj Future Cash),0G1,IFLO|0G1
+IFEU,0G2-Fortis Inc/Canada (Flex Div Adj Future Cash),0G2,IFLO|0G2
+IFEU,0G3-Franco-Nevada Corp (Flex Div Adj Future Cash),0G3,IFLO|0G3
+IFEU,0G4-Great-West Lifeco Inc (Flex Div Adj Future Cash),0G4,IFLO|0G4
+IFEU,0G5-H&R Real Estate Investment Trust (Flex Div Adj Future Cash),0G5,IFLO|0G5
+IFEU,0G6-Husky Energy Inc (Flex Div Adj Future Cash),0G6,IFLO|0G6
+IFEU,0G7-Power Corp of Canada (Flex Div Adj Future Cash),0G7,IFLO|0G7
+IFEU,0G8-Power Financial Corp (Flex Div Adj Future Cash),0G8,IFLO|0G8
+IFEU,0G9-Rogers Communications Inc (Flex Div Adj Future Cash),0G9,IFLO|0G9
+IFEU,0GA-Turkiye Garanti Bankasi AS (Flex Div Adj Future Cash),0GA,IFLO|0GA
+IFEU,0GB-Gazprom (PAO) ADR (Flex Div Adj Future Cash),0GB,IFLO|0GB
+IFEU,0GD-RioCan Real Estate Investment Trust (Flex Div Adj Future Cash),0GD,IFLO|0GD
+IFEU,0GF-Royal Bank of Canada (Flex Div Adj Future Cash),0GF,IFLO|0GF
+IFEU,0GH-Shaw Communications Inc (Flex Div Adj Future Cash),0GH,IFLO|0GH
+IFEU,0GJ-Sun Life Financial Inc (Flex Div Adj Future Cash),0GJ,IFLO|0GJ
+IFEU,0GK-SNC-Lavalin Group Inc (Flex Div Adj Future Cash),0GK,IFLO|0GK
+IFEU,0GL-Galp Energia SGPS S.A. (Flex Div Adj Future Cash),0GL,IFLO|0GL
+IFEU,0GN-General Motors Co (Flex Div Adj Future Cash),0GN,IFLO|0GN
+IFEU,0GO-Suncor Energy Inc (Flex Div Adj Future Cash),0GO,IFLO|0GO
+IFEU,0GP-Surgutneftegaz ADR (Flex Div Adj Future Cash),0GP,IFLO|0GP
+IFEU,0GQ-AltaGas Ltd (Flex Div Adj Future Cash),0GQ,IFLO|0GQ
+IFEU,0GR-Groupe Bruxelles Lambert SA (Flex Div Adj Future Cash),0GR,IFLO|0GR
+IFEU,0GS-Engie (Flex Div Adj Future Cash),0GS,IFLO|0GS
+IFEU,0GX-GlaxoSmithKline plc (Flex Div Adj Future Cash),0GX,IFLO|0GX
+IFEU,0H0-ASX Ltd (Flex Div Adj Future Cash),0H0,IFLO|0H0
+IFEU,0H1-Brambles Ltd (Flex Div Adj Future Cash),0H1,IFLO|0H1
+IFEU,0H2-Dufry AG (Flex Div Adj Future Cash),0H2,IFLO|0H2
+IFEU,0H3-Imperial Oil Ltd (Flex Div Adj Future Cash),0H3,IFLO|0H3
+IFEU,0H4-Intact Financial Corp (Flex Div Adj Future Cash),0H4,IFLO|0H4
+IFEU,0H5-Commonwealth Bank of Australia (Flex Div Adj Future Cash),0H5,IFLO|0H5
+IFEU,0H6-Coca-Cola Amatil Ltd (Flex Div Adj Future Cash),0H6,IFLO|0H6
+IFEU,0H9-CSL Ltd (Flex Div Adj Future Cash),0H9,IFLO|0H9
+IFEU,0HA-Turkiye Halk Bankasi AS (Flex Div Adj Future Cash),0HA,IFLO|0HA
+IFEU,0HC-Raiffeisen Bank Int AG (Flex Div Adj Future Cash),0HC,IFLO|0HC
+IFEU,0HD-Capgemini SA (Flex Div Adj Future Cash),0HD,IFLO|0HD
+IFEU,0HE-Amcor Ltd/Australia (Flex Div Adj Future Cash),0HE,IFLO|0HE
+IFEU,0HF-AXA SA (Flex Div Adj Future Cash),0HF,IFLO|0HF
+IFEU,0HG-Glencore plc (Flex Div Adj Future Cash),0HG,IFLO|0HG
+IFEU,0HI-Sydney Airport (Flex Div Adj Future Cash),0HI,IFLO|0HI
+IFEU,0HJ-Groupe Danone (Flex Div Adj Future Cash),0HJ,IFLO|0HJ
+IFEU,0HL-APA Group (Flex Div Adj Future Cash),0HL,IFLO|0HL
+IFEU,0HM-Hennes & Mauritz AB ser. B (Flex Div Adj Future Cash),0HM,IFLO|0HM
+IFEU,0HN-AGL Energy Ltd (Flex Div Adj Future Cash),0HN,IFLO|0HN
+IFEU,0HR-Australia & New Zealand Banking Group Ltd (Flex Div Adj Future Cash),0HR,IFLO|0HR
+IFEU,0HS-Caltex Australia Ltd (Flex Div Adj Future Cash),0HS,IFLO|0HS
+IFEU,0HT-Vestas Wind Systems A/S (Flex Div Adj Future Cash),0HT,IFLO|0HT
+IFEU,0HU-Atos SE (Flex Div Adj Future Cash),0HU,IFLO|0HU
+IFEU,0HV-Casino Guichard Perrachon SA (Flex Div Adj Future Cash),0HV,IFLO|0HV
+IFEU,0HX-BNP Paribas (Flex Div Adj Future Cash),0HX,IFLO|0HX
+IFEU,0HY-Bureau Veritas SA (Flex Div Adj Future Cash),0HY,IFLO|0HY
+IFEU,0HZ-Carrefour SA (Flex Div Adj Future Cash),0HZ,IFLO|0HZ
+IFEU,0I0-Castellum AB (Flex Div Adj Future Cash),0I0,IFLO|0I0
+IFEU,0I1-Julius Baer Gruppe (Flex Div Adj Future Cash),0I1,IFLO|0I1
+IFEU,0I2-Bouygues (Flex Div Adj Future Cash),0I2,IFLO|0I2
+IFEU,0I3-Eutelsat Communications (Flex Div Adj Future Cash),0I3,IFLO|0I3
+IFEU,0I4-Natixis (Flex Div Adj Future Cash),0I4,IFLO|0I4
+IFEU,0I5-Valeo SA (Flex Div Adj Future Cash),0I5,IFLO|0I5
+IFEU,0I6-Clariant N (Flex Div Adj Future Cash),0I6,IFLO|0I6
+IFEU,0I7-Credit Suisse Group (Flex Div Adj Future Cash),0I7,IFLO|0I7
+IFEU,0I8-Geberit AG (Flex Div Adj Future Cash),0I8,IFLO|0I8
+IFEU,0I9-Aryzta AG (Flex Div Adj Future Cash),0I9,IFLO|0I9
+IFEU,0IA-Baloise Holding AG (Flex Div Adj Future Cash),0IA,IFLO|0IA
+IFEU,0IB-Iberdrola SA (Flex Div Adj Future Cash),0IB,IFLO|0IB
+IFEU,0ID-Italgas SpA (Flex Div Adj Future Cash),0ID,IFLO|0ID
+IFEU,0IF-ABB Ltd (ST) (Flex Div Adj Future Cash),0IF,IFLO|0IF
+IFEU,0II-Icade (Flex Div Adj Future Cash),0II,IFLO|0II
+IFEU,0IJ-Airbus (Flex Div Adj Future Cash),0IJ,IFLO|0IJ
+IFEU,0IK-Turkiye Is Bankasi AS (Flex Div Adj Future Cash),0IK,IFLO|0IK
+IFEU,0IN-ING Groep NV (Flex Div Adj Future Cash),0IN,IFLO|0IN
+IFEU,0IQ-Dassault Systemes SA (Flex Div Adj Future Cash),0IQ,IFLO|0IQ
+IFEU,0IR-Compagnie Financiere Richemont SA (Flex Div Adj Future Cash),0IR,IFLO|0IR
+IFEU,0IS-Intesa Sanpaolo SpA (Flex Div Adj Future Cash),0IS,IFLO|0IS
+IFEU,0IT-Adecco Group AG (Flex Div Adj Future Cash),0IT,IFLO|0IT
+IFEU,0IU-Vinci SA (Flex Div Adj Future Cash),0IU,IFLO|0IU
+IFEU,0IV-Anheuser-Busch InBev NV (Flex Div Adj Future Cash),0IV,IFLO|0IV
+IFEU,0IW-Essilor International SA (Flex Div Adj Future Cash),0IW,IFLO|0IW
+IFEU,0IY-Edenred (Flex Div Adj Future Cash),0IY,IFLO|0IY
+IFEU,0IZ-Electricite de France (Flex Div Adj Future Cash),0IZ,IFLO|0IZ
+IFEU,0J0-Dexus Property Group (Flex Div Adj Future Cash),0J0,IFLO|0J0
+IFEU,0J1-Fortescue Metals Group Ltd (Flex Div Adj Future Cash),0J1,IFLO|0J1
+IFEU,0J2-GPT Group/The (Flex Div Adj Future Cash),0J2,IFLO|0J2
+IFEU,0J3-Insurance Australia Group Ltd (Flex Div Adj Future Cash),0J3,IFLO|0J3
+IFEU,0J5-Lend Lease Group (Flex Div Adj Future Cash),0J5,IFLO|0J5
+IFEU,0J6-Goodman Group (Flex Div Adj Future Cash),0J6,IFLO|0J6
+IFEU,0J7-Macquarie Group Ltd (Flex Div Adj Future Cash),0J7,IFLO|0J7
+IFEU,0J8-Mirvac Group (Flex Div Adj Future Cash),0J8,IFLO|0J8
+IFEU,0J9-National Australia Bank Ltd (Flex Div Adj Future Cash),0J9,IFLO|0J9
+IFEU,0JA-Swedbank AB (Flex Div Adj Future Cash),0JA,IFLO|0JA
+IFEU,0JB-LafargeHolcim Ltd (Flex Div Adj Future Cash),0JB,IFLO|0JB
+IFEU,0JC-JC Decaux SA (Flex Div Adj Future Cash),0JC,IFLO|0JC
+IFEU,0JD-Legrand SA (Flex Div Adj Future Cash),0JD,IFLO|0JD
+IFEU,0JE-Publicis Groupe (Flex Div Adj Future Cash),0JE,IFLO|0JE
+IFEU,0JF-LVMH Moet Hennessy Louis Vuitton SE (Flex Div Adj Future Cash),0JF,IFLO|0JF
+IFEU,0JG-Ericsson Telefona L M ser. B (Flex Div Adj Future Cash),0JG,IFLO|0JG
+IFEU,0JI-Pernod-Ricard (Flex Div Adj Future Cash),0JI,IFLO|0JI
+IFEU,0JJ-Marine Harvest (Flex Div Adj Future Cash),0JJ,IFLO|0JJ
+IFEU,0JK-Renault SA (Flex Div Adj Future Cash),0JK,IFLO|0JK
+IFEU,0JL-Hexagon AB (Flex Div Adj Future Cash),0JL,IFLO|0JL
+IFEU,0JM-Jeronimo Martins SGPS (Flex Div Adj Future Cash),0JM,IFLO|0JM
+IFEU,0JN-Electrolux AB ser. B (Flex Div Adj Future Cash),0JN,IFLO|0JN
+IFEU,0JO-James Hardie Industries Plc  (Flex Div Adj Future Cash),0JO,IFLO|0JO
+IFEU,0JP-Kering SA (Flex Div Adj Future Cash),0JP,IFLO|0JP
+IFEU,0JQ-Norsk Hydro ASA (Flex Div Adj Future Cash),0JQ,IFLO|0JQ
+IFEU,0JR-Getinge AB (Flex Div Adj Future Cash),0JR,IFLO|0JR
+IFEU,0JS-Rexel S.A. (Flex Div Adj Future Cash),0JS,IFLO|0JS
+IFEU,0JU-Gjensidige Forsikring ASA (Flex Div Adj Future Cash),0JU,IFLO|0JU
+IFEU,0JV-SES SA (Flex Div Adj Future Cash),0JV,IFLO|0JV
+IFEU,0JW-Vallourec SA (Flex Div Adj Future Cash),0JW,IFLO|0JW
+IFEU,0JX-Orkla ASA (Flex Div Adj Future Cash),0JX,IFLO|0JX
+IFEU,0JY-Schibsted ASA (Flex Div Adj Future Cash),0JY,IFLO|0JY
+IFEU,0JZ-Ingenico SA (Flex Div Adj Future Cash),0JZ,IFLO|0JZ
+IFEU,0K1-Transurban Group (Flex Div Adj Future Cash),0K1,IFLO|0K1
+IFEU,0K2-Westpac Banking Corp (Flex Div Adj Future Cash),0K2,IFLO|0K2
+IFEU,0K3-Westfield Corp (Flex Div Adj Future Cash),0K3,IFLO|0K3
+IFEU,0K4-Wesfarmers Ltd (Flex Div Adj Future Cash),0K4,IFLO|0K4
+IFEU,0K5-Woolworths Ltd (Flex Div Adj Future Cash),0K5,IFLO|0K5
+IFEU,0K6-Woodside Petroleum Ltd (Flex Div Adj Future Cash),0K6,IFLO|0K6
+IFEU,0K7-Scentre Group (Flex Div Adj Future Cash),0K7,IFLO|0K7
+IFEU,0K8-AMP Ltd (Flex Div Adj Future Cash),0K8,IFLO|0K8
+IFEU,0KB-KBC Groep NV (Flex Div Adj Future Cash),0KB,IFLO|0KB
+IFEU,0KC-KOC Holding AS (Flex Div Adj Future Cash),0KC,IFLO|0KC
+IFEU,0KD-Aurizon Holdings Ltd (Flex Div Adj Future Cash),0KD,IFLO|0KD
+IFEU,0KF-Rio Tinto Ltd (Flex Div Adj Future Cash),0KF,IFLO|0KF
+IFEU,0KG-Kerry Group PLC (Flex Div Adj Future Cash),0KG,IFLO|0KG
+IFEU,0KI-Jupiter Fund Management PLC (Flex Div Adj Future Cash),0KI,IFLO|0KI
+IFEU,0KL-Klepierre (Flex Div Adj Future Cash),0KL,IFLO|0KL
+IFEU,0KM-Stockland (Flex Div Adj Future Cash),0KM,IFLO|0KM
+IFEU,0KN-Kone OYJ (Flex Div Adj Future Cash),0KN,IFLO|0KN
+IFEU,0KO-Coca Cola Co (Flex Div Adj Future Cash),0KO,IFLO|0KO
+IFEU,0KP-Santos Ltd (Flex Div Adj Future Cash),0KP,IFLO|0KP
+IFEU,0KQ-Origin Energy Ltd (Flex Div Adj Future Cash),0KQ,IFLO|0KQ
+IFEU,0KR-Suncorp Group Ltd (Flex Div Adj Future Cash),0KR,IFLO|0KR
+IFEU,0KS-Telstra Corp Ltd (Flex Div Adj Future Cash),0KS,IFLO|0KS
+IFEU,0KT-Sonic Healthcare Ltd (Flex Div Adj Future Cash),0KT,IFLO|0KT
+IFEU,0KU-Newcrest Mining Ltd (Flex Div Adj Future Cash),0KU,IFLO|0KU
+IFEU,0KV-Ramsay Health Care Ltd (Flex Div Adj Future Cash),0KV,IFLO|0KV
+IFEU,0KW-REA Group Ltd (Flex Div Adj Future Cash),0KW,IFLO|0KW
+IFEU,0KY-Crown Resorts Ltd (Flex Div Adj Future Cash),0KY,IFLO|0KY
+IFEU,0KZ-QBE Insurance Group Ltd (Flex Div Adj Future Cash),0KZ,IFLO|0KZ
+IFEU,0L0-Oil Search Ltd (Flex Div Adj Future Cash),0L0,IFLO|0L0
+IFEU,0L1-Heineken Holding NV (Flex Div Adj Future Cash),0L1,IFLO|0L1
+IFEU,0L2-Qiagen NV (Flex Div Adj Future Cash),0L2,IFLO|0L2
+IFEU,0L3-STMicroelectronics NV (IT) (Flex Div Adj Future Cash),0L3,IFLO|0L3
+IFEU,0L4-Swiss Prime Site AG (Flex Div Adj Future Cash),0L4,IFLO|0L4
+IFEU,0L5-SFR Group SA (Flex Div Adj Future Cash),0L5,IFLO|0L5
+IFEU,0L6-Derwent London PLC (Flex Div Adj Future Cash),0L6,IFLO|0L6
+IFEU,0L7-William Hill plc (Flex Div Adj Future Cash),0L7,IFLO|0L7
+IFEU,0L8-Partners Group Holding AG (Flex Div Adj Future Cash),0L8,IFLO|0L8
+IFEU,0L9-MTU Aero Engine AG (Flex Div Adj Future Cash),0L9,IFLO|0L9
+IFEU,0LA-Zodiac Aerospace (Flex Div Adj Future Cash),0LA,IFLO|0LA
+IFEU,0LB-Skanska AB B Shares (Flex Div Adj Future Cash),0LB,IFLO|0LB
+IFEU,0LC-Sodexo SA (Flex Div Adj Future Cash),0LC,IFLO|0LC
+IFEU,0LD-Skandinaviska Ensk Bk ser. A (Flex Div Adj Future Cash),0LD,IFLO|0LD
+IFEU,0LE-Svenska Handelsbanken ser. A (Flex Div Adj Future Cash),0LE,IFLO|0LE
+IFEU,0LF-Safran SA (Flex Div Adj Future Cash),0LF,IFLO|0LF
+IFEU,0LG-TechnipFMC (Flex Div Adj Future Cash),0LG,IFLO|0LG
+IFEU,0LH-Investor AB B shares (Flex Div Adj Future Cash),0LH,IFLO|0LH
+IFEU,0LK-BillerudKorsnas AB (Flex Div Adj Future Cash),0LK,IFLO|0LK
+IFEU,0LL-PJSC Lukoil ADR (Flex Div Adj Future Cash),0LL,IFLO|0LL
+IFEU,0LM-Cie de Saint-Gobain (Flex Div Adj Future Cash),0LM,IFLO|0LM
+IFEU,0LO-Veolia Environnement (Flex Div Adj Future Cash),0LO,IFLO|0LO
+IFEU,0LP-Peugeot SA (Flex Div Adj Future Cash),0LP,IFLO|0LP
+IFEU,0LQ-Millicom International Cellular SA (Flex Div Adj Future Cash),0LQ,IFLO|0LQ
+IFEU,0LR-Bank of Ireland Group plc (Flex Div Adj Future Cash),0LR,IFLO|0LR
+IFEU,0LT-Suez (Flex Div Adj Future Cash),0LT,IFLO|0LT
+IFEU,0LV-SKF B (Flex Div Adj Future Cash),0LV,IFLO|0LV
+IFEU,0LW-Kinnevik AB (Flex Div Adj Future Cash),0LW,IFLO|0LW
+IFEU,0LY-Sandvik AB (Flex Div Adj Future Cash),0LY,IFLO|0LY
+IFEU,0M6-DCC PLC (Flex Div Adj Future Cash),0M6,IFLO|0M6
+IFEU,0M7-Tate & Lyle plc (Flex Div Adj Future Cash),0M7,IFLO|0M7
+IFEU,0M8-Man Group plc (Flex Div Adj Future Cash),0M8,IFLO|0M8
+IFEU,0M9-Gecina SA (Flex Div Adj Future Cash),0M9,IFLO|0M9
+IFEU,0MD-AP Moller - Maersk B (Flex Div Adj Future Cash),0MD,IFLO|0MD
+IFEU,0ME-Medibank Private Ltd (Flex Div Adj Future Cash),0ME,IFLO|0ME
+IFEU,0MG-Magnit PJCS-SPON GDR (Flex Div Adj Future Cash),0MG,IFLO|0MG
+IFEU,0MH-Magyar Telekom (Flex Div Adj Future Cash),0MH,IFLO|0MH
+IFEU,0MJ-Mylan NV (Flex Div Adj Future Cash),0MJ,IFLO|0MJ
+IFEU,0ML-MOL Hungarian Oil & Gas (Flex Div Adj Future Cash),0ML,IFLO|0ML
+IFEU,0MN-Macy's Inc (Flex Div Adj Future Cash),0MN,IFLO|0MN
+IFEU,0MO-Microsoft Corp (Flex Div Adj Future Cash),0MO,IFLO|0MO
+IFEU,0MR-Megafon GDR (Flex Div Adj Future Cash),0MR,IFLO|0MR
+IFEU,0MT-MTN Group Ltd (Flex Div Adj Future Cash),0MT,IFLO|0MT
+IFEU,0MU-PJSC MMC Norilsk Nickel ADR (Flex Div Adj Future Cash),0MU,IFLO|0MU
+IFEU,0N1-Banco BPM (Flex Div Adj Future Cash),0N1,IFLO|0N1
+IFEU,0N3-SEGRO plc (Flex Div Adj Future Cash),0N3,IFLO|0N3
+IFEU,0N4-Informa plc (Flex Div Adj Future Cash),0N4,IFLO|0N4
+IFEU,0N5-DS Smith Plc (Flex Div Adj Future Cash),0N5,IFLO|0N5
+IFEU,0N6-LEG Immobilien AG (Flex Div Adj Future Cash),0N6,IFLO|0N6
+IFEU,0N7-Melrose Industries Plc (Flex Div Adj Future Cash),0N7,IFLO|0N7
+IFEU,0N8-BTG PLC (Flex Div Adj Future Cash),0N8,IFLO|0N8
+IFEU,0N9-Capital & Counties Properties PLC (Flex Div Adj Future Cash),0N9,IFLO|0N9
+IFEU,0NB-Howden Joinery Group PLC (Flex Div Adj Future Cash),0NB,IFLO|0NB
+IFEU,0NC-Aeroport de Paris (Flex Div Adj Future Cash),0NC,IFLO|0NC
+IFEU,0ND-Nordea Bank AB (Flex Div Adj Future Cash),0ND,IFLO|0ND
+IFEU,0NE-Nestle SA (Flex Div Adj Future Cash),0NE,IFLO|0NE
+IFEU,0NG-Teleperformance SA (Flex Div Adj Future Cash),0NG,IFLO|0NG
+IFEU,0NH-IG Group Holdings PLC (Flex Div Adj Future Cash),0NH,IFLO|0NH
+IFEU,0NI-Spectris (Flex Div Adj Future Cash),0NI,IFLO|0NI
+IFEU,0NJ-Nokian Renkaat OYJ (Flex Div Adj Future Cash),0NJ,IFLO|0NJ
+IFEU,0NK-Novo-Nordisk A/S (Flex Div Adj Future Cash),0NK,IFLO|0NK
+IFEU,0NO-Novartis AG (Flex Div Adj Future Cash),0NO,IFLO|0NO
+IFEU,0NP-CHR HANSEN HOLDING A/S (Flex Div Adj Future Cash),0NP,IFLO|0NP
+IFEU,0NQ-Trelleborg AB (Flex Div Adj Future Cash),0NQ,IFLO|0NQ
+IFEU,0NS-Sanofi (Flex Div Adj Future Cash),0NS,IFLO|0NS
+IFEU,0NT-Naspers Ltd (Flex Div Adj Future Cash),0NT,IFLO|0NT
+IFEU,0NU-Lanxess (Flex Div Adj Future Cash),0NU,IFLO|0NU
+IFEU,0NY-PSP Swiss Property AG (Flex Div Adj Future Cash),0NY,IFLO|0NY
+IFEU,0NZ-Novatek (OAO) GDR (Flex Div Adj Future Cash),0NZ,IFLO|0NZ
+IFEU,0O1-Rightmove Plc (Flex Div Adj Future Cash),0O1,IFLO|0O1
+IFEU,0O2-Industrivarden AB (Flex Div Adj Future Cash),0O2,IFLO|0O2
+IFEU,0O4-Spirax-Sarco Engineering (Flex Div Adj Future Cash),0O4,IFLO|0O4
+IFEU,0O5-UBM Plc (Flex Div Adj Future Cash),0O5,IFLO|0O5
+IFEU,0O7-Orion Oyj (Flex Div Adj Future Cash),0O7,IFLO|0O7
+IFEU,0O8-Rentokil Initial plc (Flex Div Adj Future Cash),0O8,IFLO|0O8
+IFEU,0O9-Bellway (Flex Div Adj Future Cash),0O9,IFLO|0O9
+IFEU,0OA-Paddy Power Betfair Plc (Flex Div Adj Future Cash),0OA,IFLO|0OA
+IFEU,0OC-Hiscox Ltd (Flex Div Adj Future Cash),0OC,IFLO|0OC
+IFEU,0OD-Boliden AB (Flex Div Adj Future Cash),0OD,IFLO|0OD
+IFEU,0OE-GN Store Nord (Flex Div Adj Future Cash),0OE,IFLO|0OE
+IFEU,0OF-Securitas AB ser. B (Flex Div Adj Future Cash),0OF,IFLO|0OF
+IFEU,0OG-Prysmian SpA (Flex Div Adj Future Cash),0OG,IFLO|0OG
+IFEU,0OI-TUI AG (Flex Div Adj Future Cash),0OI,IFLO|0OI
+IFEU,0OJ-Great Portland Estates (Flex Div Adj Future Cash),0OJ,IFLO|0OJ
+IFEU,0OK-Freenet AG (Flex Div Adj Future Cash),0OK,IFLO|0OK
+IFEU,0OL-Ocado Group Plc (Flex Div Adj Future Cash),0OL,IFLO|0OL
+IFEU,0ON-Booker Group PLC (Flex Div Adj Future Cash),0ON,IFLO|0ON
+IFEU,0OO-OTP Bank Nyrt (Flex Div Adj Future Cash),0OO,IFLO|0OO
+IFEU,0OP-Societe BIC SA (Flex Div Adj Future Cash),0OP,IFLO|0OP
+IFEU,0OR-Daily Mail & General Trust (A Shs) (Flex Div Adj Future Cash),0OR,IFLO|0OR
+IFEU,0OS-Eiffage SA (Flex Div Adj Future Cash),0OS,IFLO|0OS
+IFEU,0OT-Distribuidora Internacional de Alimentacion SA (DIA SA) (Flex Div Adj Future Cash),0OT,IFLO|0OT
+IFEU,0OW-Elekta AB (B shares) (Flex Div Adj Future Cash),0OW,IFLO|0OW
+IFEU,0OX-OSRAM Licht AG (Flex Div Adj Future Cash),0OX,IFLO|0OX
+IFEU,0OZ-Halma (Flex Div Adj Future Cash),0OZ,IFLO|0OZ
+IFEU,0P0-Wood Group (John) (Flex Div Adj Future Cash),0P0,IFLO|0P0
+IFEU,0P1-Jyske Bank A/S (Flex Div Adj Future Cash),0P1,IFLO|0P1
+IFEU,0P3-Shaftesbury PLC (Flex Div Adj Future Cash),0P3,IFLO|0P3
+IFEU,0P5-Hays (Flex Div Adj Future Cash),0P5,IFLO|0P5
+IFEU,0P6-Intermediate Capital Group (Flex Div Adj Future Cash),0P6,IFLO|0P6
+IFEU,0P7-Rotork (Flex Div Adj Future Cash),0P7,IFLO|0P7
+IFEU,0P8-Mediaset SpA (Flex Div Adj Future Cash),0P8,IFLO|0P8
+IFEU,0P9-ICA Gruppen AB (Flex Div Adj Future Cash),0P9,IFLO|0P9
+IFEU,0PF-Close Brothers Group (Flex Div Adj Future Cash),0PF,IFLO|0PF
+IFEU,0PH-Amec Foster Wheeler PLC (Flex Div Adj Future Cash),0PH,IFLO|0PH
+IFEU,0PJ-Essentra PLC (Flex Div Adj Future Cash),0PJ,IFLO|0PJ
+IFEU,0PK-PKO Bank Polski SA (Flex Div Adj Future Cash),0PK,IFLO|0PK
+IFEU,0PM-BPER Banca (Flex Div Adj Future Cash),0PM,IFLO|0PM
+IFEU,0PN-Bank Pekao SA (Flex Div Adj Future Cash),0PN,IFLO|0PN
+IFEU,0PQ-KazMunaiGas Exploration Production JSC (Flex Div Adj Future Cash),0PQ,IFLO|0PQ
+IFEU,0PS-Bolsas y Mercados Espanoles (Flex Div Adj Future Cash),0PS,IFLO|0PS
+IFEU,0PU-Hon Hai Precision Industry Co Ltd (Flex Div Adj Future Cash),0PU,IFLO|0PU
+IFEU,0PW-MHP SE GDR (Flex Div Adj Future Cash),0PW,IFLO|0PW
+IFEU,0PX-Aggreko Plc (Flex Div Adj Future Cash),0PX,IFLO|0PX
+IFEU,0PY-Ashtead Group Plc (Flex Div Adj Future Cash),0PY,IFLO|0PY
+IFEU,0PZ-Powszechny Zaklad Ubezpieczen (Flex Div Adj Future Cash),0PZ,IFLO|0PZ
+IFEU,0Q2-British Land Company PLC (Flex Div Adj Future Cash),0Q2,IFLO|0Q2
+IFEU,0Q3-Komercni Banka AS (Flex Div Adj Future Cash),0Q3,IFLO|0Q3
+IFEU,0Q4-Bunzl Plc (Flex Div Adj Future Cash),0Q4,IFLO|0Q4
+IFEU,0Q5-BP plc (Flex Div Adj Future Cash),0Q5,IFLO|0Q5
+IFEU,0Q6-Sky PLC (Flex Div Adj Future Cash),0Q6,IFLO|0Q6
+IFEU,0Q7-BT Group plc (Flex Div Adj Future Cash),0Q7,IFLO|0Q7
+IFEU,0Q8-Dixons Carphone Group plc (Flex Div Adj Future Cash),0Q8,IFLO|0Q8
+IFEU,0Q9-Centrica plc (Flex Div Adj Future Cash),0Q9,IFLO|0Q9
+IFEU,0QA-BAE Systems plc (Flex Div Adj Future Cash),0QA,IFLO|0QA
+IFEU,0QB-Luxottica Group SpA (Flex Div Adj Future Cash),0QB,IFLO|0QB
+IFEU,0QC-Tenaris SA (Flex Div Adj Future Cash),0QC,IFLO|0QC
+IFEU,0QD-Assicurazioni Generali SpA (Flex Div Adj Future Cash),0QD,IFLO|0QD
+IFEU,0QE-Babcock International Group Plc (Flex Div Adj Future Cash),0QE,IFLO|0QE
+IFEU,0QH-UnipolSai SpA (Flex Div Adj Future Cash),0QH,IFLO|0QH
+IFEU,0QI-Berkeley Group Holdings plc (Flex Div Adj Future Cash),0QI,IFLO|0QI
+IFEU,0QJ-Enel SpA (Flex Div Adj Future Cash),0QJ,IFLO|0QJ
+IFEU,0QK-Unione Di Banche Italiane SpA (Flex Div Adj Future Cash),0QK,IFLO|0QK
+IFEU,0QL-Barratt Developments Plc (Flex Div Adj Future Cash),0QL,IFLO|0QL
+IFEU,0QN-Terna SpA (Flex Div Adj Future Cash),0QN,IFLO|0QN
+IFEU,0QO-AA PLC (Flex Div Adj Future Cash),0QO,IFLO|0QO
+IFEU,0QP-AstraZeneca plc (Flex Div Adj Future Cash),0QP,IFLO|0QP
+IFEU,0QR-Barclays plc (Flex Div Adj Future Cash),0QR,IFLO|0QR
+IFEU,0QS-British American Tobacco plc (Flex Div Adj Future Cash),0QS,IFLO|0QS
+IFEU,0QT-Telecom Italia SpA (Flex Div Adj Future Cash),0QT,IFLO|0QT
+IFEU,0QU-Unicredit SpA (Flex Div Adj Future Cash),0QU,IFLO|0QU
+IFEU,0QV-Mediobanca SpA (Flex Div Adj Future Cash),0QV,IFLO|0QV
+IFEU,0QW-Saipem SpA (Flex Div Adj Future Cash),0QW,IFLO|0QW
+IFEU,0QX-ENI SpA (Flex Div Adj Future Cash),0QX,IFLO|0QX
+IFEU,0QZ-CNH Industrial (Flex Div Adj Future Cash),0QZ,IFLO|0QZ
+IFEU,0R0-Compass Group plc (Flex Div Adj Future Cash),0R0,IFLO|0R0
+IFEU,0R1-Capita Plc (Flex Div Adj Future Cash),0R1,IFLO|0R1
+IFEU,0R2-Croda International (Flex Div Adj Future Cash),0R2,IFLO|0R2
+IFEU,0R3-Diageo plc (Flex Div Adj Future Cash),0R3,IFLO|0R3
+IFEU,0R4-Direct Line Insurance Group Plc (Flex Div Adj Future Cash),0R4,IFLO|0R4
+IFEU,0R5-Experian Plc (Flex Div Adj Future Cash),0R5,IFLO|0R5
+IFEU,0R6-Reliance Industries Spons GDRs (Flex Div Adj Future Cash),0R6,IFLO|0R6
+IFEU,0R8-Easyjet Plc (Flex Div Adj Future Cash),0R8,IFLO|0R8
+IFEU,0R9-Fresnillo Plc (Flex Div Adj Future Cash),0R9,IFLO|0R9
+IFEU,0RC-Richter Gedeon Nyrt (Flex Div Adj Future Cash),0RC,IFLO|0RC
+IFEU,0RD-Royal Dutch Shell plc A Euro (Flex Div Adj Future Cash),0RD,IFLO|0RD
+IFEU,0RE-Repsol YPF SA (Flex Div Adj Future Cash),0RE,IFLO|0RE
+IFEU,0RF-CaixaBank SA (Flex Div Adj Future Cash),0RF,IFLO|0RF
+IFEU,0RG-Grifols SA (Flex Div Adj Future Cash),0RG,IFLO|0RG
+IFEU,0RH-L'Oreal SA (Flex Div Adj Future Cash),0RH,IFLO|0RH
+IFEU,0RI-Investec plc (Flex Div Adj Future Cash),0RI,IFLO|0RI
+IFEU,0RJ-Bankia SAU (Flex Div Adj Future Cash),0RJ,IFLO|0RJ
+IFEU,0RK-Banco de Sabadell SA (Flex Div Adj Future Cash),0RK,IFLO|0RK
+IFEU,0RL-Burberry Group (Flex Div Adj Future Cash),0RL,IFLO|0RL
+IFEU,0RM-Enagas (Flex Div Adj Future Cash),0RM,IFLO|0RM
+IFEU,0RN-Gas Natural SDG SA (Flex Div Adj Future Cash),0RN,IFLO|0RN
+IFEU,0RO-Rosneft (PJSC OC) GDR (Flex Div Adj Future Cash),0RO,IFLO|0RO
+IFEU,0RQ-Amadeus IT Group SA (Flex Div Adj Future Cash),0RQ,IFLO|0RQ
+IFEU,0RR-Pennon Group (Flex Div Adj Future Cash),0RR,IFLO|0RR
+IFEU,0RU-ACS Actividades Cons y Serv (Flex Div Adj Future Cash),0RU,IFLO|0RU
+IFEU,0RW-Ferrovial SA (Flex Div Adj Future Cash),0RW,IFLO|0RW
+IFEU,0RX-Bankinter SA (Flex Div Adj Future Cash),0RX,IFLO|0RX
+IFEU,0RY-Ryanair Holdings plc (Flex Div Adj Future Cash),0RY,IFLO|0RY
+IFEU,0S0-Banco Santander SA (Flex Div Adj Future Cash),0S0,IFLO|0S0
+IFEU,0S2-Samsung Electronics Reg.S GDR (Flex Div Adj Future Cash),0S2,IFLO|0S2
+IFEU,0S4-Sistema JSFC GDR (Flex Div Adj Future Cash),0S4,IFLO|0S4
+IFEU,0S6-Severstal (PAO) GDR (Flex Div Adj Future Cash),0S6,IFLO|0S6
+IFEU,0S8-GAM Holding Ltd (Flex Div Adj Future Cash),0S8,IFLO|0S8
+IFEU,0S9-Berendsen PLC (Flex Div Adj Future Cash),0S9,IFLO|0S9
+IFEU,0SB-Aspen Pharmacare Holdings Ltd (Flex Div Adj Future Cash),0SB,IFLO|0SB
+IFEU,0SE-South32 Ltd (Flex Div Adj Future Cash),0SE,IFLO|0SE
+IFEU,0SF-Snam SpA (Flex Div Adj Future Cash),0SF,IFLO|0SF
+IFEU,0SI-Siemens AG (Flex Div Adj Future Cash),0SI,IFLO|0SI
+IFEU,0SJ-Haci Omer Sabanci Holding AS (Flex Div Adj Future Cash),0SJ,IFLO|0SJ
+IFEU,0SL-Statoil ASA (Flex Div Adj Future Cash),0SL,IFLO|0SL
+IFEU,0SM-Solvay SA (Flex Div Adj Future Cash),0SM,IFLO|0SM
+IFEU,0SN-Sampo Oyj (Flex Div Adj Future Cash),0SN,IFLO|0SN
+IFEU,0SP-SAP SE (Flex Div Adj Future Cash),0SP,IFLO|0SP
+IFEU,0SR-Sasol Ltd (Flex Div Adj Future Cash),0SR,IFLO|0SR
+IFEU,0SS-Seadrill Ltd. (Flex Div Adj Future Cash),0SS,IFLO|0SS
+IFEU,0ST-Standard Chartered plc (Flex Div Adj Future Cash),0ST,IFLO|0ST
+IFEU,0SU-Schneider Electric SA (Flex Div Adj Future Cash),0SU,IFLO|0SU
+IFEU,0SX-State Street Corp (Flex Div Adj Future Cash),0SX,IFLO|0SX
+IFEU,0T0-Topdanmark A/S (Flex Div Adj Future Cash),0T0,IFLO|0T0
+IFEU,0T1-Hermes International (Flex Div Adj Future Cash),0T1,IFLO|0T1
+IFEU,0T2-Lagardere S.C.A. (Flex Div Adj Future Cash),0T2,IFLO|0T2
+IFEU,0T3-Tryg AS (Flex Div Adj Future Cash),0T3,IFLO|0T3
+IFEU,0T4-Fuchs Petrolub SE - PFD (Flex Div Adj Future Cash),0T4,IFLO|0T4
+IFEU,0T5-Glanbia PLC (Flex Div Adj Future Cash),0T5,IFLO|0T5
+IFEU,0T6-Phoenix Group Holdings (Flex Div Adj Future Cash),0T6,IFLO|0T6
+IFEU,0T7-Thomas Cook Group Plc (Flex Div Adj Future Cash),0T7,IFLO|0T7
+IFEU,0T8-EMS-Chemie Holding AG (Flex Div Adj Future Cash),0T8,IFLO|0T8
+IFEU,0T9-Dialog Semiconductor PLC (Flex Div Adj Future Cash),0T9,IFLO|0T9
+IFEU,0TB-TAV Havalimanlari Holding AS (Flex Div Adj Future Cash),0TB,IFLO|0TB
+IFEU,0TE-Telefonica SA (Flex Div Adj Future Cash),0TE,IFLO|0TE
+IFEU,0TG-Travis Perkins Plc (Flex Div Adj Future Cash),0TG,IFLO|0TG
+IFEU,0TJ-Metso (Flex Div Adj Future Cash),0TJ,IFLO|0TJ
+IFEU,0TK-ThyssenKrupp AG (Flex Div Adj Future Cash),0TK,IFLO|0TK
+IFEU,0TL-Telenor ASA (Flex Div Adj Future Cash),0TL,IFLO|0TL
+IFEU,0TM-Turk Telekomunikasyon AS (Flex Div Adj Future Cash),0TM,IFLO|0TM
+IFEU,0TN-Treasury Wine Estates Ltd (Flex Div Adj Future Cash),0TN,IFLO|0TN
+IFEU,0TQ-Inditex SA (Flex Div Adj Future Cash),0TQ,IFLO|0TQ
+IFEU,0TS-Tesco plc (Flex Div Adj Future Cash),0TS,IFLO|0TS
+IFEU,0TT-Turkcell Iletisim Hizmet AS (Flex Div Adj Future Cash),0TT,IFLO|0TT
+IFEU,0TU-Tupras Turkiye Petrol Rafinerileri AS (Flex Div Adj Future Cash),0TU,IFLO|0TU
+IFEU,0TW-Stora Enso Oyj (Flex Div Adj Future Cash),0TW,IFLO|0TW
+IFEU,0TY-Turk Hava Yollari (Flex Div Adj Future Cash),0TY,IFLO|0TY
+IFEU,0U0-Hikma Pharmaceuticals PLC (Flex Div Adj Future Cash),0U0,IFLO|0U0
+IFEU,0U1-Hammerson Plc (Flex Div Adj Future Cash),0U1,IFLO|0U1
+IFEU,0U2-Hargreaves Lansdown Plc (Flex Div Adj Future Cash),0U2,IFLO|0U2
+IFEU,0U3-HSBC Holdings plc (Flex Div Adj Future Cash),0U3,IFLO|0U3
+IFEU,0U4-Tullow Oil plc (Flex Div Adj Future Cash),0U4,IFLO|0U4
+IFEU,0U5-Intercontinental Hotels Group plc (Flex Div Adj Future Cash),0U5,IFLO|0U5
+IFEU,0U6-3i Group plc (Flex Div Adj Future Cash),0U6,IFLO|0U6
+IFEU,0U7-Imi Plc (Flex Div Adj Future Cash),0U7,IFLO|0U7
+IFEU,0U8-Imperial Brands Plc (Flex Div Adj Future Cash),0U8,IFLO|0U8
+IFEU,0U9-Inchcape (Flex Div Adj Future Cash),0U9,IFLO|0U9
+IFEU,0UB-Uniper SE (Flex Div Adj Future Cash),0UB,IFLO|0UB
+IFEU,0UC-UCB SA (Flex Div Adj Future Cash),0UC,IFLO|0UC
+IFEU,0UF-Beiersdorf AG (Flex Div Adj Future Cash),0UF,IFLO|0UF
+IFEU,0UH-BASF AG (Flex Div Adj Future Cash),0UH,IFLO|0UH
+IFEU,0UI-Britvic PLC (Flex Div Adj Future Cash),0UI,IFLO|0UI
+IFEU,0UJ-Red Electrica Corporacion SA (Flex Div Adj Future Cash),0UJ,IFLO|0UJ
+IFEU,0UK-Brenntag AG (Flex Div Adj Future Cash),0UK,IFLO|0UK
+IFEU,0UL-G4S Plc (Flex Div Adj Future Cash),0UL,IFLO|0UL
+IFEU,0UM-Umicore (Flex Div Adj Future Cash),0UM,IFLO|0UM
+IFEU,0UN-Unilever NV (Flex Div Adj Future Cash),0UN,IFLO|0UN
+IFEU,0UP-UPM-Kymmene Oyj (Flex Div Adj Future Cash),0UP,IFLO|0UP
+IFEU,0UR-Continental AG (Flex Div Adj Future Cash),0UR,IFLO|0UR
+IFEU,0US-GKN Plc (Flex Div Adj Future Cash),0US,IFLO|0US
+IFEU,0UU-Mapfre SA (Flex Div Adj Future Cash),0UU,IFLO|0UU
+IFEU,0UW-Bayer AG (Flex Div Adj Future Cash),0UW,IFLO|0UW
+IFEU,0UX-Bollore SA (Flex Div Adj Future Cash),0UX,IFLO|0UX
+IFEU,0UY-Adidas AG (Flex Div Adj Future Cash),0UY,IFLO|0UY
+IFEU,0UZ-Allianz AG (Flex Div Adj Future Cash),0UZ,IFLO|0UZ
+IFEU,0V0-Intertek Group (Flex Div Adj Future Cash),0V0,IFLO|0V0
+IFEU,0V1-ITV plc (Flex Div Adj Future Cash),0V1,IFLO|0V1
+IFEU,0V2-Johnson Matthey Plc (Flex Div Adj Future Cash),0V2,IFLO|0V2
+IFEU,0V3-Kingfisher plc (Flex Div Adj Future Cash),0V3,IFLO|0V3
+IFEU,0V4-Land Securities Group plc (Flex Div Adj Future Cash),0V4,IFLO|0V4
+IFEU,0V5-Legal & General Group plc (Flex Div Adj Future Cash),0V5,IFLO|0V5
+IFEU,0V6-Intu Properties Plc (Flex Div Adj Future Cash),0V6,IFLO|0V6
+IFEU,0V7-Lloyds Banking Group plc (Flex Div Adj Future Cash),0V7,IFLO|0V7
+IFEU,0V8-Coca-Cola Hbc Ag (Flex Div Adj Future Cash),0V8,IFLO|0V8
+IFEU,0VB-Deutsche Wohnen SE (Flex Div Adj Future Cash),0VB,IFLO|0VB
+IFEU,0VD-Axel Springer SE (Flex Div Adj Future Cash),0VD,IFLO|0VD
+IFEU,0VE-Voestalpine AG (Flex Div Adj Future Cash),0VE,IFLO|0VE
+IFEU,0VF-Verbund AG (Flex Div Adj Future Cash),0VF,IFLO|0VF
+IFEU,0VH-United Internet AG (Flex Div Adj Future Cash),0VH,IFLO|0VH
+IFEU,0VI-Vivendi SA (Flex Div Adj Future Cash),0VI,IFLO|0VI
+IFEU,0VJ-Fraport AG Frankfurt Airport Services Wo (Flex Div Adj Future Cash),0VJ,IFLO|0VJ
+IFEU,"0VL-Vopak NV, Koninklijke (Flex Div Adj Future Cash)",0VL,IFLO|0VL
+IFEU,0VM-OMV AG (Flex Div Adj Future Cash),0VM,IFLO|0VM
+IFEU,0VN-Turkiye Vakiflar Bankasi TAO (Flex Div Adj Future Cash),0VN,IFLO|0VN
+IFEU,0VO-Vodafone Group plc (Flex Div Adj Future Cash),0VO,IFLO|0VO
+IFEU,0VQ-Daimler AG (Flex Div Adj Future Cash),0VQ,IFLO|0VQ
+IFEU,0VR-Fresenius Medical Care AG (Flex Div Adj Future Cash),0VR,IFLO|0VR
+IFEU,0VS-Inmarsat PLC (Flex Div Adj Future Cash),0VS,IFLO|0VS
+IFEU,0VT-VTB Bank JSC GDR (Flex Div Adj Future Cash),0VT,IFLO|0VT
+IFEU,0VU-Deutsche Boerse AG (Flex Div Adj Future Cash),0VU,IFLO|0VU
+IFEU,0VW-Deutsche Telekom AG (Flex Div Adj Future Cash),0VW,IFLO|0VW
+IFEU,0VY-Hannover Rueck AG (Flex Div Adj Future Cash),0VY,IFLO|0VY
+IFEU,0VZ-GEA Group AG (Flex Div Adj Future Cash),0VZ,IFLO|0VZ
+IFEU,0WA-National Grid plc (Flex Div Adj Future Cash),0WA,IFLO|0WA
+IFEU,0WB-CECONOMY AG (Flex Div Adj Future Cash),0WB,IFLO|0WB
+IFEU,0WC-Wacker Chemie AG (Flex Div Adj Future Cash),0WC,IFLO|0WC
+IFEU,0WD-K+S AG (Flex Div Adj Future Cash),0WD,IFLO|0WD
+IFEU,0WE-Morrison (WM) Supermarkets plc (Flex Div Adj Future Cash),0WE,IFLO|0WE
+IFEU,0WF-London Stock Exchange Group plc (Flex Div Adj Future Cash),0WF,IFLO|0WF
+IFEU,0WG-Mondi Plc (Flex Div Adj Future Cash),0WG,IFLO|0WG
+IFEU,0WH-Deutsche Lufthansa AG (Flex Div Adj Future Cash),0WH,IFLO|0WH
+IFEU,0WI-Vicinity Centres (Flex Div Adj Future Cash),0WI,IFLO|0WI
+IFEU,0WJ-HeidelbergCement AG (Flex Div Adj Future Cash),0WJ,IFLO|0WJ
+IFEU,0WK-Meggitt Plc (Flex Div Adj Future Cash),0WK,IFLO|0WK
+IFEU,0WL-MAN SE (Flex Div Adj Future Cash),0WL,IFLO|0WL
+IFEU,0WM-Merlin Entertainments Plc (Flex Div Adj Future Cash),0WM,IFLO|0WM
+IFEU,0WN-Marks & Spencer Group plc (Flex Div Adj Future Cash),0WN,IFLO|0WN
+IFEU,0WO-Next plc (Flex Div Adj Future Cash),0WO,IFLO|0WO
+IFEU,0WP-WPP plc (Flex Div Adj Future Cash),0WP,IFLO|0WP
+IFEU,0WQ-Hugo Boss AG (Flex Div Adj Future Cash),0WQ,IFLO|0WQ
+IFEU,0WR-Wartsila Oyj (Flex Div Adj Future Cash),0WR,IFLO|0WR
+IFEU,0WS-Old Mutual plc (Flex Div Adj Future Cash),0WS,IFLO|0WS
+IFEU,0WU-Fresenius SE & Co. KGaA (Flex Div Adj Future Cash),0WU,IFLO|0WU
+IFEU,0WV-St James's Place PLC (Flex Div Adj Future Cash),0WV,IFLO|0WV
+IFEU,0WW-Linde AG (Flex Div Adj Future Cash),0WW,IFLO|0WW
+IFEU,0WY-Henkel AG & CO KGaA - PFD (Flex Div Adj Future Cash),0WY,IFLO|0WY
+IFEU,0WZ-Infineon Technologies AG (Flex Div Adj Future Cash),0WZ,IFLO|0WZ
+IFEU,0X1-Rio Tinto plc (Flex Div Adj Future Cash),0X1,IFLO|0X1
+IFEU,0X2-Royal Mail Plc (Flex Div Adj Future Cash),0X2,IFLO|0X2
+IFEU,0X3-Royal Dutch Shell plc B share (Flex Div Adj Future Cash),0X3,IFLO|0X3
+IFEU,0X4-Rolls-Royce Group plc (Flex Div Adj Future Cash),0X4,IFLO|0X4
+IFEU,0X5-RSA Insurance Group Plc (Flex Div Adj Future Cash),0X5,IFLO|0X5
+IFEU,0X7-Sainsbury (J) Plc (Flex Div Adj Future Cash),0X7,IFLO|0X7
+IFEU,0X8-Schroders Plc (Flex Div Adj Future Cash),0X8,IFLO|0X8
+IFEU,0X9-Sage Group plc (the) (Flex Div Adj Future Cash),0X9,IFLO|0X9
+IFEU,0XA-Pearson plc (Flex Div Adj Future Cash),0XA,IFLO|0XA
+IFEU,0XB-Wirecard AG (Flex Div Adj Future Cash),0XB,IFLO|0XB
+IFEU,"0XC-DSM NV, Koninklijke (Flex Div Adj Future Cash)",0XC,IFLO|0XC
+IFEU,0XD-RWE AG (Flex Div Adj Future Cash),0XD,IFLO|0XD
+IFEU,0XE-Prudential plc (Flex Div Adj Future Cash),0XE,IFLO|0XE
+IFEU,0XF-Koninklijke Ahold Delhaize NV (Flex Div Adj Future Cash),0XF,IFLO|0XF
+IFEU,0XG-Persimmon PLC (Flex Div Adj Future Cash),0XG,IFLO|0XG
+IFEU,0XH-Aalberts Industries NV (Flex Div Adj Future Cash),0XH,IFLO|0XH
+IFEU,0XI-Relx plc (Flex Div Adj Future Cash),0XI,IFLO|0XI
+IFEU,0XJ-Telefonica Deutschland Holding AG (Flex Div Adj Future Cash),0XJ,IFLO|0XJ
+IFEU,0XK-Akzo Nobel NV (Flex Div Adj Future Cash),0XK,IFLO|0XK
+IFEU,0XL-Reckitt Benckiser Group Plc (Flex Div Adj Future Cash),0XL,IFLO|0XL
+IFEU,0XM-ASML Holding NV (Flex Div Adj Future Cash),0XM,IFLO|0XM
+IFEU,0XN-Gemalto NV (Flex Div Adj Future Cash),0XN,IFLO|0XN
+IFEU,0XO-Volkswagen AG - PFD (Flex Div Adj Future Cash),0XO,IFLO|0XO
+IFEU,0XP-Provident Financial (Flex Div Adj Future Cash),0XP,IFLO|0XP
+IFEU,0XQ-Muenchener Rueckversicherung (Flex Div Adj Future Cash),0XQ,IFLO|0XQ
+IFEU,0XR-Randgold Resources LTD (Flex Div Adj Future Cash),0XR,IFLO|0XR
+IFEU,0XS-Royal Bank of Scotland Group plc (Flex Div Adj Future Cash),0XS,IFLO|0XS
+IFEU,0XT-Altice NV (Flex Div Adj Future Cash),0XT,IFLO|0XT
+IFEU,0XU-Merck KGaA (Flex Div Adj Future Cash),0XU,IFLO|0XU
+IFEU,0XV-Aegon NV (Flex Div Adj Future Cash),0XV,IFLO|0XV
+IFEU,0XW-Symrise AG (Flex Div Adj Future Cash),0XW,IFLO|0XW
+IFEU,0XX-Porsche Automobil Holding SE (Flex Div Adj Future Cash),0XX,IFLO|0XX
+IFEU,0XY-ProSiebenSat.1 Media AG (Flex Div Adj Future Cash),0XY,IFLO|0XY
+IFEU,0XZ-RTL Group SA (Flex Div Adj Future Cash),0XZ,IFLO|0XZ
+IFEU,0Y0-Greene King (Flex Div Adj Future Cash),0Y0,IFLO|0Y0
+IFEU,0Y1-Severn Trent plc (Flex Div Adj Future Cash),0Y1,IFLO|0Y1
+IFEU,0Y2-Taylor Wimpey plc (Flex Div Adj Future Cash),0Y2,IFLO|0Y2
+IFEU,0Y3-United Utilities plc (Flex Div Adj Future Cash),0Y3,IFLO|0Y3
+IFEU,0Y4-Weir Group Plc (Flex Div Adj Future Cash),0Y4,IFLO|0Y4
+IFEU,0Y6-Whitbread plc (Flex Div Adj Future Cash),0Y6,IFLO|0Y6
+IFEU,0Y7-ISS A/S (Flex Div Adj Future Cash),0Y7,IFLO|0Y7
+IFEU,0Y8-DSV A/S (Flex Div Adj Future Cash),0Y8,IFLO|0Y8
+IFEU,0Y9-Neste OYJ (Flex Div Adj Future Cash),0Y9,IFLO|0Y9
+IFEU,0YA-Yara International ASA (Flex Div Adj Future Cash),0YA,IFLO|0YA
+IFEU,0YC-Telenet Group Holding NV (Flex Div Adj Future Cash),0YC,IFLO|0YC
+IFEU,"0YD-Philips NV, Kon. (Flex Div Adj Future Cash)",0YD,IFLO|0YD
+IFEU,0YE-Smith & Nephew plc (Flex Div Adj Future Cash),0YE,IFLO|0YE
+IFEU,0YF-Wolters Kluwer NV (Flex Div Adj Future Cash),0YF,IFLO|0YF
+IFEU,0YG-Shire PLC (Flex Div Adj Future Cash),0YG,IFLO|0YG
+IFEU,0YH-Relx NV (Flex Div Adj Future Cash),0YH,IFLO|0YH
+IFEU,0YJ-ArcelorMittal (Flex Div Adj Future Cash),0YJ,IFLO|0YJ
+IFEU,0YK-Yapi ve Kredi Bankasi AS (Flex Div Adj Future Cash),0YK,IFLO|0YK
+IFEU,0YL-SSE Plc (Flex Div Adj Future Cash),0YL,IFLO|0YL
+IFEU,0YM-Colruyt SA (Flex Div Adj Future Cash),0YM,IFLO|0YM
+IFEU,0YN-Credit Agricole SA (Flex Div Adj Future Cash),0YN,IFLO|0YN
+IFEU,0YP-Smiths Group Plc (Flex Div Adj Future Cash),0YP,IFLO|0YP
+IFEU,"0YQ-KPN NV, Koninklijke (Flex Div Adj Future Cash)",0YQ,IFLO|0YQ
+IFEU,0YR-Sports Direct International Plc (Flex Div Adj Future Cash),0YR,IFLO|0YR
+IFEU,0YS-Standard Life Aberdeen plc (Flex Div Adj Future Cash),0YS,IFLO|0YS
+IFEU,0YT-Atlas Copco AB A shares (Flex Div Adj Future Cash),0YT,IFLO|0YT
+IFEU,0YU-Heineken NV (Flex Div Adj Future Cash),0YU,IFLO|0YU
+IFEU,0YV-Unibail-Rodamco SE (Flex Div Adj Future Cash),0YV,IFLO|0YV
+IFEU,0YW-Randstad Holding NV (Flex Div Adj Future Cash),0YW,IFLO|0YW
+IFEU,"0YX-Boskalis Westiminster NV, Kon. (Flex Div Adj Future Cash)",0YX,IFLO|0YX
+IFEU,0YY-NN Group NV (Flex Div Adj Future Cash),0YY,IFLO|0YY
+IFEU,0YZ-OCI NV (Flex Div Adj Future Cash),0YZ,IFLO|0YZ
+IFEU,0Z0-Endesa SA (Flex Div Adj Future Cash),0Z0,IFLO|0Z0
+IFEU,0Z3-Unilever plc (Flex Div Adj Future Cash),0Z3,IFLO|0Z3
+IFEU,0Z8-Givaudan (Flex Div Adj Future Cash),0Z8,IFLO|0Z8
+IFEU,0Z9-Carnival plc (Flex Div Adj Future Cash),0Z9,IFLO|0Z9
+IFEU,0ZA-Zardoya Otis SA (Flex Div Adj Future Cash),0ZA,IFLO|0ZA
+IFEU,0ZB-Kumba Iron Ore Ltd (Flex Div Adj Future Cash),0ZB,IFLO|0ZB
+IFEU,0ZC-Rand Merchant Investment Holdings Ltd (Flex Div Adj Future Cash),0ZC,IFLO|0ZC
+IFEU,0ZD-Discovery Ltd (Flex Div Adj Future Cash),0ZD,IFLO|0ZD
+IFEU,0ZE-Steinhoff International Holdings NV (Flex Div Adj Future Cash),0ZE,IFLO|0ZE
+IFEU,0ZF-Mr Price Group Ltd (Flex Div Adj Future Cash),0ZF,IFLO|0ZF
+IFEU,0ZG-Shoprite Holdings Ltd (Flex Div Adj Future Cash),0ZG,IFLO|0ZG
+IFEU,0ZH-Tiger Brands Ltd (Flex Div Adj Future Cash),0ZH,IFLO|0ZH
+IFEU,0ZI-Petrofac Ltd. (Flex Div Adj Future Cash),0ZI,IFLO|0ZI
+IFEU,0ZK-Nedbank Group Ltd (Flex Div Adj Future Cash),0ZK,IFLO|0ZK
+IFEU,0ZL-Vodacom Group Ltd (Flex Div Adj Future Cash),0ZL,IFLO|0ZL
+IFEU,0ZM-Remgro Ltd (Flex Div Adj Future Cash),0ZM,IFLO|0ZM
+IFEU,0ZN-Sanlam Ltd (Flex Div Adj Future Cash),0ZN,IFLO|0ZN
+IFEU,0ZP-Standard Bank Group Ltd/South Africa (Flex Div Adj Future Cash),0ZP,IFLO|0ZP
+IFEU,0ZQ-Iliad SA (Flex Div Adj Future Cash),0ZQ,IFLO|0ZQ
+IFEU,0ZR-Growthpoint Properties Ltd (Flex Div Adj Future Cash),0ZR,IFLO|0ZR
+IFEU,0ZS-Woolworths Holdings Ltd/South Africa (Flex Div Adj Future Cash),0ZS,IFLO|0ZS
+IFEU,0ZT-RMB Holdings Ltd (Flex Div Adj Future Cash),0ZT,IFLO|0ZT
+IFEU,0ZU-Coca-Cola Icecek AS (Flex Div Adj Future Cash),0ZU,IFLO|0ZU
+IFEU,0ZW-Barclays Africa Group Ltd (Flex Div Adj Future Cash),0ZW,IFLO|0ZW
+IFEU,0ZY-Enka Insaat ve Sanayi AS (Flex Div Adj Future Cash),0ZY,IFLO|0ZY
+IFEU,0ZZ-Imerys SA (Flex Div Adj Future Cash),0ZZ,IFLO|0ZZ
+IFEU,3A0-OC Oerlikon Corp AG (Flex Div Adj Future Cash),3A0,IFLO|3A0
+IFEU,3A1-MorphoSys AG (Flex Div Adj Future Cash),3A1,IFLO|3A1
+IFEU,3A2-PageGroup plc (Flex Div Adj Future Cash),3A2,IFLO|3A2
+IFEU,3A3-FLSmidth & Co A/S (Flex Div Adj Future Cash),3A3,IFLO|3A3
+IFEU,3A4-ASM International NV (Flex Div Adj Future Cash),3A4,IFLO|3A4
+IFEU,3A6-Micro Focus International PLC (Flex Div Adj Future Cash),3A6,IFLO|3A6
+IFEU,3A7-Sydbank A/S (Flex Div Adj Future Cash),3A7,IFLO|3A7
+IFEU,3A8-Intrum Justitia AB (Flex Div Adj Future Cash),3A8,IFLO|3A8
+IFEU,3A9-Deutsche Euroshop (Flex Div Adj Future Cash),3A9,IFLO|3A9
+IFEU,3AA-Stagecoach Group (Flex Div Adj Future Cash),3AA,IFLO|3AA
+IFEU,3AB-Bilfinger SE (Flex Div Adj Future Cash),3AB,IFLO|3AB
+IFEU,3AC-Logitech International SA (Flex Div Adj Future Cash),3AC,IFLO|3AC
+IFEU,3AE-Air France-KLM (Flex Div Adj Future Cash),3AE,IFLO|3AE
+IFEU,3AF-Balfour Beatty (Flex Div Adj Future Cash),3AF,IFLO|3AF
+IFEU,3AG-Immofinanz AG (Flex Div Adj Future Cash),3AG,IFLO|3AG
+IFEU,3AH-Azimut Holding SpA (Flex Div Adj Future Cash),3AH,IFLO|3AH
+IFEU,3AJ-Viscofan SA (Flex Div Adj Future Cash),3AJ,IFLO|3AJ
+IFEU,3AK-Sulzer AG (Flex Div Adj Future Cash),3AK,IFLO|3AK
+IFEU,3AL-Carillion (Flex Div Adj Future Cash),3AL,IFLO|3AL
+IFEU,3AM-Orpea (Flex Div Adj Future Cash),3AM,IFLO|3AM
+IFEU,3AN-Amer Sports Oyj (Flex Div Adj Future Cash),3AN,IFLO|3AN
+IFEU,3AO-DKSH Holding AG (Flex Div Adj Future Cash),3AO,IFLO|3AO
+IFEU,3AP-Subsea 7 SA (Flex Div Adj Future Cash),3AP,IFLO|3AP
+IFEU,3AQ-Huhtamaki OYJ (Flex Div Adj Future Cash),3AQ,IFLO|3AQ
+IFEU,3AR-Drax Group plc (Flex Div Adj Future Cash),3AR,IFLO|3AR
+IFEU,3AS - Siemens Gamesa Renewable Energy SA (Flex Div Adj Future Cash),3AS,IFLO|3AS
+IFEU,3AT-BBA Aviation PLC (Flex Div Adj Future Cash),3AT,IFLO|3AT
+IFEU,3AU-Hexpol AB (Flex Div Adj Future Cash),3AU,IFLO|3AU
+IFEU,3AV-TGS Nopec Geophysical Company ASA (Flex Div Adj Future Cash),3AV,IFLO|3AV
+IFEU,3AW-Mediaset Espana Communicacion (Flex Div Adj Future Cash),3AW,IFLO|3AW
+IFEU,3AX-Kesko OYJ (Flex Div Adj Future Cash),3AX,IFLO|3AX
+IFEU,3AY-JM AB (Flex Div Adj Future Cash),3AY,IFLO|3AY
+IFEU,3AZ-Wereldhave NV (Flex Div Adj Future Cash),3AZ,IFLO|3AZ
+IFEU,3B0-SEB S.A. (Flex Div Adj Future Cash),3B0,IFLO|3B0
+IFEU,3B1-Ladbrokes Coral Group PLC (Flex Div Adj Future Cash),3B1,IFLO|3B1
+IFEU,3B2-International Personal Finance PLC (Flex Div Adj Future Cash),3B2,IFLO|3B2
+IFEU,3B3-Gerresheimer AG (Flex Div Adj Future Cash),3B3,IFLO|3B3
+IFEU,3B4-PostNL N.V (Flex Div Adj Future Cash),3B4,IFLO|3B4
+IFEU,3B5-Outokumpu Oyj (Flex Div Adj Future Cash),3B5,IFLO|3B5
+IFEU,3B6-Mitie Group (Flex Div Adj Future Cash),3B6,IFLO|3B6
+IFEU,3B7-Genel Energy Plc (Flex Div Adj Future Cash),3B7,IFLO|3B7
+IFEU,3B8-Modern Times Group AB (Flex Div Adj Future Cash),3B8,IFLO|3B8
+IFEU,3B9-C&C Group PLC (Flex Div Adj Future Cash),3B9,IFLO|3B9
+IFEU,3BA-Banca Popolare di Sondrio SCARL (Flex Div Adj Future Cash),3BA,IFLO|3BA
+IFEU,3BB-Ultra Electronics Holdings (Flex Div Adj Future Cash),3BB,IFLO|3BB
+IFEU,3BC-Ashmore Group Plc (Flex Div Adj Future Cash),3BC,IFLO|3BC
+IFEU,3BE-Lancashire Holdings Ltd (Flex Div Adj Future Cash),3BE,IFLO|3BE
+IFEU,3BF-Societe Telev Francaise 1 (Flex Div Adj Future Cash),3BF,IFLO|3BF
+IFEU,3BG-QinetiQ Group PLC (Flex Div Adj Future Cash),3BG,IFLO|3BG
+IFEU,3BH-SBM Offshore NV (Flex Div Adj Future Cash),3BH,IFLO|3BH
+IFEU,3BI-BHP Billiton plc (Flex Div Adj Future Cash),3BI,IFLO|3BI
+IFEU,3BJ-Pargesa Holding SA (Flex Div Adj Future Cash),3BJ,IFLO|3BJ
+IFEU,3BK-Davide Campari - Milano (Flex Div Adj Future Cash),3BK,IFLO|3BK
+IFEU,3BL-Rheinmetall AG (Flex Div Adj Future Cash),3BL,IFLO|3BL
+IFEU,3BN-Firstgroup (Flex Div Adj Future Cash),3BN,IFLO|3BN
+IFEU,3BO-Elementis PLC (Flex Div Adj Future Cash),3BO,IFLO|3BO
+IFEU,3BP-Neopost SA (Flex Div Adj Future Cash),3BP,IFLO|3BP
+IFEU,3BQ-Evonik Industries AG (Flex Div Adj Future Cash),3BQ,IFLO|3BQ
+IFEU,3BR-Remy Cointreau (Flex Div Adj Future Cash),3BR,IFLO|3BR
+IFEU,3BS-Vienna Insurance Group (Flex Div Adj Future Cash),3BS,IFLO|3BS
+IFEU,3BU-Cofinimmo (Flex Div Adj Future Cash),3BU,IFLO|3BU
+IFEU,3BV-William Demant Holding (Flex Div Adj Future Cash),3BV,IFLO|3BV
+IFEU,3BX-Leoni AG (Flex Div Adj Future Cash),3BX,IFLO|3BX
+IFEU,3BZ-Rubis SA (Flex Div Adj Future Cash),3BZ,IFLO|3BZ
+IFEU,3C2-Colgate-Palmolive Co (Flex Div Adj Future Cash),3C2,IFLO|3C2
+IFEU,3C3-Costco Wholesale Corp (Flex Div Adj Future Cash),3C3,IFLO|3C3
+IFEU,3C4-CVS Health Corp (Flex Div Adj Future Cash),3C4,IFLO|3C4
+IFEU,3C5-Deere & Co (Flex Div Adj Future Cash),3C5,IFLO|3C5
+IFEU,3C6-Dominion Energy Inc (Flex Div Adj Future Cash),3C6,IFLO|3C6
+IFEU,3C7-Duke Energy Corp (Flex Div Adj Future Cash),3C7,IFLO|3C7
+IFEU,3C8-Du Pont (E.I.) De Nemours (Flex Div Adj Future Cash),3C8,IFLO|3C8
+IFEU,3C9-Eli Lilly & Co (Flex Div Adj Future Cash),3C9,IFLO|3C9
+IFEU,3CA-Altria Group Inc (Flex Div Adj Future Cash),3CA,IFLO|3CA
+IFEU,3CB-Vifor Pharma AG (Flex Div Adj Future Cash),3CB,IFLO|3CB
+IFEU,3CC-dormakaba Holding AG (Flex Div Adj Future Cash),3CC,IFLO|3CC
+IFEU,3CE-Abbott Laboratories (Flex Div Adj Future Cash),3CE,IFLO|3CE
+IFEU,3CG-Barry Callebaut AG (Flex Div Adj Future Cash),3CG,IFLO|3CG
+IFEU,3CH-Hunting PLC (Flex Div Adj Future Cash),3CH,IFLO|3CH
+IFEU,3CI-Baxter International Inc (Flex Div Adj Future Cash),3CI,IFLO|3CI
+IFEU,3CJ-AVEVA Group PLC (Flex Div Adj Future Cash),3CJ,IFLO|3CJ
+IFEU,3CK-Flughafen Zuerich AG (Flex Div Adj Future Cash),3CK,IFLO|3CK
+IFEU,3CL-AT&T Inc (Flex Div Adj Future Cash),3CL,IFLO|3CL
+IFEU,3CM-Georg Fischer AG (Flex Div Adj Future Cash),3CM,IFLO|3CM
+IFEU,3CO-Sika AG (Flex Div Adj Future Cash),3CO,IFLO|3CO
+IFEU,3CP-3M Co (Flex Div Adj Future Cash),3CP,IFLO|3CP
+IFEU,3CQ-Electrocomponents (Flex Div Adj Future Cash),3CQ,IFLO|3CQ
+IFEU,3CR-Anthem Inc (Flex Div Adj Future Cash),3CR,IFLO|3CR
+IFEU,3CS-Automatic Data Processing Inc (Flex Div Adj Future Cash),3CS,IFLO|3CS
+IFEU,3CT-Eurofins Scientific Group SA (Flex Div Adj Future Cash),3CT,IFLO|3CT
+IFEU,3CU-Storebrand ASA (Flex Div Adj Future Cash),3CU,IFLO|3CU
+IFEU,3CV-Helvetia Holding AG (Flex Div Adj Future Cash),3CV,IFLO|3CV
+IFEU,3CW-SGS SA (Flex Div Adj Future Cash),3CW,IFLO|3CW
+IFEU,3CX-Serco Group (Flex Div Adj Future Cash),3CX,IFLO|3CX
+IFEU,3CY-Rhoen Klinikum AG (Flex Div Adj Future Cash),3CY,IFLO|3CY
+IFEU,3D1-McDonald's Corp (Flex Div Adj Future Cash),3D1,IFLO|3D1
+IFEU,3D2-Becton Dickinson & Co (Flex Div Adj Future Cash),3D2,IFLO|3D2
+IFEU,3D3-CH Robinson Worldwide Inc (Flex Div Adj Future Cash),3D3,IFLO|3D3
+IFEU,3D4-Validus Holdings Ltd (Flex Div Adj Future Cash),3D4,IFLO|3D4
+IFEU,3D5-Symantec Corporation (Flex Div Adj Future Cash),3D5,IFLO|3D5
+IFEU,3D6-Abengoa SA 'B' (Flex Div Adj Future Cash),3D6,IFLO|3D6
+IFEU,3DA-Verizon Inc (Flex Div Adj Future Cash),3DA,IFLO|3DA
+IFEU,3DB-Merck & Co Inc (Flex Div Adj Future Cash),3DB,IFLO|3DB
+IFEU,3DC-Procter & Gamble Company (Flex Div Adj Future Cash),3DC,IFLO|3DC
+IFEU,3DD-Johnson & Johnson (Flex Div Adj Future Cash),3DD,IFLO|3DD
+IFEU,3DE-UnitedHealth Group Inc (Flex Div Adj Future Cash),3DE,IFLO|3DE
+IFEU,3DF-Oracle Corp (Flex Div Adj Future Cash),3DF,IFLO|3DF
+IFEU,3DG-Travelers Cos Inc/The (Flex Div Adj Future Cash),3DG,IFLO|3DG
+IFEU,3DH-Kellogg Co (Flex Div Adj Future Cash),3DH,IFLO|3DH
+IFEU,3DJ-General Mills Inc (Flex Div Adj Future Cash),3DJ,IFLO|3DJ
+IFEU,3DK-PepsiCo Inc (Flex Div Adj Future Cash),3DK,IFLO|3DK
+IFEU,3DL-Walt Disney Co/The (Flex Div Adj Future Cash),3DL,IFLO|3DL
+IFEU,3DM-Pfizer Inc. (Flex Div Adj Future Cash),3DM,IFLO|3DM
+IFEU,3DN-Southern Co (Flex Div Adj Future Cash),3DN,IFLO|3DN
+IFEU,3DP-United Parcel Service Inc (Flex Div Adj Future Cash),3DP,IFLO|3DP
+IFEU,3DQ-Exxon Mobil Corp (Flex Div Adj Future Cash),3DQ,IFLO|3DQ
+IFEU,3DR-Wal-Mart Stores Inc (Flex Div Adj Future Cash),3DR,IFLO|3DR
+IFEU,3DS-Medtronic plc (Flex Div Adj Future Cash),3DS,IFLO|3DS
+IFEU,3DT-Philip Morris (Flex Div Adj Future Cash),3DT,IFLO|3DT
+IFEU,3DU-Express Scripts Inc (Flex Div Adj Future Cash),3DU,IFLO|3DU
+IFEU,3DV-NextEra Energy Inc (Flex Div Adj Future Cash),3DV,IFLO|3DV
+IFEU,3DW-Kimberly-Clark Corp (Flex Div Adj Future Cash),3DW,IFLO|3DW
+IFEU,3DX-Home Depot Inc (Flex Div Adj Future Cash),3DX,IFLO|3DX
+IFEU,3DY-Honeywell International Inc (Flex Div Adj Future Cash),3DY,IFLO|3DY
+IFEU,3DZ-International Business Machines Corp (Flex Div Adj Future Cash),3DZ,IFLO|3DZ
+IFEU,3FB-Bidvest Group Ltd (Flex Div Adj Future Cash),3FB,IFLO|3FB
+IFEU,3FE-Ferrari NV (Flex Div Adj Future Cash),3FE,IFLO|3FE
+IFEU,3FI-Fiat Chrysler Automobiles NV (Flex Div Adj Future Cash),3FI,IFLO|3FI
+IFEU,3GU-Bid Corporation Ltd (Flex Div Adj Future Cash),3GU,IFLO|3GU
+IFEU,3RT-RTL Group SA (Flex Div Adj Future Cash),3RT,IFLO|3RT
+IFEU,3SH-South32 (Flex Div Adj Future Cash),3SH,IFLO|3SH
+IFEU,ABY-ABB Ltd (Flex Future Cash),ABY,IFLO|ABY
+IFEU,AC-Accor (Std Future Cash),AC,IFLO|AC
+IFEU,AF1-ICE Futures Richards Bay Coal Early (122 days) Single Expiry Future,AF1,IFEU|AF1
+IFEU,AF2-ICE Futures Richards Bay Coal Early (214 days) Single Expiry Future,AF2,IFEU|AF2
+IFEU,AF3-ICE Futures Richards Bay Coal Early (305 days) Single Expiry Future,AF3,IFEU|AF3
+IFEU,AFC-Richards Bay Coal Calendar One Time Future,AFC,IFEU|AFC
+IFEU,AFQ-Richards Bay Coal Quarter One Time Future,AFQ,IFEU|AFQ
+IFEU,AFR-Richards Bay Coal Future,AFR,IFEU|AFR
+IFEU,AGU-Aggreko Plc (Flex Future Cash),AGU,IFLO|AGU
+IFEU,AHD-Anglo American plc (Flex Future Cash),AHD,IFLO|AHD
+IFEU,AHL-Koninklijke Ahold Delhaize NV (Std Future Cash),AHL,IFLO|AHL
+IFEU,AKZ-Akzo Nobel NV (Std Future Cash),AKZ,IFLO|AKZ
+IFEU,ALN-Air Liquide (Std Future Cash),ALN,IFLO|ALN
+IFEU,ALT-Alstom SA (Std Future Cash),ALT,IFLO|ALT
+IFEU,ALV-Allianz AG (Std Future Cash),ALV,IFLO|ALV
+IFEU,AM5-Amadeus IT Group SA (Flex Future Cash),AM5,IFLO|AM5
+IFEU,AMC-ams AG (Flex Future Cash),AMC,IFLO|AMC
+IFEU,AQY-Svenska Handelsbanken ser. A (Flex Future Cash),AQY,IFLO|AQY
+IFEU,ARL-ArcelorMittal (Std Future Cash),ARL,IFLO|ARL
+IFEU,ASL-ASML Holding NV (Std Future Cash),ASL,IFLO|ASL
+IFEU,AT1-ICE Futures Rotterdam Coal Early (122 days) Single Expiry Future,AT1,IFEU|AT1
+IFEU,AT2-ICE Futures Rotterdam Coal Early (214 days) Single Expiry Future,AT2,IFEU|AT2
+IFEU,AT3-ICE Futures Rotterdam Coal Early (305 days) Single Expiry Future,AT3,IFEU|AT3
+IFEU,ATC-Rotterdam Calendar One Time Future,ATC,IFEU|ATC
+IFEU,ATQ-Rotterdam Coal Quarter One Time Future,ATQ,IFEU|ATQ
+IFEU,ATW-Rotterdam Coal Future,ATW,IFEU|ATW
+IFEU,AUD-Arkema (Flex Future Cash),AUD,IFLO|AUD
+IFEU,AUK-ArcelorMittal (Flex Future Dlv),AUK,IFLO|AUK
+IFEU,AUT-Atlantia SpA (Std Future Cash),AUT,IFLO|AUT
+IFEU,AXQ-AXA SA (Std Future Cash),AXQ,IFLO|AXQ
+IFEU,B-Brent Crude Future,B,IFEU|B
+IFEU,BAG-Britvic PLC (Flex Future Cash),BAG,IFLO|BAG
+IFEU,BAS-BASF AG (Std Future Cash),BAS,IFLO|BAS
+IFEU,BBD-Barclays plc (Flex Future Cash),BBD,IFLO|BBD
+IFEU,BDG-Babcock International Group Plc (Flex Future Cash),BDG,IFLO|BDG
+IFEU,BDK-Burberry Group (Flex Future Cash),BDK,IFLO|BDK
+IFEU,BHG-Berkshire Hathaway Inc (Flex Future Cash),BHG,IFLO|BHG
+IFEU,BIY-Intesa Sanpaolo SpA (Flex Future Cash),BIY,IFLO|BIY
+IFEU,BKE-Berkeley Group Holdings plc (Flex Future Cash),BKE,IFLO|BKE
+IFEU,BLG-Proximus SA (Std Future Cash),BLG,IFLO|BLG
+IFEU,BMD-Bayerische Motoren Werke AG (Flex Future Cash),BMD,IFLO|BMD
+IFEU,BNR-BNP Paribas (Std Future Cash),BNR,IFLO|BNR
+IFEU,"BOI-Boskalis Westiminster NV, Kon. (Std Future Cash)",BOI,IFLO|BOI
+IFEU,BOU-Bouygues (Std Future Cash),BOU,IFLO|BOU
+IFEU,BPG-Bpost SA (Flex Future Cash),BPG,IFLO|BPG
+IFEU,BPV-Banco BPM (Std Future Cash),BPV,IFLO|BPV
+IFEU,BPY-BP plc (Flex Future Cash),BPY,IFLO|BPY
+IFEU,BTY-BT Group plc (Flex Future Cash),BTY,IFLO|BTY
+IFEU,BVA-Banco Bilbao Vizcaya Argent (Std Future Cash),BVA,IFLO|BVA
+IFEU,C-EUA Future,C,IFEU|C
+IFEU,C-London Cocoa Future,C,IFLX|C
+IFEU,C05-Medium Swiss Confederation Bond Future,C05,IFLL|C05
+IFEU,C10-Long Swiss Confederation Bond Future,C10,IFLL|C10
+IFEU,CAM-Carrefour SA (Std Future Cash),CAM,IFLO|CAM
+IFEU,CBK-Commerzbank AG (Std Future Cash),CBK,IFLO|CBK
+IFEU,CER-CER Future,CER,IFEU|CER
+IFEU,CES-CER Daily Future,CES,IFEU|CES
+IFEU,CET-ICE EUAA UK Auction,CET,IFEU|CET
+IFEU,CEU-EUAA Future,CEU,IFEU|CEU
+IFEU,CGM-Capgemini SA (Std Future Cash),CGM,IFLO|CGM
+IFEU,CMZ-Carrefour SA (Flex Future Dlv),CMZ,IFLO|CMZ
+IFEU,COR-Klepierre (Std Future Cash),COR,IFLO|COR
+IFEU,CRA-Credit Agricole SA (Std Future Cash),CRA,IFLO|CRA
+IFEU,CRF-CFR South China Coal Futures,CRF,IFEU|CRF
+IFEU,CS-Containerised White Sugar Futures,CS,IFLX|CS
+IFEU,CYD-Recordati SpA (Flex Future Cash),CYD,IFLO|CYD
+IFEU,DAO-Groupe Danone (Std Future Cash),DAO,IFLO|DAO
+IFEU,DBK-Deutsche Bank AG (Std Future Cash),DBK,IFLO|DBK
+IFEU,DCY-Daimler AG (Std Future Cash),DCY,IFLO|DCY
+IFEU,DDY-DNB NOR ASA (Flex Future Cash),DDY,IFLO|DDY
+IFEU,DGG-Domino's Pizza Group Plc (Flex Future Cash),DGG,IFLO|DGG
+IFEU,DHY-Sandvik AB (Flex Future Cash),DHY,IFLO|DHY
+IFEU,DIA-Distribuidora Internacional de Alimentacion SA (DIA SA) (Std Future Cash),DIA,IFLO|DIA
+IFEU,DMM-Daily Mail & General Trust (A Shs) (Flex Future Cash),DMM,IFLO|DMM
+IFEU,DRD-DSV A/S (Flex Future Cash),DRD,IFLO|DRD
+IFEU,"DSI-DSM NV, Koninklijke (Std Future Cash)",DSI,IFLO|DSI
+IFEU,DowDuPont (Flex Div Adj Future Cash),3C8,IFLO|3C8
+IFEU,EAS-Airbus (Std Future Cash),EAS,IFLO|EAS
+IFEU,EC-Euro Cocoa Future,EC,IFLX|EC
+IFEU,ECG-ICE EUA UK Auction,ECG,IFEU|ECG
+IFEU,ECP-ICE EUA Phase 3 Daily Futures,ECP,IFEU|ECP
+IFEU,ED-EuroDollars,ED,IFLL|ED
+IFEU,EDV-Electricite de France (Std Future Cash),EDV,IFLO|EDV
+IFEU,EDY-Energias de Portugal SA (Flex Future Cash),EDY,IFLO|EDY
+IFEU,EFE-FTSEurofirst 80 Future,EFE,IFLL|EFE
+IFEU,EFP-FTSEurofirst 100 Future,EFP,IFLL|EFP
+IFEU,EKE-Elekta AB (B shares) (Flex Future Cash),EKE,IFLO|EKE
+IFEU,END-Endesa SA (Flex Future Cash),END,IFLO|END
+IFEU,ENI-ENI SpA (Std Future Cash),ENI,IFLO|ENI
+IFEU,ENL-Enel SpA (Std Future Cash),ENL,IFLO|ENL
+IFEU,EOM-E.ON SE (Std Future Cash),EOM,IFLO|EOM
+IFEU,EON-One Month Eonia (futures delivery month = ECB+1),EON,IFLL|EON
+IFEU,EPY-Svenska Cellulosa AB ex-event package (Flex Future Cash),EPY,IFLO|EPY
+IFEU,ERD-CaixaBank SA (Flex Future Cash),ERD,IFLO|ERD
+IFEU,ESQ-Essilor International SA (Std Future Cash),ESQ,IFLO|ESQ
+IFEU,ESX-FTSE 100 Index Option (Synthetic Underlying),ESX,IFLO|ESX
+IFEU,EU3-30Yr Euro Swapnote,EU3,IFLL|EU3
+IFEU,EWE-MSCI Europe Equal Weighted NTR EUR Index Future,EWE,IFLL|EWE
+IFEU,EWM-MSCI Emerging Markets Equal Weighted NTR USD Index Future,EWM,IFLL|EWM
+IFEU,EWS-MSCI USA Equal Weighted NTR USD Index Future,EWS,IFLL|EWS
+IFEU,EWW-MSCI World Equal Weighted NTR USD Index Future,EWW,IFLL|EWW
+IFEU,EZD-CEZ AS (Flex Future Cash),EZD,IFLO|EZD
+IFEU,EZX-Easyjet Plc (Flex Future Cash),EZX,IFLO|EZX
+IFEU,F-Argus Sour Crude Index Future,F,IFEU|F
+IFEU,FAY-Sampo Oyj (Flex Future Cash),FAY,IFLO|FAY
+IFEU,FBY-Casino Guichard Perrachon SA (Flex Future Cash),FBY,IFLO|FBY
+IFEU,FKY-Adidas AG (Flex Future Cash),FKY,IFLO|FKY
+IFEU,FLX-FTSE 100 Index Option (Synthetic Underlying),FLX,IFLO|FLX
+IFEU,FRB-Ageas NV/SA (Std Future Cash),FRB,IFLO|FRB
+IFEU,FSY-Swedbank AB (Flex Future Cash),FSY,IFLO|FSY
+IFEU,FTM-Orange SA (Std Future Cash),FTM,IFLO|FTM
+IFEU,FTSE Developed Europe SMID Cap Tradable Plus Index Future,SMD,IFLL|SMD
+IFEU,FTSE UK Mid Cap Tradable Plus Index Future,UKM,IFLL|UKM
+IFEU,FUG-Fugro NV (Std Future Cash),FUG,IFLO|FUG
+IFEU,FYY-Electrolux AB ser. B (Flex Future Cash),FYY,IFLO|FYY
+IFEU,G-Gasoil Future (Low Sulphur Gasoil Futures from February 2015 contract month),G,IFEU|G
+IFEU,G-Short Gilt Future,G,IFLL|G
+IFEU,G02-Short German Bond Future (Schatz),G02,IFLL|G02
+IFEU,G05-Medium German Bond Future (Bobl),G05,IFLL|G05
+IFEU,G10-Long German Bond Future (Bund),G10,IFLL|G10
+IFEU,G30-Ultra Long German Bond Future (Buxl),G30,IFLL|G30
+IFEU,GAD-Gas Natural SDG SA (Flex Future Cash),GAD,IFLO|GAD
+IFEU,GB3-30Yr Sterling Swapnote,GB3,IFLL|GB3
+IFEU,GBO-5Yr Sterling Swapnote,GBO,IFLL|GBO
+IFEU,GBP-10Yr Sterling Swapnote,GBP,IFLL|GBP
+IFEU,GBW-2Yr Sterling Swapnote,GBW,IFLL|GBW
+IFEU,GCF-globalCOAL RB Coal Future,GCF,IFEU|GCF
+IFEU,GCG-Glencore plc (Flex Future Cash),GCG,IFLO|GCG
+IFEU,GDS-Engie (Std Future Cash),GDS,IFLO|GDS
+IFEU,GEF-Gecina SA (Flex Future Cash),GEF,IFLO|GEF
+IFEU,GEN-Assicurazioni Generali SpA (Std Future Cash),GEN,IFLO|GEN
+IFEU,GJQ-Gjensidige Forsikring ASA (Flex Future Cash),GJQ,IFLO|GJQ
+IFEU,GNW-Greene King (Flex Future Cash),GNW,IFLO|GNW
+IFEU,GSY-GlaxoSmithKline plc (Flex Future Cash),GSY,IFLO|GSY
+IFEU,GWE-UK Natural Gas Future (EUR/MWh),GWE,IFEU|GWE
+IFEU,H-Medium Gilt Future,H,IFLL|H
+IFEU,HCD-HeidelbergCement AG (Flex Future Cash),HCD,IFLO|HCD
+IFEU,HEI-Heineken NV (Std Future Cash),HEI,IFLO|HEI
+IFEU,HMY-Hennes & Mauritz AB ser. B (Flex Future Cash),HMY,IFLO|HMY
+IFEU,HOD-Hera SpA (Flex Future Cash),HOD,IFLO|HOD
+IFEU,HSY-HSBC Holdings plc (Flex Future Cash),HSY,IFLO|HSY
+IFEU,HUF-Hugo Boss AG (Flex Future Cash),HUF,IFLO|HUF
+IFEU,I-Three Month Euro (Euribor) Future,I,IFLL|I
+IFEU,I02-Short Italian Bond (BTP) Future,I02,IFLL|I02
+IFEU,I05-Medium Itailian Bond (BTP) Future,I05,IFLL|I05
+IFEU,I10-Long Italian Bond (BTP) Future,I10,IFLL|I10
+IFEU,IBE-Iberdrola SA (Std Future Cash),IBE,IFLO|IBE
+IFEU,ICT-Intermediate Capital Group (Flex Future Cash),ICT,IFLO|ICT
+IFEU,ILB-Illinois Basin Future,ILB,IFEU|ILB
+IFEU,INB-Anheuser-Busch InBev NV (Std Future Cash),INB,IFLO|INB
+IFEU,ING-ING Groep NV (Std Future Cash),ING,IFLO|ING
+IFEU,ITP-Italgas SpA (Std Future Cash),ITP,IFLO|ITP
+IFEU,JFY-Colruyt SA (Flex Future Cash),JFY,IFLO|JFY
+IFEU,JQY-Enagas (Flex Future Cash),JQY,IFLO|JQY
+IFEU,KFY-Antofagasta plc (Flex Future Cash),KFY,IFLO|KFY
+IFEU,KGY-Kingfisher plc (Flex Future Cash),KGY,IFLO|KGY
+IFEU,KMD-Komercni Banka AS (Flex Future Cash),KMD,IFLO|KMD
+IFEU,"KPN-KPN NV, Koninklijke (Std Future Cash)",KPN,IFLO|KPN
+IFEU,L-Three Month Sterling Future,L,IFLL|L
+IFEU,LAF-LafargeHolcim Ltd (Std Future Cash),LAF,IFLO|LAF
+IFEU,LGG-Legrand SA (Std Future Cash),LGG,IFLO|LGG
+IFEU,LGY-Legal & General Group plc (Flex Future Cash),LGY,IFLO|LGY
+IFEU,LLY-Lloyds Banking Group plc (Flex Future Cash),LLY,IFLO|LLY
+IFEU,LRL-L'Oreal SA (Std Future Cash),LRL,IFLO|LRL
+IFEU,M-UK Natural Gas NBP Future,M,IFEU|M
+IFEU,MAK-MSCI AC Asia Pacific Ex Japan Index Future,MAK,IFLL|MAK
+IFEU,MB-Mediobanca SpA (Std Future Cash),MB,IFLO|MB
+IFEU,MCA-MSCI AC Far East ex Japan Index Future,MCA,IFLL|MCA
+IFEU,MCB-MSCI EM Asia Index Future,MCB,IFLL|MCB
+IFEU,MCC-MSCI BRIC Index Future,MCC,IFLL|MCC
+IFEU,MCF-MSCI EM Lat Am Index Future,MCF,IFLL|MCF
+IFEU,MCG-MSCI Brazil Index Future,MCG,IFLL|MCG
+IFEU,MCH-MSCI Mexico Index Future,MCH,IFLL|MCH
+IFEU,MCI-MSCI EAFE Index Future,MCI,IFLL|MCI
+IFEU,MCJ-MSCI Europe Index Future,MCJ,IFLL|MCJ
+IFEU,MCK-MSCI KOKUSAI Net TR USD Index Future,MCK,IFLL|MCK
+IFEU,MCM-MSCI Hong Kong Index Future,MCM,IFLL|MCM
+IFEU,MCN-MSCI World Index Future,MCN,IFLL|MCN
+IFEU,MCO-MSCI Japan Index Future,MCO,IFLL|MCO
+IFEU,MCQ-MSCI Emerging Markets (EM) Index Future,MCQ,IFLL|MCQ
+IFEU,MCR-MSCI All Countries Asia Ex Japan Index Future,MCR,IFLL|MCR
+IFEU,MCU-MSCI USA Net TR EUR Index Future,MCU,IFLL|MCU
+IFEU,MCV-MSCI USA Index Future,MCV,IFLL|MCV
+IFEU,MCZ-MSCI EM EMEA Index Future,MCZ,IFLL|MCZ
+IFEU,MDA-MSCI Canada Index Future,MDA,IFLL|MDA
+IFEU,MDB-MSCI Canada Net TR EUR Index Future,MDB,IFLL|MDB
+IFEU,ME0-MSCI Europe Consumer Disc NTR EUR Index Future,ME0,IFLL|ME0
+IFEU,ME1-MSCI Europe Consumer Staples NTR EUR Index Future,ME1,IFLL|ME1
+IFEU,ME2-MSCI Europe Energy NTR EUR Index Future,ME2,IFLL|ME2
+IFEU,ME3-MSCI Europe Financials NTR EUR Index Future,ME3,IFLL|ME3
+IFEU,ME4-MSCI Europe Health Care NTR EUR Index Future,ME4,IFLL|ME4
+IFEU,ME5-MSCI Europe Industrials NTR EUR Index Future,ME5,IFLL|ME5
+IFEU,ME6-MSCI Europe IT NTR EUR Index Future,ME6,IFLL|ME6
+IFEU,ME7-MSCI Europe Materials NTR EUR Index Future,ME7,IFLL|ME7
+IFEU,ME8-MSCI Europe Tele Services NTR EUR Index Future,ME8,IFLL|ME8
+IFEU,ME9-MSCI Europe Utilities NTR EUR Index Future,ME9,IFLL|ME9
+IFEU,MEC-Argus Sour Crude Index Differential Future,MEC,IFEU|MEC
+IFEU,MF0-MSCI Europe Real Estate NTR Index Future,MF0,IFLL|MF0
+IFEU,MFR-MSCI France Net Total Return EUR Index Future,MFR,IFLL|MFR
+IFEU,MHE-MSCI EMU 100% HEDGED TO USD INDEX FUTURE,MHE,IFLL|MHE
+IFEU,MHI-MSCI Japan 100% Hedged to EUR Index Future,MHI,IFLL|MHI
+IFEU,MHN-MSCI World 100% Hedged to EUR Index Future,MHN,IFLL|MHN
+IFEU,MID-Middle Eastern Crude Future,MID,IFEU|MID
+IFEU,MII-MSCI India Index Future,MII,IFLL|MII
+IFEU,MIY-Morrison (WM) Supermarkets plc (Flex Future Cash),MIY,IFLO|MIY
+IFEU,MKE-MSCI Europe Ex UK Index Future,MKE,IFLL|MKE
+IFEU,MKI-MSCI KOKUSAI Net Total Return Index Future (JPY),MKI,IFLL|MKI
+IFEU,MKO-MSCI KOKUSAI Gross TR USD Index Future,MKO,IFLL|MKO
+IFEU,MLW-MSCI World Net TR EUR Index Future,MLW,IFLL|MLW
+IFEU,MLY-Michelin (Flex Future Cash),MLY,IFLO|MLY
+IFEU,MNO-Mondadori (Arnoldo) Editore SpA (Std Future Cash),MNO,IFLO|MNO
+IFEU,MOY-Metso (Flex Future Cash),MOY,IFLO|MOY
+IFEU,MPE-MSCI Europe Net TR EUR Index Future,MPE,IFLL|MPE
+IFEU,MPJ-MSCI Pacific ex Japan Index Future,MPJ,IFLL|MPJ
+IFEU,MSA-MSCI South Africa Net TR USD Index Future,MSA,IFLL|MSA
+IFEU,MSB-MSCI EMU NTR EUR Index Future,MSB,IFLL|MSB
+IFEU,MSCI Taiwan NTR USD Index Future,MST,IFLL|MST
+IFEU,MSE-MSCI South Africa Net TR EUR Index Future,MSE,IFLL|MSE
+IFEU,MSH-MSCI Switzerland NTR in CHF Index Future,MSH,IFLL|MSH
+IFEU,MSI-Mediaset SpA (Std Future Cash),MSI,IFLO|MSI
+IFEU,MSM-MSCI Emerging Markets Net TR EUR Index Future,MSM,IFLL|MSM
+IFEU,MSR-MSCI Switzerland NTR EUR Index Future,MSR,IFLL|MSR
+IFEU,MSZ-MSCI Europe ex Switzerland NTR EUR Index Future,MSZ,IFLL|MSZ
+IFEU,MUN-MSCI UK NTR EUR Index Future,MUN,IFLL|MUN
+IFEU,MVE-MSCI Europe Min Volatility NTR EUR Index Future,MVE,IFLL|MVE
+IFEU,MVM-MSCI Emerging Markets Min Volatility NTR USD Index Future,MVM,IFLL|MVM
+IFEU,MVW-MSCI World Minimum Volatility NTR USD Index Future,MVW,IFLL|MVW
+IFEU,MWB-MSCI World Consumer Staples Net TR USD Index Future,MWB,IFLL|MWB
+IFEU,MWE-MSCI World Energy Net TR USD Index Future,MWE,IFLL|MWE
+IFEU,MWG-MSCI World Consumer Discretionary Net TR USD Index Future,MWG,IFLL|MWG
+IFEU,MWI-MSCI World Industrials Net TR USD Index Future,MWI,IFLL|MWI
+IFEU,MWL-MSCI ACWI ex Europe NTR EUR Index Future,MWL,IFLL|MWL
+IFEU,MWM-MSCI World Materials Net TR USD Index Future,MWM,IFLL|MWM
+IFEU,MWN-MSCI World Financials Net TR USD Index Future,MWN,IFLL|MWN
+IFEU,MWO-MSCI World Health Care Net TR USD Index Future,MWO,IFLL|MWO
+IFEU,MWS-MSCI World Real Estate NTR Index Future,MWS,IFLL|MWS
+IFEU,MWT-MSCI World Telecom Services Net TR USD Index Future,MWT,IFLL|MWT
+IFEU,MWV-MSCI World IT Net TR USD Index Future,MWV,IFLL|MWV
+IFEU,MWW-MSCI World Utilities Net TR USD Index Future,MWW,IFLL|MWW
+IFEU,MZA-MSCI ACWI ex Australia Future,MZA,IFLL|MZA
+IFEU,MZF-Prysmian SpA (Flex Future Cash),MZF,IFLO|MZF
+IFEU,N-New York Harbor Unleaded Gasoline Future,N,IFEU|N
+IFEU,NAY-Novartis AG (Flex Future Cash),NAY,IFLO|NAY
+IFEU,NBD-UK Natural Gas Daily Future,NBD,IFEU|NBD
+IFEU,NC1-globalCOAL Newcastle Early (122 days) Single Expiry Future,NC1,IFEU|NC1
+IFEU,NC2-globalCOAL Newcastle Early (214 days) Single Expiry Future,NC2,IFEU|NC2
+IFEU,NC3-globalCOAL Newcastle Early (305 days) Single Expiry Future,NC3,IFEU|NC3
+IFEU,NCC-gcNewcastle Coal Calendar One Time Future,NCC,IFEU|NCC
+IFEU,NCD-Neopost SA (Flex Future Cash),NCD,IFLO|NCD
+IFEU,NCF-gcNewcastle Coal Future,NCF,IFEU|NCF
+IFEU,NCQ-gcNewcastle Coal Quarter One Time Future,NCQ,IFEU|NCQ
+IFEU,NDG-ICE Futures UK Natural Gas Daily Financial Future,NDG,IFEU|NDG
+IFEU,NDY-Nordea Bank AB (Flex Future Cash),NDY,IFLO|NDY
+IFEU,NEY-Nestle SA (Flex Future Cash),NEY,IFLO|NEY
+IFEU,NGY-National Grid plc (Flex Future Cash),NGY,IFLO|NGY
+IFEU,NHY-Norsk Hydro ASA (Flex Future Cash),NHY,IFLO|NHY
+IFEU,NKY-Nokian Renkaat OYJ (Flex Future Cash),NKY,IFLO|NKY
+IFEU,NOK-Nokia OYJ (Std Future Cash),NOK,IFLO|NOK
+IFEU,NTD-Neste OYJ (Flex Future Cash),NTD,IFLO|NTD
+IFEU,NVH-Novatek (OAO) GDR (Flex Future Dlv),NVH,IFLO|NVH
+IFEU,NXY-Next plc (Flex Future Cash),NXY,IFLO|NXY
+IFEU,O-5Yr Euro Swapnote Future,O,IFLL|O
+IFEU,O-New York Harbor Heating Oil Future,O,IFEU|O
+IFEU,OCY-Mapfre SA (Flex Future Cash),OCY,IFLO|OCY
+IFEU,OMV-OMV AG (Std Future Cash),OMV,IFLO|OMV
+IFEU,OSY-Atresmedia Corporacion de Medios de Comunicacion SA (Flex Future Cash),OSY,IFLO|OSY
+IFEU,P-10Yr Euro Swapnote Future,P,IFLL|P
+IFEU,PBG-Eris GBP LIBOR 2YR Calendar 6M Interest Rate Future  (0.50%),PBG,IFLL|PBG
+IFEU,PBH-PBH-Eris GBP LIBOR 2YR Calendar 6M Interest Rate Future (0.75%),PBH,IFLL|PBH
+IFEU,PBI-PBI-Eris GBP LIBOR 2YR Calendar 6M Interest Rate Future (1.00%),PBI,IFLL|PBI
+IFEU,PBJ-PBJ-Eris GBP LIBOR 2YR Calendar 6M Interest Rate Future (1.25%),PBJ,IFLL|PBJ
+IFEU,PCG-Eris GBP LIBOR 3YR Calendar 6M Interest Rate Future  (0.50%),PCG,IFLL|PCG
+IFEU,PCH-PCH-Eris GBP LIBOR 3YR Calendar 6M Interest Rate Future (0.75%),PCH,IFLL|PCH
+IFEU,PCI-PCI-Eris GBP LIBOR 3YR Calendar 6M Interest Rate Future (1.00%),PCI,IFLL|PCI
+IFEU,PCJ-PCJ-Eris GBP LIBOR 3YR Calendar 6M  Interest Rate Future (1.25%),PCJ,IFLL|PCJ
+IFEU,PCK-PCK-Eris GBP LIBOR 3YR Calendar 6M Interest Rate Future (1.50%),PCK,IFLL|PCK
+IFEU,PEG-Eris GBP LIBOR 5YR Calendar 6M Interest Rate Future  (0.50%),PEG,IFLL|PEG
+IFEU,PEI-PEI-Eris GBP LIBOR 5YR Calendar 6M Interest Rate Future (1.00%),PEI,IFLL|PEI
+IFEU,PEJ-PEJ-Eris GBP LIBOR 5YR Calendar 6M Interest Rate Future (1.25%),PEJ,IFLL|PEJ
+IFEU,PEK-PEK-Eris GBP LIBOR 5YR Calendar 6M Interest Rate Future (1.50%),PEK,IFLL|PEK
+IFEU,PEL-Eris GBP LIBOR 5YR Calendar 6M Interest Rate Future  (1.75%),PEL,IFLL|PEL
+IFEU,PEM-PEM-Eris GBP LIBOR 5YR Calendar 6M Interest Rate Future (2.00%),PEM,IFLL|PEM
+IFEU,PGH-Eris GBP LIBOR 7YR Calendar 6M Interest Rate Future  (0.75%),PGH,IFLL|PGH
+IFEU,PGJ-PGJ-Eris GBP LIBOR 7YR Calendar 6M Interest Rate Future (1.25%),PGJ,IFLL|PGJ
+IFEU,PGK-PGK-Eris GBP LIBOR 7YR Calendar 6M Interest Rate Future (1.50%),PGK,IFLL|PGK
+IFEU,PGL-Eris GBP LIBOR 7YR Calendar 6M Interest Rate Future  (1.75%),PGL,IFLL|PGL
+IFEU,PGM-PGM-Eris GBP LIBOR 7YR Calendar 6M Interest Rate Future (2.00%),PGM,IFLL|PGM
+IFEU,"PHI-Philips NV, Kon. (Std Future Cash)",PHI,IFLO|PHI
+IFEU,PJ-Eris GBP LIBOR Synthetic 10Y Calendar 6M Interest Rate Future,PJ,IFLL|PJ
+IFEU,PJH-Eris GBP LIBOR 10YR Calendar 6M Interest Rate Future  (0.75%),PJH,IFLL|PJH
+IFEU,PJJ-Eris GBP LIBOR 10YR Calendar 6M Interest Rate Future  (1.25%),PJJ,IFLL|PJJ
+IFEU,PJK-PJK-Eris GBP LIBOR 10YR Calendar 6M Interest Rate Future (1.50%),PJK,IFLL|PJK
+IFEU,PJM-PJM-Eris GBP LIBOR 10YR Calendar 6M Interest Rate Future (2.00%),PJM,IFLL|PJM
+IFEU,PKY-GAM Holding Ltd (Flex Future Cash),PKY,IFLO|PKY
+IFEU,PNI-Eris GBP LIBOR 30YR Calendar 6M Interest Rate Future  (1.00%),PNI,IFLL|PNI
+IFEU,PNK-Eris GBP LIBOR 30YR Calendar 6M Interest Rate Future  (1.50%),PNK,IFLL|PNK
+IFEU,PNL-Eris GBP LIBOR 30YR Calendar 6M Interest Rate Future  (1.75%),PNL,IFLL|PNL
+IFEU,PNM-Eris GBP LIBOR 30YR Calendar 6M Interest Rate Future  (2.00%),PNM,IFLL|PNM
+IFEU,PNN-Eris GBP LIBOR 30YR Calendar 6M Interest Rate Future  (2.25%),PNN,IFLL|PNN
+IFEU,PTN-PostNL N.V (Std Future Cash),PTN,IFLO|PTN
+IFEU,PUY-Publicis Groupe (Flex Future Cash),PUY,IFLO|PUY
+IFEU,PY-Eris GBP LIBOR Synthetic 10Y Calendar 3M Interest Rate Future,PY,IFLL|PY
+IFEU,QJ-Eris Euribor Synthetic 10Y IMM 6M Interest Rate Future,QJ,IFLL|QJ
+IFEU,QSY-Skandinaviska Ensk Bk ser. A (Flex Future Cash),QSY,IFLO|QSY
+IFEU,QVY-Adecco Group AG (Flex Future Cash),QVY,IFLO|QVY
+IFEU,QY-Eris Euribor Synthetic 10Y IMM 3M Interest Rate Future,QY,IFLL|QY
+IFEU,R-Long Gilt Future,R,IFLL|R
+IFEU,RB5-Reckitt Benckiser Group Plc (Flex Future Cash),RB5,IFLO|RB5
+IFEU,RBE-RBE-Eris Euribor 2YR Calendar 6M Interest Rate Future (0.00%),RBE,IFLL|RBE
+IFEU,RBF-RBF-Eris Euribor 2YR Calendar 6M Interest Rate Future (0.25%),RBF,IFLL|RBF
+IFEU,RBY-Royal Bank of Scotland Group plc (Flex Future Cash),RBY,IFLO|RBY
+IFEU,RC-Robusta Coffee Future,RC,IFLX|RC
+IFEU,RCE-RCE-Eris Euribor 3YR Calendar 6M Interest Rate Future (0.00%),RCE,IFLL|RCE
+IFEU,RCF-RCF-Eris Euribor 3YR Calendar 6M Interest Rate Future (0.25%),RCF,IFLL|RCF
+IFEU,RD-Royal Dutch Shell plc A Euro (Std Future Cash),RD,IFLO|RD
+IFEU,REA-Renault SA (Std Future Cash),REA,IFLO|REA
+IFEU,REE-REE-Eris Euribor 5YR Calendar 6M Interest Rate Future (0.00%),REE,IFLL|REE
+IFEU,REF-REF-Eris Euribor 5YR Calendar 6M Interest Rate Future (0.25%),REF,IFLL|REF
+IFEU,REG-REG-Eris Euribor 5YR Calendar 6M Interest Rate Future (0.50%),REG,IFLL|REG
+IFEU,REN-Relx NV (Std Future Cash),REN,IFLO|REN
+IFEU,RGE-Eris Euribor 7YR Calendar 6M Interest Rate Future  (0.00%),RGE,IFLL|RGE
+IFEU,RGF-RGF-Eris Euribor 7YR Calendar 6M Interest Rate Future (0.25%),RGF,IFLL|RGF
+IFEU,RGG-RGG-Eris Euribor 7YR Calendar 6M Interest Rate Future (0.50%),RGG,IFLL|RGG
+IFEU,RGH-RGH-Eris Euribor 7YR Calendar 6M Interest Rate Future (0.75%),RGH,IFLL|RGH
+IFEU,RIY-Rio Tinto plc (Flex Future Cash),RIY,IFLO|RIY
+IFEU,RJ-Eris Euribor Synthetic 10Y Calendar 6M Interest Rate Future,RJ,IFLL|RJ
+IFEU,RJG-RJG-Eris Euribor 10YR Calendar 6M Interest Rate Future (0.50%),RJG,IFLL|RJG
+IFEU,RJH-RJH-Eris Euribor 10YR Calendar 6M Interest Rate Future (0.75%),RJH,IFLL|RJH
+IFEU,RJI-RJI-Eris Euribor 10YR Calendar 6M Interest Rate Future (1.00%),RJI,IFLL|RJI
+IFEU,RJJ-RJJ-Eris Euribor 10YR Calendar 6M Interest Rate Future (1.25%),RJJ,IFLL|RJJ
+IFEU,RMO-Rightmove Plc (Flex Future Cash),RMO,IFLO|RMO
+IFEU,RNH-Eris Euribor 30YR Calendar 6M Interest Rate Future  (0.75%),RNH,IFLL|RNH
+IFEU,RNJ-Eris Euribor 30YR Calendar 6M Interest Rate Future  (1.25%),RNJ,IFLL|RNJ
+IFEU,RNK-Eris Euribor 30YR Calendar 6M Interest Rate Future  (1.50%),RNK,IFLL|RNK
+IFEU,RNY-Renault SA (Flex Future Cash),RNY,IFLO|RNY
+IFEU,ROY-Roche Holding AG (Flex Future Cash),ROY,IFLO|ROY
+IFEU,RPM-GCF Repo Mortgage Backed Securities Index Futures,RPM,IFLL|RPM
+IFEU,RPT-GCF Repo US Treasury Index Futures,RPT,IFLL|RPT
+IFEU,RTD-Randstad Holding NV (Std Future Cash),RTD,IFLO|RTD
+IFEU,RWE-RWE AG (Std Future Cash),RWE,IFLO|RWE
+IFEU,RZ-Eris Euribor Synthetic 10Y Calendar 3M Interest Rate Future,RZ,IFLL|RZ
+IFEU,S-Three Month Euroswiss Future,S,IFLL|S
+IFEU,S02-Short Spanish Bond Future,S02,IFLL|S02
+IFEU,S05-Medium Spanish Bond Future,S05,IFLL|S05
+IFEU,S10-Long Spanish Bond Future,S10,IFLL|S10
+IFEU,SAY-Sainsbury (J) Plc (Flex Future Cash),SAY,IFLO|SAY
+IFEU,SCH-Banco Santander SA (Std Future Cash),SCH,IFLO|SCH
+IFEU,SCY-Standard Chartered plc (Flex Future Cash),SCY,IFLO|SCY
+IFEU,SDV-Schroders Plc (Flex Future Cash),SDV,IFLO|SDV
+IFEU,SEY-Natixis (Flex Future Cash),SEY,IFLO|SEY
+IFEU,SGB-Cie de Saint-Gobain (Std Future Cash),SGB,IFLO|SGB
+IFEU,SIM-Siemens AG (Std Future Cash),SIM,IFLO|SIM
+IFEU,SJY-Banco Santander SA (Flex Future Cash),SJY,IFLO|SJY
+IFEU,SNE-Schneider Electric SA (Std Future Cash),SNE,IFLO|SNE
+IFEU,SNT-Snam SpA (Std Future Cash),SNT,IFLO|SNT
+IFEU,SNV-Sanofi (Std Future Cash),SNV,IFLO|SNV
+IFEU,SOE-Societe Generale (Std Future Cash),SOE,IFLO|SOE
+IFEU,SOY-Solvay SA (Flex Future Cash),SOY,IFLO|SOY
+IFEU,SPM-Saipem SpA (Std Future Cash),SPM,IFLO|SPM
+IFEU,STM-STMicroelectronics NV (IT) (Std Future Cash),STM,IFLO|STM
+IFEU,SUB-FOB Indonesia Sub-Bituminous Coal Future,SUB,IFEU|SUB
+IFEU,SWY-Swisscom AG (Flex Future Cash),SWY,IFLO|SWY
+IFEU,T-UK Feed Wheat Future,T,IFLX|T
+IFEU,T-West Texas Intermediate Light Sweet Crude Future,T,IFEU|T
+IFEU,TCY-Tesco plc (Flex Future Cash),TCY,IFLO|TCY
+IFEU,TEF-Telefonica SA (Std Future Cash),TEF,IFLO|TEF
+IFEU,TI-Telecom Italia SpA (Std Future Cash),TI,IFLO|TI
+IFEU,TIR-Telecom Italia SpA (Savings) (Std Future Cash),TIR,IFLO|TIR
+IFEU,TOA-Total SA (Std Future Cash),TOA,IFLO|TOA
+IFEU,TPS-Travis Perkins Plc (Flex Future Cash),TPS,IFLO|TPS
+IFEU,TQY-Telenor ASA (Flex Future Cash),TQY,IFLO|TQY
+IFEU,TRN-Terna SpA (Std Future Cash),TRN,IFLO|TRN
+IFEU,TTH-Amazon.Com Inc (Flex Future Dlv),TTH,IFLO|TTH
+IFEU,TVY-Banco de Sabadell SA (Flex Future Cash),TVY,IFLO|TVY
+IFEU,TWS-2Yr Euro Swapnote Future,TWS,IFLL|TWS
+IFEU,TZZ-Total SA (Flex Future Dlv),TZZ,IFLO|TZZ
+IFEU,U-Ultra Long Gilt Future,U,IFLL|U
+IFEU,UBL-UK Power Baseload Future (Gregorian),UBL,IFEU|UBL
+IFEU,UC-Unicredit SpA (Std Future Cash),UC,IFLO|UC
+IFEU,UCP-Powder River Basin Coal Future,UCP,IFEU|UCP
+IFEU,UCX-CSX Coal Future,UCX,IFEU|UCX
+IFEU,UEW-FTSE 100 Equally Weighted TR Index Future (GBP),UEW,IFLL|UEW
+IFEU,UFY-Unibail-Rodamco SE (Flex Future Cash),UFY,IFLO|UFY
+IFEU,UMZ-Umicore (Flex Future Dlv),UMZ,IFLO|UMZ
+IFEU,UNA-Unilever NV (Std Future Cash),UNA,IFLO|UNA
+IFEU,UPL-UK Power Peakload Future (Gregorian),UPL,IFEU|UPL
+IFEU,US3-30Yr US Dollar Swapnote,US3,IFLL|US3
+IFEU,USO-5yr US Dollar Swapnote Future,USO,IFLL|USO
+IFEU,USP-10yr US Dollar Swapnote Future,USP,IFLL|USP
+IFEU,USW-2yr US Dollar Swapnote Future,USW,IFLL|USW
+IFEU,VEO-Veolia Environnement (Std Future Cash),VEO,IFLO|VEO
+IFEU,VIN-Vinci SA (Std Future Cash),VIN,IFLO|VIN
+IFEU,VJ-Eris GBP LIBOR Synthetic 10Y IMM 6M Interest Rate Future,VJ,IFLL|VJ
+IFEU,VOY-Vodafone Group plc (Flex Future Cash),VOY,IFLO|VOY
+IFEU,VVI-Vivendi SA (Std Future Cash),VVI,IFLO|VVI
+IFEU,VWD-Vestas Wind Systems A/S (Flex Future Cash),VWD,IFLO|VWD
+IFEU,VY-Eris GBP LIBOR Synthetic 10Y IMM 3M Interest Rate Future,VY,IFLL|VY
+IFEU,W-White Sugar Future,W,IFLX|W
+IFEU,WER-Weir Group Plc (Flex Future Cash),WER,IFLO|WER
+IFEU,WLS-Wolters Kluwer NV (Std Future Cash),WLS,IFLO|WLS
+IFEU,WMS-MSCI ACWI NTR Index Future,WMS,IFLL|WMS
+IFEU,WOS-Ferguson Plc (Flex Div Adj Future Cash),0Y5,IFLO|0Y5
+IFEU,WPY-WPP plc (Flex Future Cash),WPY,IFLO|WPY
+IFEU,WTF-CAD WTI Crude Future,WTF,IFEU|WTF
+IFEU,WTH-CAD WTI 1st Line Future,WTH,IFEU|WTH
+IFEU,WVY-Red Electrica Corporacion SA (Flex Future Cash),WVY,IFLO|WVY
+IFEU,XEY-Sodexo SA (Flex Future Cash),XEY,IFLO|XEY
+IFEU,XGY-SKF B (Flex Future Cash),XGY,IFLO|XGY
+IFEU,XZ-FTSE 100 Dividend Index - RDSA Withholding Future,XZ,IFLL|XZ
+IFEU,Y2-FTSE 250 Index Future (GBP 2),Y2,IFLL|Y2
+IFEU,YAX-AEX Index Option  (Synthetic Underlying),YAX,IFLO|YAX
+IFEU,YCC-CAC 40 Index Option  (Synthetic Underlying),YCC,IFLO|YCC
+IFEU,YFS-FTSE 250 Index 2GBP Option (Synthetic Underlying),YFS,IFLO|YFS
+IFEU,YQY-Kuehne & Nagel International AG (Flex Future Cash),YQY,IFLO|YQY
+IFEU,YZ-FTSE 100 Declared Dividend Index Futures,YZ,IFLL|YZ
+IFEU,Z-FTSE 100 (New Style) Index Future,Z,IFLL|Z
+IFEU,ZAX-AEX Index Future,ZAX,IFLL|ZAX
+IFEU,ZBL-BEL 20 Index Future,ZBL,IFLL|ZBL
+IFEU,ZCC-CAC 40 Index Future,ZCC,IFLL|ZCC
+IFEU,ZPS-PSI 20 Index Future,ZPS,IFLL|ZPS
+IFEU,ZTR-FTSE 100 Total Return (Declared Dividend) Index Future,ZTR,IFLL|ZTR
