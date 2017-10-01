@@ -57,7 +57,7 @@ class MlCurve(ActiveResource):
                                 ai.active,
                                 MlCurve.flavor(ai.flavor.name()),
                                 actives_cls=ai.flavor.actives_cls,
-                                modifier='UNIQUE (Date, CONTRACT) ON CONFLICT IGNORE',
+                                modifier='UNIQUE (Date, CONTRACT) ON CONFLICT REPLACE',
                                 pre_dump=pre_dump,
                                 post_load=post_load,
                                 actives_flavor=ai.flavor.name())

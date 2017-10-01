@@ -12,10 +12,14 @@ def exchook(*args):
 
     sys.exit(1)
 
+
 def main():
     sys.excepthook = exchook
 
-    ControllerLauncher()
+    cl = ControllerLauncher()
+
+    cl.event_loop()
+
 
 if __name__ == '__main__':
     main()

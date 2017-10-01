@@ -14,6 +14,7 @@ class ControllerLauncher:
 
         self.view_launcher = ViewLauncher(self, self.model_launcher)
 
+    def event_loop(self):
         self.view_launcher.event_loop()
 
     def update_data(self, how):
@@ -104,7 +105,8 @@ class ControllerLauncher:
         return self.get_package_config()['version']
 
     def register_update(self, source):
-        self.view_launcher.register_update(source)
+        if hasattr(self, 'view_launcher'):
+            self.view_launcher.register_update(source)
 
     def update_missed_schedulers(self):
         self.view_launcher.update_missed_schedulers()

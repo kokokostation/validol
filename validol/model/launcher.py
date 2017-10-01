@@ -53,17 +53,20 @@ class ModelLauncher:
             self.write_db_version(init_version(self))
 
         if not main_dbh_exists:
-            real_conn = self.main_dbh
-
-            self.main_dbh = sqlite3.connect(":memory:")
-
-            self.update_weekly()
-
-            real_conn.executescript("".join(self.main_dbh.iterdump()))
-
-            self.main_dbh = real_conn
+            self.init_main_dbh()
 
         return self
+
+    def init_main_dbh(self):
+        real_conn = self.main_dbh
+
+        self.main_dbh = sqlite3.connect(":memory:")
+
+        self.update_weekly()
+
+        real_conn.executescript("".join(self.main_dbh.iterdump()))
+
+        self.main_dbh = real_conn
 
     def update(self, cls):
         try:

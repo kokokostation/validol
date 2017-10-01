@@ -30,18 +30,20 @@ class Table(QtWidgets.QWidget):
         for i, col in enumerate(filtered_df):
             col_without_nan = filtered_df[col].dropna()
 
-            if col_without_nan.empty:
-                continue
+            if not col_without_nan.empty:
+                min_val, max_val = col_without_nan.min(), col_without_nan.max()
 
-            min_val, max_val = col_without_nan.min(), col_without_nan.max()
+                if max_val != min_val:
+                    for j in range(len(filtered_df)):
+                        value = filtered_df.iloc[j, i]
 
-            for j in range(len(filtered_df)):
-                value = filtered_df.iloc[j, i]
-
-                if value is not None and not pd.isnull(value):
-                    norm = (value - min_val) / (max_val - min_val)
-                    table.item(j, i + 1).setBackground(
-                        QtGui.QBrush(QtGui.QColor(*map(int, [255 * norm, 0, 255 * (1 - norm), 100]))))
+                        if value is not None and not pd.isnull(value):
+                            try:
+                                norm = (value - min_val) / (max_val - min_val)
+                                table.item(j, i + 1).setBackground(
+                                    QtGui.QBrush(QtGui.QColor(*map(int, [255 * norm, 0, 255 * (1 - norm), 100]))))
+                            except:
+                                pass
 
         self.mainLayout = QtWidgets.QVBoxLayout(self)
 

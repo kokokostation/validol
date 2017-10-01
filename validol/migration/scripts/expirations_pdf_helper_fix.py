@@ -2,8 +2,7 @@ import sqlite3
 from shutil import copyfile
 
 
-
-def main():
+def main(model_launcher):
     copyfile('main.db', 'main.db.old')
 
     dbh = sqlite3.connect('main.db')

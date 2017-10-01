@@ -164,7 +164,7 @@ class Updatable:
 class Resource(Table, Updatable):
     def __init__(self, dbh, table, schema, modifier=None, pre_dump=None, post_load=None):
         Table.__init__(self, dbh, table, [("Date", "INTEGER")] + schema,
-                       modifier or "PRIMARY KEY (Date) ON CONFLICT IGNORE",
+                       modifier or "PRIMARY KEY (Date) ON CONFLICT REPLACE",
                        pre_dump, post_load)
         Updatable.__init__(self)
 

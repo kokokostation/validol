@@ -121,8 +121,8 @@ class InvestingPrice(Resource):
             else:
                 if begin < first:
                     self.write_df(self.fill(begin, first - dt.timedelta(days=1)))
-                if last < end:
-                    self.write_df(self.fill(last + dt.timedelta(days=1), end))
+                if last <= end:
+                    self.write_df(self.fill(last, end))
         except requests.exceptions.ConnectionError:
             pass
 

@@ -55,8 +55,8 @@ class Expirations(ResourceUpdater):
             curr_contract = exp_info['Contract'].iloc[i] + relativedelta(months=delta)
 
             result = result.append(df[
-                (begin <= df.index) &
-                (df.index < end) &
+                (begin < df.index) &
+                (df.index <= end) &
                 (df.CONTRACT == curr_contract)
                 ])
 

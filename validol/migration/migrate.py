@@ -1,4 +1,5 @@
 from validol.migration.scripts.expirations_pdf_helper_fix import main as zzn_main
+from validol.migration.scripts.db_fix import main as zzts_main
 from validol.model.utils.utils import map_version
 
 
@@ -7,7 +8,8 @@ from validol.model.utils.utils import map_version
 
 
 MIGRATION_MAP = [
-    ('0.0.9', zzn_main)
+    ('0.0.9', zzn_main),
+    ('0.0.27', zzts_main)
 ]
 
 
@@ -22,5 +24,5 @@ def migrate(model_launcher):
 
     for version, migration_functor in MIGRATION_MAP:
         if map_version(db_version) < map_version(version) < map_version(current_version):
-            migration_functor()
+            migration_functor(model_launcher)
             model_launcher.write_db_version(version)

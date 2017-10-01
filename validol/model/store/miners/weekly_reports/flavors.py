@@ -296,7 +296,7 @@ class Ice(Flavor):
     def prepare_update(self):
         df = self.get_df(Ice.FLAVORS[0])
 
-        fix_atoms(df)
+        df = fix_atoms(df)
 
         self.grouped_df = group_by(df, ["FutOnly_or_Combined"])
 
