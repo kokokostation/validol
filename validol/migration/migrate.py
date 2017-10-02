@@ -1,5 +1,6 @@
 from validol.migration.scripts.expirations_pdf_helper_fix import main as zzn_main
 from validol.migration.scripts.db_fix import main as zzts_main
+from validol.migration.scripts.platforms_fix import main as zztn_main
 from validol.model.utils.utils import map_version
 
 
@@ -9,7 +10,8 @@ from validol.model.utils.utils import map_version
 
 MIGRATION_MAP = [
     ('0.0.9', zzn_main),
-    ('0.0.27', zzts_main)
+    ('0.0.27', zzts_main),
+    ('0.0.29', zztn_main)
 ]
 
 

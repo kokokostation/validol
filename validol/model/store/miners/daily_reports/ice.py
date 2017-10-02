@@ -30,11 +30,6 @@ class IceDaily:
     @property
     @lru_cache()
     def session_obj(self):
-        platforms_table = Platforms(self.model_launcher, self.flavor['name'])
-        platforms_table.write_df(
-            pd.DataFrame([['IFEU', 'ICE FUTURES EUROPE']],
-                         columns=("PlatformCode", "PlatformName")))
-
         session = CachedSession(allowable_methods=('GET', 'POST'),
                                 ignored_parameters=['smpbss'])
 
@@ -66,6 +61,11 @@ class IceDaily:
         return session
 
     def update(self):
+        platforms_table = Platforms(self.model_launcher, self.flavor['name'])
+        platforms_table.write_df(
+            pd.DataFrame([['IFEU', 'ICE FUTURES EUROPE']],
+                         columns=("PlatformCode", "PlatformName")))
+
         from validol.model.store.miners.daily_reports.ice_view import IceView
 
         ranges = []
