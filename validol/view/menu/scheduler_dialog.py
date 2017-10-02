@@ -88,7 +88,7 @@ class SchedulerDialog(ViewElement, QtWidgets.QWidget):
     def create_scheduler(self):
         name = self.schedulers.currentText()
         cron = self.cron_line.text()
-        working = self.switched_on.checkState()
+        working = self.switched_on.checkState() == QtCore.Qt.Checked
 
         self.model_launcher.write_scheduler(name, cron, working)
 
