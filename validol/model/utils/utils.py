@@ -103,12 +103,6 @@ def group_by(df, columns):
     return df.groupby(columns, sort=False)[[col for col in df.columns if col not in columns]]
 
 
-def date_from_timestamp(df):
-    result = df.copy()
-    result.Date = result.apply(lambda row: dt.date.fromtimestamp(row['Date']), axis=1)
-    return result
-
-
 def date_to_timestamp(df):
     result = df.copy()
     result.Date = result.apply(lambda row: to_timestamp(row['Date']), axis=1)

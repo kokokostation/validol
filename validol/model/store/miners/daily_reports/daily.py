@@ -1,6 +1,7 @@
 import pandas as pd
+import datetime as dt
 
-from validol.model.utils.utils import date_from_timestamp, concat
+from validol.model.utils.utils import concat
 from validol.model.store.resource import ActiveResource
 from validol.model.utils.fs_cache import FsCache
 
@@ -123,7 +124,7 @@ class DailyResource(ActiveResource):
         return df.append(net_df)
 
     def fill(self, first, last):
-        return self.download_dates(set(self.available_dates()) - set(date_from_timestamp(self.read_df()).Date))
+        return self.download_dates(set(self.available_dates()) - set(map(dt.date.fromtimestamp, self.read_df().index)))
 
     def available_dates(self):
         fs_cache = FsCache(self.pdf_helper.active_folder)
