@@ -11,9 +11,11 @@ class FtpCacheEntry(Base):
     value = Column(LargeBinary)
 
     @staticmethod
-    def load(ftp, file):
-        data = BytesIO()
-        ftp.retrbinary('RETR {}'.format(file), data.write)
+    def load(ftp_server, file):
+        with FTP(ftp_server) as ftp:
+            ftp.login()
+            data = BytesIO()
+            ftp.retrbinary('RETR {}'.format(file), data.write)
 
         return FtpCacheEntry(name=file, value=data.getvalue())
 
@@ -23,15 +25,15 @@ class FtpCache(NamedStructure):
         NamedStructure.__init__(self, FtpCacheEntry, model_launcher, model_launcher.cache_engine)
 
     def get(self, ftp_server, file, with_cache=True):
-        try:
-            return self.read_by_name(file).value
-        except:
-            with FTP(ftp_server) as ftp:
-                ftp.login()
-                obj = FtpCacheEntry.load(ftp, file)
+        if with_cache:
+            try:
+                return self.read_by_name(file).value
+            except:
+                obj = FtpCacheEntry.load(ftp_server, file)
 
-                if with_cache:
-                    self.write(obj)
+                self.write(obj)
+        else:
+            obj = FtpCacheEntry.load(ftp_server, file)
 
-                return obj.value
+        return obj.value
 
