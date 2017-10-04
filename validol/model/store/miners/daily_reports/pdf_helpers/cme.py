@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from itertools import repeat
 import re
+import random
+import PyPDF2 as ppdf
 
 from validol.model.store.miners.daily_reports.pdf_helpers.utils import filter_rows, DailyPdfParser, is_contract
 from validol.model.utils.utils import get_pages_run
@@ -14,8 +16,43 @@ class CmeParser(DailyPdfParser):
     def split_info(df):
         return df.iloc[0, :], df.iloc[1:, :].reset_index(drop=True)
 
+    @staticmethod
+    def if_preliminary_pdf(content):
+        pdf = ppdf.PdfFileReader(content)
+
+        num_pages = pdf.getNumPages()
+
+        for i in range(15):
+            page_num = random.randint(0, num_pages - 1)
+
+            page = pdf.getPage(page_num)
+            page.cropBox.lowerLeft = (page.cropBox.lowerLeft[0], 800)
+            page.cropBox.lowerRight = (page.cropBox.lowerRight[0], 800)
+
+            writer = ppdf.PdfFileWriter()
+            writer.addPage(page)
+            file = BytesIO()
+            writer.write(file)
+
+            reader = ppdf.PdfFileReader(file)
+
+            if 'PRELIMINARY' in reader.getPage(0).extractText():
+                return True
+
+        return False
+
+    @staticmethod
+    def if_preliminary_zip(zip_file):
+        main_file = [filename for filename in zip_file.namelist()
+                     if re.match('^DailyBulletin_\d+\.pdf$', filename)][0]
+
+        return CmeParser.if_preliminary_pdf(BytesIO(zip_file.read(main_file)))
+
     def map_content(self, content):
         with ZipFile(BytesIO(content), 'r') as zip_file:
+            if CmeParser.if_preliminary_zip(zip_file):
+                raise ValueError
+
             return zip_file.read(self.pdf_helper.other_info['archive_file'])
 
     def config(self, content):

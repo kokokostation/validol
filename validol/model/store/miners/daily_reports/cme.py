@@ -5,6 +5,7 @@ import os
 from zipfile import ZipFile
 from io import BytesIO
 from functools import lru_cache
+import re
 
 from validol.model.store.resource import Actives, Platforms
 from validol.model.store.view.active_info import ActiveInfo
@@ -52,12 +53,19 @@ class Active(DailyResource):
         def __init__(self, cme_active):
             self.cme_active = cme_active
 
+        @staticmethod
+        def if_valid_zip(file):
+            return re.match('^DailyBulletin_pdf_\d+\.zip$', file) is not None
+
         @property
         @lru_cache()
         def available_dates_cache(self):
             return {self.handle(file): file for file in Active.Cache.get_files() if self.handle(file) is not None}
 
         def handle(self, file):
+            if not Active.Cache.if_valid_zip(file):
+                return None
+
             start = len('DailyBulletin_pdf_')
             try:
                 return dt.datetime.strptime(file[start:start + 8], '%Y%m%d').date()
@@ -88,6 +96,11 @@ class Active(DailyResource):
         def available_handles(self):
             return self.available_dates_cache.keys()
 
+        def delete(self, date):
+            file = self.available_dates_cache.get(date, None)
+            if file is not None:
+                FtpCache(self.cme_active.model_launcher).remove_by_name(file)
+
     @staticmethod
     def get_archive_files(model_launcher):
         item = FtpCache(model_launcher).one_or_none()
@@ -99,10 +112,6 @@ class Active(DailyResource):
 
         with ZipFile(BytesIO(item), 'r') as zip_file:
             return zip_file.namelist()
-
-    def download_date(self, date):
-        content = self.cache.get(date)
-        return self.pdf_helper.parse_content(content, date)
 
 
 class CmeActives(Actives):

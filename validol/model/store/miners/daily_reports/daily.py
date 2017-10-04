@@ -1,4 +1,4 @@
-from functools import lru_cache
+import pandas as pd
 
 from validol.model.utils.utils import date_range, concat
 from validol.model.store.resource import ActiveResource
@@ -132,4 +132,12 @@ class DailyResource(ActiveResource):
         return self.cache.available_handles()
 
     def download_date(self, date):
-        raise NotImplementedError
+        content = self.cache.get(date)
+
+        if content is not None:
+            try:
+                return self.pdf_helper.parse_content(content, date)
+            except ValueError:
+                self.cache.delete(date)
+
+        return pd.DataFrame()

@@ -172,17 +172,6 @@ class Active(DailyResource):
             else:
                 return []
 
-    def download_date(self, date):
-        content = self.cache.get(date)
-
-        if content is not None:
-            try:
-                return self.pdf_helper.parse_content(content, date)
-            except ValueError:
-                self.cache.delete(date)
-
-                return pd.DataFrame()
-
 
 class IceActives(Actives):
     def __init__(self, model_launcher, flavor):
