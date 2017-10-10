@@ -19,11 +19,11 @@ class MWTippedList(TextTippedList):
 
 def with_ai(f):
     @wraps(f)
-    def wrapped(self, *args, **kwargs):
+    def wrapped(self):
         ai = self.active_info()
 
         if ai is not None:
-            return f(ai, *args, **kwargs)
+            return f(self, ai)
 
     return wrapped
 

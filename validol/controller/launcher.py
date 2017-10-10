@@ -110,3 +110,6 @@ class ControllerLauncher:
 
     def update_missed_schedulers(self):
         self.view_launcher.update_missed_schedulers()
+
+    def display_error(self, title, message):
+        self.view_launcher.display_error(title, message)

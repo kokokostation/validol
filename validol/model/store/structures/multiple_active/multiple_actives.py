@@ -31,10 +31,16 @@ class MultipleActiveView(ViewFlavor):
         return MultipleActives(model_launcher, self.active_cls).get_actives()
 
     def new_active(self, platform, model_launcher):
+        chosen_actives = model_launcher.controller_launcher.get_chosen_actives()
+
+        if not chosen_actives:
+            model_launcher.controller_launcher.display_error('No actives', 'You need to pick at least 1 active')
+            return
+
         name = model_launcher.controller_launcher.ask_name()
         if name is not None:
             MultipleActives(model_launcher, self.active_cls)\
-                .write_active(name, model_launcher.controller_launcher.get_chosen_actives())
+                .write_active(name, chosen_actives)
 
     def remove_active(self, ai, model_launcher):
         MultipleActives(model_launcher, self.active_cls).remove_by_name(ai.active)
