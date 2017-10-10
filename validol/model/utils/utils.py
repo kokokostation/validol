@@ -103,9 +103,15 @@ def group_by(df, columns):
     return df.groupby(columns, sort=False)[[col for col in df.columns if col not in columns]]
 
 
+def date_from_timestamp(df):
+    result = df.copy()
+    result.index = result.index.map(dt.date.fromtimestamp)
+    return result
+
+
 def date_to_timestamp(df):
     result = df.copy()
-    result.Date = result.apply(lambda row: to_timestamp(row['Date']), axis=1)
+    result.Date = result.Date.map(to_timestamp)
     return result
 
 

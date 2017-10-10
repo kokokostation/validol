@@ -54,6 +54,13 @@ class DailyView(ViewFlavor):
     def get_processors(self):
         return [processor.NAME for processor in self.flavor['processors']]
 
+    def reload_expirations(self, ai, model_launcher):
+        pdf_helper = model_launcher.read_pdf_helper(ai)
+
+        model_launcher.remove_expirations(pdf_helper.name)
+
+        pdf_helper.read_expirations(model_launcher)
+
 
 def active_df_tolist(df):
     return ['{} - {} - {}'.format(item.PlatformCode, item.ActiveCode, item.ActiveName)
@@ -78,7 +85,7 @@ def searchable_with_mark(text, content):
 
 
 def expirations_layout(model_launcher):
-    expirations = model_launcher.get_expirations()
+    expirations = model_launcher.get_expiration_names()
 
     widget, layout = searchable_with_mark('Ice expirations', active_df_tolist(expirations))
 

@@ -1,5 +1,7 @@
 from PyQt5 import QtWidgets
 import json
+import datetime as dt
+import numpy as np
 
 
 def scrollable_area(layout):
@@ -42,5 +44,15 @@ def mark(text, widget):
 
     return layout
 
+
+def showable_df(df):
+    show_df = df.copy()
+    show_df[show_df.index.name] = show_df.index.map(dt.date.fromtimestamp)
+
+    for col in show_df:
+        if show_df[col].dtype == np.float64:
+            show_df[col] = show_df[col].apply("{:.2f}".format)
+
+    return show_df
 
 

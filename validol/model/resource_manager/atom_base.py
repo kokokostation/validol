@@ -19,6 +19,9 @@ class AtomBase:
     def evaluate(self, evaluator, params):
         raise NotImplementedError
 
+    def note(self):
+        return None
+
 
 def rangable(f):
     @wraps(f)

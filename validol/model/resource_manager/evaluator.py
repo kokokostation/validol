@@ -1,11 +1,11 @@
 import numpy as np
 import operator
-import math
 import pandas as pd
 import pyparsing as pp
 
 from validol.model.utils.utils import merge_dfs
 from validol.model.store.structures.structure import PieceNameError
+from validol.model.resource_manager.data import Data
 
 
 class AtomWrap:
@@ -139,7 +139,10 @@ class NumericStringParser(FormulaGrammar):
             else:
                 result = self.cache[name]
 
-            return result
+            if atom.note() is not None:
+                return result, atom.note()
+            else:
+                return result
         elif op[0] == '@':
             return params_map[op]
         elif op == 'unary -':
@@ -173,13 +176,20 @@ class Evaluator:
 
     def evaluate(self, formulas):
         df = pd.DataFrame()
+        info = {}
 
         for formula in formulas:
             result = self.parser.evaluate(formula)
+
+            if isinstance(result, tuple):
+                info[formula] = result[1]
+                result = result[0]
 
             if isinstance(result, pd.Series):
                 df = merge_dfs(df, result.to_frame(formula))
             else:
                 df[formula] = result
 
-        return df
+        df.dropna(axis=0, how='all', inplace=True)
+
+        return Data(df, info)

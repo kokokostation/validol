@@ -71,15 +71,15 @@ class ViewLauncher(ViewElement):
     def refresh_prices(self):
         self.main_window.set_cached_prices()
 
-    def show_table(self, df, labels, title):
-        self.windows.append(Table(ViewLauncher.FLAGS, df, labels, title))
+    def show_table(self, data, labels, title):
+        self.windows.append(Table(ViewLauncher.FLAGS, data, labels, title))
 
-    def show_graph_dialog(self, df, table_pattern, title):
-        self.windows.append(GraphDialog(ViewLauncher.FLAGS, df, table_pattern, title, self.controller_launcher,
-                           self.model_launcher))
+    def show_graph_dialog(self, data, table_pattern, title):
+        self.windows.append(GraphDialog(ViewLauncher.FLAGS, data, table_pattern, title,
+                                        self.controller_launcher, self.model_launcher))
 
-    def show_graph(self, df, pattern, table_labels, title):
-        self.windows.append(CheckedGraph(ViewLauncher.FLAGS, df, pattern, table_labels, title))
+    def show_graph(self, data, pattern, table_labels, title):
+        self.windows.append(CheckedGraph(ViewLauncher.FLAGS, data, pattern, table_labels, title))
 
     def refresh_tables(self):
         self.main_window.tipped_list.refresh()

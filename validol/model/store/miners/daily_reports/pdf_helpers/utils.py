@@ -55,4 +55,4 @@ class DailyPdfParser(PdfParser):
 
         result['Source'] = str(self.pdf_helper.name)
 
-        return result
+        return result[pd.notnull(result.Date)]

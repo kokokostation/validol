@@ -37,3 +37,6 @@ class CmeView(DailyView):
             })
 
         model_launcher.controller_launcher.refresh_actives()
+
+    def config(self):
+        return {'expirations_delta': -1}

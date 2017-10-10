@@ -12,6 +12,9 @@ class ActiveInfo:
     def __str__(self):
         return ActiveInfoSchema().dumps(self).data
 
+    def active_only(self):
+        return ActiveInfoActiveOnlySchema().dumps(self).data
+
 
 class ActiveInfoSchema(Schema):
     class Meta:

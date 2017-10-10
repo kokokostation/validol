@@ -7,7 +7,7 @@ from PyQt5 import QtCore, QtWidgets
 from collections import defaultdict
 
 import validol.pyqtgraph as pg
-from validol.model.store.structures.pattern import Line, Bar
+from validol.model.store.structures.pattern import Line, Bar, Indicator
 from validol.model.utils.utils import remove_duplications, to_timestamp, merge_dfs
 from validol.view.utils.utils import set_title
 from validol.view.utils.pattern_tree import PatternTree
@@ -63,21 +63,22 @@ class GraphItem:
 
 
 class Showable(GraphItem):
-    def __init__(self, plot_item, chunk, showed, flavor=None):
+    def __init__(self, plot_item, chunks, showed, flavor=None):
         GraphItem.__init__(self, flavor)
 
         self.plot_item = plot_item
-        self.chunk = chunk
+        self.chunks = chunks
         self.showed_ = False
 
         self.set(showed)
 
     def set(self, showed):
         if self.showed_ != showed:
-            if showed:
-                self.plot_item.addItem(self.chunk)
-            else:
-                self.plot_item.removeItem(self.chunk)
+            for chunk in self.chunks:
+                if showed:
+                    self.plot_item.addItem(chunk)
+                else:
+                    self.plot_item.removeItem(chunk)
 
             self.showed_ = showed
 
@@ -92,8 +93,8 @@ class ScatteredPlot(GraphItem):
     def __init__(self, plot_item, plot, scatter, flavor):
         GraphItem.__init__(self, flavor)
 
-        self.plot = Showable(plot_item, plot, True)
-        self.scatter = Showable(plot_item, scatter, False)
+        self.plot = Showable(plot_item, [plot], True)
+        self.scatter = Showable(plot_item, [scatter], False)
         self.scatter_state = False
 
     def set(self, showed):
@@ -116,15 +117,23 @@ class ScatteredPlot(GraphItem):
 
 
 class DaysMap:
-    def __init__(self, df, pattern):
-        self.start = dt.date.fromtimestamp(df.index[0])
+    def __init__(self, data, pattern):
+        self.start = dt.date.fromtimestamp(data.df.index[0])
 
-        days_num = (dt.date.fromtimestamp(df.index[-1]) - self.start).days + 1 + 10
+        days_num = (dt.date.fromtimestamp(data.df.index[-1]) - self.start).days + 1 + 10
         all_dates = [to_timestamp(self.start + dt.timedelta(days=i)) for i in range(0, days_num)]
 
-        self.days_map = merge_dfs(pd.DataFrame(index=all_dates),
-                                  df[remove_duplications(pattern.get_formulas())])\
-            .fillna(method='ffill', axis=0)
+        formulas = remove_duplications(pattern.get_formulas())
+
+        self.days_map = merge_dfs(pd.DataFrame(index=all_dates), data.df[formulas])
+
+        for formula in formulas:
+            method = 'ffill'
+
+            if formula in data.info:
+                method = data.info[formula].get('fill_method', 'ffill')
+
+            self.days_map[formula].fillna(method=method, axis=0, inplace=True)
 
         self.days_map.index = np.arange(len(self.days_map))
 
@@ -143,8 +152,8 @@ class DaysMap:
 class LegendUpdater:
     DELAY = 200
 
-    def __init__(self, df, pattern, vert_lines, hor_lines, plots, legends, labels, legend_data):
-        self.days_map = DaysMap(df, pattern)
+    def __init__(self, data, pattern, vert_lines, hor_lines, plots, legends, labels, legend_data):
+        self.days_map = DaysMap(data, pattern)
         self.vert_lines = vert_lines
         self.hor_lines = hor_lines
         self.plots = plots
@@ -185,8 +194,6 @@ class LegendUpdater:
                 self.legends[i].addItem(*section[0])
                 for style, key in section[1:]:
                     value = self.days_map.get_value(days_passed or self.curr_days_passed, key)
-                    if value is not None:
-                        value = "{:.2f}".format(value)
                     self.legends[i].addItem(
                         style,
                         "{} {}".format(key, value))
@@ -204,13 +211,13 @@ class LegendUpdater:
 
 
 class Graph(pg.GraphicsWindow):
-    def __init__(self, df, pattern, table_labels):
+    def __init__(self, data, pattern, table_labels):
         pg.GraphicsWindow.__init__(self)
 
         self.widgets = defaultdict(dict)
         self.legendData = []
 
-        self.df = df
+        self.data = data
         self.pattern = pattern
         self.table_labels = table_labels
         self.scatter_on = False
@@ -229,7 +236,7 @@ class Graph(pg.GraphicsWindow):
 
     def fix_background(self, graph_num):
         for w in self.widgets[graph_num].values():
-            if w.flavor == 'line':
+            if w.flavor != 'bar':
                 w.redraw()
 
     def toogle_scatter(self):
@@ -242,7 +249,7 @@ class Graph(pg.GraphicsWindow):
         bars = [piece for pieces in graph_pieces for piece in pieces if isinstance(piece, Bar)]
         if bars:
             week = pd.Series(
-                self.df[[piece.atom_id for piece in bars]].dropna(how='all').index).diff().min()
+                self.data.df[[piece.atom_id for piece in bars]].dropna(how='all').index).diff().min()
             bases_num = max([piece.base for piece in bars]) + 1
             bar_width = 0.95 * week / bases_num
 
@@ -250,8 +257,9 @@ class Graph(pg.GraphicsWindow):
             self.legendData[graph_num][lr].append((ItemData(None, None), "____" + label + "____"))
 
             for piece in pieces:
-                xs = pd.Series(self.df.index).as_matrix()
-                ys = self.df[piece.atom_id].as_matrix().astype(np.float64)
+                if isinstance(piece, Line) or isinstance(piece, Bar):
+                    xs = pd.Series(self.data.df.index).as_matrix()
+                    ys = self.data.df[piece.atom_id].as_matrix().astype(np.float64)
 
                 if isinstance(piece, Line):
                     pen = {'color': piece.color, 'width': 2}
@@ -269,16 +277,28 @@ class Graph(pg.GraphicsWindow):
 
                     chunk = Showable(
                         plot_item,
-                        pg.BarGraphItem(
+                        [pg.BarGraphItem(
                             x=xs + bar_width * piece.base,
                             height=ys,
                             width=bar_width,
                             brush=pg.mkBrush(piece.color + [130]),
-                            pen=pg.mkPen('k')),
+                            pen=pg.mkPen('k'))],
                         True,
                         'bar'
                     )
                     legend_color = piece.color + [200]
+                elif isinstance(piece, Indicator):
+                    pen = {'color': piece.color, 'width': 2}
+                    chunk = Showable(
+                        plot_item,
+                        [pg.VTickGroup([date for date, _ in
+                                        self.data.df[piece.atom_id].dropna().iteritems()],
+                                       [0, 0.1],
+                                       pen=pen)],
+                        True,
+                        'indicator'
+                    )
+                    legend_color = piece.color
 
                 self.widgets[graph_num][piece.atom_id] = chunk
                 self.legendData[graph_num][lr].append((ItemData('s', legend_color), piece.atom_id))
@@ -322,7 +342,7 @@ class Graph(pg.GraphicsWindow):
                 plots[i].setXLink(plots[j])
 
         if plots:
-            plots[0].setXRange(self.df.index[0], self.df.index[-1])
+            plots[0].setXRange(self.data.df.index[0], self.data.df.index[-1])
 
         vLines = []
         hLines = []
@@ -335,18 +355,18 @@ class Graph(pg.GraphicsWindow):
             p.addItem(hLines[-1], ignoreBounds=True)
             p.addItem(labels[-1], ignoreBounds=True)
 
-        self.legend_updater = LegendUpdater(self.df, self.pattern, vLines, hLines,
+        self.legend_updater = LegendUpdater(self.data, self.pattern, vLines, hLines,
                                             plots, legends, labels, self.legendData)
 
         self.scene().sigMouseMoved.connect(self.legend_updater.mouse_moved)
 
 
 class CheckedGraph(QtWidgets.QWidget):
-    def __init__(self, flags, df, pattern, tableLabels, title):
+    def __init__(self, flags, data, pattern, tableLabels, title):
         QtWidgets.QWidget.__init__(self, flags=flags)
 
         self.setWindowTitle(title)
-        self.graph = Graph(df, pattern, tableLabels)
+        self.graph = Graph(data, pattern, tableLabels)
 
         self.mainLayout = QtWidgets.QVBoxLayout(self)
         set_title(self.mainLayout, title)

@@ -1,9 +1,9 @@
 from PyQt5 import QtWidgets
 from collections import OrderedDict
-from functools import partial
+from functools import partial, wraps
 
 from validol.view.utils.tipped_list import TextTippedList
-from validol.view.utils.utils import scrollable_area, display_error
+from validol.view.utils.utils import scrollable_area
 from validol.view.view_element import ViewElement
 from validol.view.utils.searchable_list import SearchableList
 from validol.model.store.view.active_info import ActiveInfo
@@ -15,6 +15,17 @@ class MWTippedList(TextTippedList):
 
     def get_items(self):
         return self.model_launcher.get_tables()
+
+
+def with_ai(f):
+    @wraps(f)
+    def wrapped(self, *args, **kwargs):
+        ai = self.active_info()
+
+        if ai is not None:
+            return f(ai, *args, **kwargs)
+
+    return wrapped
 
 
 class Window(ViewElement, QtWidgets.QWidget):
@@ -115,10 +126,14 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.remove_active_data_button = QtWidgets.QPushButton('Remove active data')
         self.remove_active_data_button.clicked.connect(self.remove_active_data)
 
+        self.reload_expirations_button = QtWidgets.QPushButton('Reload expirations')
+        self.reload_expirations_button.clicked.connect(self.reload_expirations)
+
         self.rightLayout = QtWidgets.QVBoxLayout()
         self.rightLayout.addWidget(self.cached_prices)
         self.rightLayout.addWidget(self.remove_active_button)
         self.rightLayout.addWidget(self.remove_active_data_button)
+        self.rightLayout.addWidget(self.reload_expirations_button)
         self.rightLayout.addWidget(self.tipped_list.list)
         self.rightLayout.addWidget(self.removeTable)
         self.rightLayout.addWidget(self.tipped_list.view)
@@ -144,43 +159,92 @@ class Window(ViewElement, QtWidgets.QWidget):
 
         self.showMaximized()
 
+    def current_platform_active(self):
+        platform, active = self.current_platform(), self.current_active()
+
+        if platform is None or active is None:
+            return None
+        else:
+            return platform, active
+
+    def active_info(self):
+        pa = self.current_platform_active()
+
+        if pa is not None:
+            return ActiveInfo(self.current_flavor(), pa[0], pa[1], self.current_active_flavor())
+
+    def current_flavor(self):
+        return self.flavors_map[self.flavors.currentItem().text()]
+
+    def current_platform(self):
+        item = self.platforms.currentItem()
+
+        if item is not None:
+            return item.toolTip()
+
+    def current_active(self):
+        item = self.actives.currentItem()
+        if item is not None:
+            return item.text()
+
+    def current_active_flavor(self):
+        item = self.active_flavors.currentItem()
+        if item is not None:
+            return item.text()
+
+    def current_price(self):
+        item = self.cached_prices.currentItem()
+        if item is not None:
+            return item.toolTip()
+
     def new_active(self):
-        self.current_flavor().new_active(
-            self.platforms.currentItem().toolTip(),
-            self.model_launcher)
+        platform = self.current_platform()
+
+        if platform is None:
+            return
+
+        self.current_flavor().new_active(platform, self.model_launcher)
 
         self.platform_chosen()
 
     def active_chosen(self):
-        if self.actives.currentItem() is None:
+        pa = self.current_platform_active()
+
+        if pa is None:
             return
 
         self.active_flavors.clear()
 
-        active_flavors = self.current_flavor().active_flavors(
-                self.platforms.currentItem().toolTip(),
-                self.actives.currentItem().text(),
-                self.model_launcher)
+        active_flavors = self.current_flavor().active_flavors(pa[0], pa[1], self.model_launcher)
 
-        for index, active_flavor in active_flavors.iterrows():
-            self.active_flavors.addItem(active_flavor.active_flavor)
+        for active_flavor in active_flavors.active_flavor:
+            self.active_flavors.addItem(active_flavor)
 
         if not active_flavors.empty:
             self.active_flavors.setCurrentRow(0)
 
-    def remove_active(self):
-        self.current_flavor().remove_active(self.active_info(), self.model_launcher)
+    @with_ai
+    def remove_active(self, ai):
+        self.current_flavor().remove_active(ai, self.model_launcher)
 
         self.platform_chosen()
 
-    def remove_active_data(self):
-        self.current_flavor().remove_active_data(self.active_info(), self.model_launcher)
+    @with_ai
+    def remove_active_data(self, ai):
+        self.current_flavor().remove_active_data(ai, self.model_launcher)
 
         self.active_chosen()
 
+    @with_ai
+    def reload_expirations(self, ai):
+        self.current_flavor().reload_expirations(ai, self.model_launcher)
+
     def remove_table(self):
-        self.model_launcher.remove_table(self.tipped_list.list.currentItem().text())
-        self.tipped_list.refresh()
+        item = self.tipped_list.current_item()
+
+        if item is not None:
+            self.model_launcher.remove_table(item.name)
+            self.tipped_list.refresh()
 
     def set_cached_prices(self):
         self.cached_prices.clear()
@@ -190,17 +254,11 @@ class Window(ViewElement, QtWidgets.QWidget):
             wi.setToolTip(value["url"])
             self.cached_prices.addItem(wi)
 
-    def active_info(self):
-        active_flavor = self.active_flavors.currentItem().text() \
-            if self.active_flavors.currentItem() is not None else None
-
-        return ActiveInfo(self.current_flavor(),
-                          self.platforms.currentItem().toolTip(),
-                          self.actives.currentItem().text(),
-                          active_flavor)
-
     def submit_active(self):
         curr_ai = self.active_info()
+
+        if curr_ai is None:
+            return
 
         actives = curr_ai.flavor.active_infos(curr_ai, self.model_launcher)
 
@@ -229,15 +287,11 @@ class Window(ViewElement, QtWidgets.QWidget):
             self.actives_layout.insertLayout(len(self.actives_layout_lines), layout)
 
     def submit_cached(self, price_url, active):
-        url = self.cached_prices.currentItem().toolTip()
+        url = self.current_price()
 
-        price_url.setText(url)
-
-        active.price_url = url
-
-
-    def current_flavor(self):
-        return self.flavors_map[self.flavors.currentItem().text()]
+        if url is not None:
+            price_url.setText(url)
+            active.price_url = url
 
     def flavor_chosen(self):
         self.platforms.clear()
@@ -249,27 +303,25 @@ class Window(ViewElement, QtWidgets.QWidget):
             wi.setToolTip(platform.PlatformCode)
             self.platforms.addItem(wi)
 
-        self.platforms.setCurrentRow(0)
-
-        self.active_flavors.clear()
+        if self.platforms.count() > 0:
+            self.platforms.setCurrentRow(0)
+        else:
+            self.platform_chosen()
 
     def platform_chosen(self):
-        if self.platforms.currentItem() is None:
+        self.actives.clear()
+        self.active_flavors.clear()
+
+        platform = self.current_platform()
+
+        if platform is None:
             return
 
-        self.actives.clear()
+        actives = self.current_flavor().actives(platform, self.model_launcher)
 
-        actives = self.current_flavor()\
-                .actives(self.platforms.currentItem().toolTip(), self.model_launcher)
-
-        if actives.empty:
-            self.active_flavors.clear()
-        else:
-            for _, active in actives.iterrows():
-                wi = QtWidgets.QListWidgetItem(active.ActiveName)
-                self.actives.addItem(wi)
-
-        self.active_flavors.clear()
+        for _, active in actives.iterrows():
+            wi = QtWidgets.QListWidgetItem(active.ActiveName)
+            self.actives.addItem(wi)
 
     def clear_active(self, vbox):
         i = self.actives_layout_lines.index(vbox)
@@ -289,12 +341,13 @@ class Window(ViewElement, QtWidgets.QWidget):
         self.chosen_actives.pop(i)
 
     def clear_actives(self):
-        for i in range(len(self.actives_layout_lines) - 1, -1, -1):
-            self.remove_line(i)
+        while self.actives_layout_lines:
+            self.remove_line(0)
 
     def draw_table(self):
         table_pattern = self.tipped_list.current_item()
-        self.controller_launcher.draw_table(table_pattern, self.chosen_actives)
+        if table_pattern is not None:
+            self.controller_launcher.draw_table(table_pattern, self.chosen_actives)
 
     def create_table(self):
         self.controller_launcher.show_table_dialog()

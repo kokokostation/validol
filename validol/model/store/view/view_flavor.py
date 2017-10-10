@@ -69,3 +69,9 @@ class ViewFlavor:
     def show_ais(ais, model_launcher):
         return '\n'.join("{}: {}".format(letter, ai.flavor.show_ai(ai, model_launcher))
                          for letter, ai in zip(alphas, ais))
+
+    def config(self):
+        return {}
+
+    def reload_expirations(self, ai, model_launcher):
+        pass

@@ -13,7 +13,7 @@ class PatternTree(QtWidgets.QTreeWidget):
 
         for i in range(2):
             types = dict((label, QtWidgets.QTreeWidgetItem([label]))
-                         for label in ("line", "bar", "-bar"))
+                         for label in ("line", "bar", "-bar", "ind"))
             for piece in graph.pieces[i]:
                 item = QtWidgets.QTreeWidgetItem([piece.atom_id])
 

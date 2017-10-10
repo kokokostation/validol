@@ -178,3 +178,14 @@ class Min(AtomBase):
 
     def evaluate(self, evaluator, params):
         return params[0].apply(lambda curve: curve.min())
+
+
+class Expirations(AtomBase):
+    def __init__(self):
+        AtomBase.__init__(self, 'EXPS', ['@letter'])
+
+    def evaluate(self, evaluator, params):
+        return evaluator.model_launcher.get_expirations(evaluator.letter_map[params[0]])
+
+    def note(self):
+        return {'fill_method': 'bfill'}

@@ -52,13 +52,16 @@ class PdfHelper(Base):
     def on_load(self):
         self.processor = self.processor(self)
 
-    def initial(self, model_launcher):
+    def read_expirations(self, model_launcher):
         if os.path.isfile(self.expirations_file):
             exps = self.processor.read_expirations(self.expirations_file)
             for key, value in self.other_info['expirations'].items():
                 exps[key] = value
 
             Expirations(model_launcher).write_df(exps)
+
+    def initial(self, model_launcher):
+        self.read_expirations(model_launcher)
 
         if os.path.isdir(self.active_folder):
             return self.processor.read_data(self.active_folder)

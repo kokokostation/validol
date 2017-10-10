@@ -7,7 +7,7 @@ import requests
 from dateutil.relativedelta import relativedelta
 
 from validol.model.store.resource import ResourceUpdater
-from validol.model.utils.utils import concat
+from validol.model.utils.utils import concat, date_from_timestamp, to_timestamp, merge_dfs
 
 
 class Expirations(ResourceUpdater):
@@ -21,6 +21,7 @@ class Expirations(ResourceUpdater):
     ]
     CONSTRAINT = 'UNIQUE (Date, Contract, PlatformCode, Event, ActiveCode, ActiveName) ON CONFLICT IGNORE'
     PLATFORM_RENAME = {'EUROPE': 'IFEU'}
+    NET = 'net'
 
     def __init__(self, model_launcher):
         ResourceUpdater.__init__(self, model_launcher, model_launcher.main_dbh, 'Expirations',
@@ -31,34 +32,42 @@ class Expirations(ResourceUpdater):
     def from_contract(date):
         return dt.datetime.strptime(date, '%b%y').date()
 
+    def exp_info(self, exp):
+        df = self.read_df('''
+            SELECT
+                Date, Contract, Source
+            FROM
+                {table}
+            WHERE
+                PlatformCode = ? AND ActiveName = ? AND ActiveCode = ? AND Event = 'LTD'
+            ''', params=(exp['PlatformCode'], exp['ActiveName'], exp['ActiveCode']), index_on=False)
+
+        df.index = df.Contract.map(Expirations.from_contract)
+
+        df = merge_dfs(df[df.Source != Expirations.NET], df[df.Source == Expirations.NET])
+
+        return df.set_index('Date').sort_index().Contract
+
     def current(self, ai, delta, df):
         df['CONTRACT'] = df['CONTRACT'].apply(Expirations.from_contract)
 
         exp = self.model_launcher.get_exp_info(ai)
 
-        exp_info = self.read_df('''
-                    SELECT
-                        Date, Contract
-                    FROM
-                        {table}
-                    WHERE
-                        PlatformCode = ? AND ActiveName = ? AND ActiveCode = ? AND Event = 'LTD'
-                ''', params=(exp['PlatformCode'], exp['ActiveName'], exp['ActiveCode']))
-
-        exp_info['Contract'] = exp_info['Contract'].apply(Expirations.from_contract)
+        exp_info = date_from_timestamp(self.exp_info(exp)).apply(Expirations.from_contract)
 
         result = pd.DataFrame()
 
-        for i in range(1, len(exp_info)):
-            begin, end = exp_info.index[i - 1], exp_info.index[i]
+        date_delta = relativedelta(days=ai.flavor.config().get('expirations_delta', 0))
 
-            curr_contract = exp_info['Contract'].iloc[i] + relativedelta(months=delta)
+        for i in range(1, len(exp_info)):
+            begin, end = map(lambda index: to_timestamp(exp_info.index[index] + date_delta), [i - 1, i])
+
+            curr_contract = exp_info.iloc[i] + relativedelta(months=delta)
 
             result = result.append(df[
                 (begin < df.index) &
                 (df.index <= end) &
-                (df.CONTRACT == curr_contract)
-                ])
+                (df.CONTRACT == curr_contract)])
 
         return result
 
@@ -89,7 +98,7 @@ class Expirations(ResourceUpdater):
 
             result = result.append(new_df, ignore_index=True)
 
-        result['Source'] = 'net'
+        result['Source'] = Expirations.NET
 
         return result
 

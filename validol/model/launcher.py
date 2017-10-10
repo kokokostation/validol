@@ -128,7 +128,7 @@ class ModelLauncher:
         PdfHelpers(self).write_helper(ai, info, other_info)
 
     def read_pdf_helper(self, ai):
-        PdfHelpers(self).read_by_name(ai)
+        return PdfHelpers(self).read_by_name(ai)
 
     def remove_pdf_helper(self, ai):
         PdfHelpers(self).remove_by_name(ai)
@@ -181,5 +181,8 @@ class ModelLauncher:
     def register_update(self, source):
         self.controller_launcher.register_update(source)
 
-    def get_expirations(self):
+    def get_expiration_names(self):
         return Expirations(self).get_expirations()
+
+    def get_expirations(self, ai):
+        return Expirations(self).exp_info(self.get_exp_info(ai))

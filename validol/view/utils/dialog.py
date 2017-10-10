@@ -3,10 +3,10 @@ from PyQt5.QtCore import Qt
 
 
 class MyDialog(QDialog):
-    def __init__(self, widgets):
+    def __init__(self, widgets, modal=True):
         QDialog.__init__(self, flags=Qt.Window)
 
-        self.setModal(True)
+        self.setModal(modal)
 
         self.main_layout = QVBoxLayout(self)
 
@@ -17,9 +17,16 @@ class MyDialog(QDialog):
                 self.main_layout.addLayout(wi)
 
         self.ready_button = QPushButton('Ready')
-        self.ready_button.clicked.connect(lambda: self.accept())
+        self.ready_button.clicked.connect(self.on_ready)
 
         self.main_layout.addWidget(self.ready_button)
+
+    def can_accept(self):
+        return True
+
+    def on_ready(self):
+        if self.can_accept():
+            self.accept()
 
     def get_data(self):
         if self.exec_() == QDialog.Accepted:

@@ -32,7 +32,7 @@ class CmeDaily:
         ranges = []
 
         for index, active in CmeActives(self.model_launcher, self.flavor['name']).read_df().iterrows():
-            pdf_helper = PdfHelpers(self.model_launcher).read_by_name(
+            pdf_helper = self.model_launcher.read_pdf_helper(
                 ActiveInfo(CmeView(self.flavor), active.PlatformCode, active.ActiveName))
 
             ranges.append(Active(self.model_launcher, active.PlatformCode, active.ActiveName,

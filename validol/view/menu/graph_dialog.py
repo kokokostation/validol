@@ -2,7 +2,7 @@ from functools import partial
 
 from PyQt5 import QtWidgets, QtGui
 
-from validol.model.store.structures.pattern import Graph, Line, Bar, Pattern
+from validol.model.store.structures.pattern import Graph, Line, Bar, Pattern, Indicator
 from validol.model.utils.utils import remove_duplications
 from validol.view.utils.utils import scrollable_area, set_title
 from validol.view.utils.tipped_list import TippedList
@@ -29,14 +29,14 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
               (255, 0, 255), (0, 0, 255), (192, 192, 192), (255, 69, 0), (255, 140, 0),
               (102, 0, 204), (51, 153, 255)]
 
-    def __init__(self, flags, df, table_pattern, title,
+    def __init__(self, flags, data, table_pattern, title,
                  controller_launcher, model_launcher):
         QtWidgets.QWidget.__init__(self, flags=flags)
         ViewElement.__init__(self, controller_launcher, model_launcher)
 
         self.setWindowTitle(table_pattern.name)
 
-        self.df = df
+        self.data = data
 
         self.title = title
         self.table_name = table_pattern.name
@@ -101,11 +101,11 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
             textBox.setText(label)
             lastLabel.addWidget(textBox)
 
-            checkBoxes = [
-                QtWidgets.QCheckBox(label) for label in ["left", "right", "line", "bar", "-bar"]]
+            checkBoxes = [QtWidgets.QCheckBox(label)
+                          for label in ["left", "right", "line", "bar", "-bar", "ind"]]
 
             buttonGroups = []
-            for t in [[0, 1], [2, 3, 4]]:
+            for t in [[0, 1], [2, 3, 4, 5]]:
                 buttonGroups.append(ButtonGroup())
                 for j in t:
                     buttonGroups[-1].add_item(checkBoxes[j])
@@ -150,7 +150,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
     def draw_graph(self):
         if self.tipped_list.current_item() is not None:
-            self.controller_launcher.draw_graph(self.df,
+            self.controller_launcher.draw_graph(self.data,
                                                 self.tipped_list.current_item(),
                                                 self.table_labels,
                                                 self.title)
@@ -162,26 +162,30 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
         for i, label in enumerate(self.labels):
             name, button_groups, check_boxes, combo_boxes = label
-            lr, type = button_groups[0].checked_button(), button_groups[1].checked_button()
-            if lr and type:
+            lr, typ = button_groups[0].checked_button(), button_groups[1].checked_button()
+
+            if typ:
                 color = GraphDialog.COLORS[combo_boxes[1].currentIndex()]
 
-                base_color = combo_boxes[0].currentIndex()
-
-                if type[1] == "line":
-                    graph.add_piece(lr[0], Line(name.text(), color))
-                else:
-                    if base_color in base_colors:
-                        base = base_colors.index(base_color)
+                if typ[1] == "ind":
+                    graph.add_piece(0, Indicator(name.text(), color))
+                elif lr:
+                    if typ[1] == "line":
+                        graph.add_piece(lr[0], Line(name.text(), color))
                     else:
-                        base = len(base_colors)
-                        base_colors.append(base_color)
+                        base_color = combo_boxes[0].currentIndex()
 
-                    sign = 1
-                    if type[1] == "-bar":
-                        sign = -1
+                        if base_color in base_colors:
+                            base = base_colors.index(base_color)
+                        else:
+                            base = len(base_colors)
+                            base_colors.append(base_color)
 
-                    graph.add_piece(lr[0], Bar(name.text(), color, base, sign))
+                        sign = 1
+                        if typ[1] == "-bar":
+                            sign = -1
+
+                        graph.add_piece(lr[0], Bar(name.text(), color, base, sign))
 
         self.currentPattern.add_graph(graph)
 
@@ -204,7 +208,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
     def submit_pattern(self):
         patternTitle = self.patternTitle.text()
-        if not patternTitle:
+        if not patternTitle or not self.currentPattern.graphs:
             return
 
         self.currentPattern.set_name(self.table_name, patternTitle)

@@ -33,6 +33,17 @@ class LineSchema(PieceSchema):
         return Line(**data)
 
 
+class Indicator(Piece):
+    def name(self):
+        return 'ind'
+
+
+class IndicatorSchema(PieceSchema):
+    @post_load
+    def make(self, data):
+        return Indicator(**data)
+
+
 class Bar(Piece):
     def __init__(self, atom_id, color, base, sign):
         Piece.__init__(self, atom_id, color)
@@ -68,15 +79,18 @@ class Graph:
 class SideSchema(Schema):
     lines = fields.Nested(LineSchema, many=True)
     bars = fields.Nested(BarSchema, many=True)
+    indicators = fields.Nested(IndicatorSchema, many=True)
 
     @post_load
     def make(self, data):
-        return data['lines'] + data['bars']
+        return data['lines'] + data['bars'] + data.get('indicators', [])
 
     @pre_dump
     def primitive(self, pieces):
-        return {'lines': [piece for piece in pieces if isinstance(piece, Line)],
-                'bars': [piece for piece in pieces if isinstance(piece, Bar)]}
+        return {fieldname: [piece for piece in pieces if isinstance(piece, klass)]
+                for fieldname, klass in [('lines', Line),
+                                         ('bars', Bar),
+                                         ('indicators', Indicator)]}
 
 
 class GraphSchema(Schema):
