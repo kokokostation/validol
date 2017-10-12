@@ -17,7 +17,7 @@ class MyDialog(QDialog):
                 self.main_layout.addLayout(wi)
 
         self.ready_button = QPushButton('Ready')
-        self.ready_button.clicked.connect(self.on_ready)
+        self.ready_button.clicked.connect(lambda: self.on_ready())
 
         self.main_layout.addWidget(self.ready_button)
 
