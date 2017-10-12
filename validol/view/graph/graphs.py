@@ -9,7 +9,7 @@ from collections import defaultdict
 import validol.pyqtgraph as pg
 from validol.model.store.structures.pattern import Line, Bar, Indicator
 from validol.model.utils.utils import remove_duplications, to_timestamp, merge_dfs
-from validol.view.utils.utils import set_title
+from validol.view.utils.utils import set_title, showable_df
 from validol.view.utils.pattern_tree import PatternTree
 
 
@@ -118,14 +118,14 @@ class ScatteredPlot(GraphItem):
 
 class DaysMap:
     def __init__(self, data, pattern):
-        self.start = dt.date.fromtimestamp(data.show_df.index[0])
+        self.start = dt.date.fromtimestamp(data.df.index[0])
 
-        days_num = (dt.date.fromtimestamp(data.show_df.index[-1]) - self.start).days + 1 + 10
+        days_num = (dt.date.fromtimestamp(data.df.index[-1]) - self.start).days + 1 + 10
         all_dates = [to_timestamp(self.start + dt.timedelta(days=i)) for i in range(0, days_num)]
 
         formulas = remove_duplications(pattern.get_formulas())
 
-        self.days_map = merge_dfs(pd.DataFrame(index=all_dates), data.show_df[formulas])
+        self.days_map = merge_dfs(pd.DataFrame(index=all_dates), data.df[formulas])
 
         for formula in formulas:
             method = 'ffill'
@@ -134,6 +134,8 @@ class DaysMap:
                 method = data.info[formula].get('fill_method', 'ffill')
 
             self.days_map[formula].fillna(method=method, axis=0, inplace=True)
+
+        self.days_map = showable_df(self.days_map)
 
         self.days_map.index = np.arange(len(self.days_map))
 

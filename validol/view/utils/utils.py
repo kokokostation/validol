@@ -51,7 +51,7 @@ def showable_df(df):
 
     for col in show_df:
         if show_df[col].dtype == np.float64:
-            show_df[col] = show_df[col].apply("{:.2f}".format)
+            show_df[col] = show_df[col].map("{:.2f}".format)
 
     return show_df
 
