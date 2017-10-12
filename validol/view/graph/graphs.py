@@ -118,14 +118,14 @@ class ScatteredPlot(GraphItem):
 
 class DaysMap:
     def __init__(self, data, pattern):
-        self.start = dt.date.fromtimestamp(data.df.index[0])
+        self.start = dt.date.fromtimestamp(data.show_df.index[0])
 
-        days_num = (dt.date.fromtimestamp(data.df.index[-1]) - self.start).days + 1 + 10
+        days_num = (dt.date.fromtimestamp(data.show_df.index[-1]) - self.start).days + 1 + 10
         all_dates = [to_timestamp(self.start + dt.timedelta(days=i)) for i in range(0, days_num)]
 
         formulas = remove_duplications(pattern.get_formulas())
 
-        self.days_map = merge_dfs(pd.DataFrame(index=all_dates), data.df[formulas])
+        self.days_map = merge_dfs(pd.DataFrame(index=all_dates), data.show_df[formulas])
 
         for formula in formulas:
             method = 'ffill'
