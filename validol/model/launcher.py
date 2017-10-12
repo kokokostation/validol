@@ -185,4 +185,4 @@ class ModelLauncher:
         return Expirations(self).get_expirations()
 
     def get_expirations(self, ai):
-        return Expirations(self).exp_info(self.get_exp_info(ai))
+        return Expirations(self).exp_info(ai)

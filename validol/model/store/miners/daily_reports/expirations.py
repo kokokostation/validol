@@ -32,7 +32,9 @@ class Expirations(ResourceUpdater):
     def from_contract(date):
         return dt.datetime.strptime(date, '%b%y').date()
 
-    def exp_info(self, exp):
+    def exp_info(self, ai):
+        exp = self.model_launcher.get_exp_info(ai)
+
         df = self.read_df('''
             SELECT
                 Date, Contract, Source
@@ -44,16 +46,14 @@ class Expirations(ResourceUpdater):
 
         df.index = df.Contract.map(Expirations.from_contract)
 
-        df = merge_dfs(df[df.Source != Expirations.NET], df[df.Source == Expirations.NET])
+        df = merge_dfs(df[df.Source == ai.active_only()], df[df.Source == Expirations.NET])
 
         return df.set_index('Date').sort_index().Contract
 
     def current(self, ai, delta, df):
         df['CONTRACT'] = df['CONTRACT'].apply(Expirations.from_contract)
 
-        exp = self.model_launcher.get_exp_info(ai)
-
-        exp_info = date_from_timestamp(self.exp_info(exp)).apply(Expirations.from_contract)
+        exp_info = date_from_timestamp(self.exp_info(ai)).apply(Expirations.from_contract)
 
         result = pd.DataFrame()
 
@@ -155,7 +155,7 @@ class Expirations(ResourceUpdater):
             FROM 
                 "{table}" 
             WHERE
-                Source = ?'''.format(table=self.table), (str(ai),))
+                Source = ?'''.format(table=self.table), (ai.active_only(),))
 
         self.dbh.commit()
 
