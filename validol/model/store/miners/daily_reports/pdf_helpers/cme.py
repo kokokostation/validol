@@ -43,8 +43,14 @@ class CmeParser(DailyPdfParser):
 
     @staticmethod
     def if_preliminary_zip(zip_file):
-        main_file = [filename for filename in zip_file.namelist()
-                     if re.match('^DailyBulletin_\d+\.pdf$', filename)][0]
+        main_file = zip_file.namelist()[0]
+
+        for regex in ['^DailyBulletin_\d+\.pdf$', '^Section63.*?\.pdf$']:
+            files = [filename for filename in zip_file.namelist() if re.match(regex, filename)]
+
+            if files:
+                main_file = files[0]
+                break
 
         return CmeParser.if_preliminary_pdf(BytesIO(zip_file.read(main_file)))
 
