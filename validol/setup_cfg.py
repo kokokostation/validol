@@ -1,11 +1,11 @@
 SETUP_CONFIG = {
     'name': 'validol',
-    'version': '0.0.38',
+    'version': '0.0.39',
     'license': 'MIT',
     'install_requires': [
         'pyparsing',
         'numpy',
-        'pandas',
+        'pandas==0.20.3',
         'requests',
         'PyQt5',
         'sqlalchemy',
