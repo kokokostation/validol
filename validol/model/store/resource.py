@@ -8,7 +8,7 @@ from validol.model.utils.utils import date_to_timestamp, to_timestamp
 
 class Table:
     def __init__(self, dbh, table, schema, modifier="", pre_dump=None, post_load=None):
-        self.schema = [(name, data_type) for name, data_type in schema]
+        self.schema = schema
         self.table = table
         self.dbh = dbh
         self.pre_dump = pre_dump or (lambda x: x)
