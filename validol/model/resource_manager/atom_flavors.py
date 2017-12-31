@@ -75,10 +75,9 @@ class MBDeltaAtom(AtomBase):
 
     @rangable
     def evaluate(self, evaluator, params):
-        df = MonetaryAtom().evaluate(evaluator, params)
-        mbase = df.MBase
+        mbase = MonetaryAtom().evaluate(evaluator, params)
 
-        grouped_mbase = [(mbase[0], 1)] + [(k, len(list(g))) for k, g in groupby(mbase)]
+        grouped_mbase = [(mbase.iloc[0], 1)] + [(k, len(list(g))) for k, g in groupby(mbase)]
         deltas = []
         for i in range(1, len(grouped_mbase)):
             k, n = grouped_mbase[i]
@@ -87,9 +86,7 @@ class MBDeltaAtom(AtomBase):
             for j in range(n):
                 deltas.append(delta / n)
 
-        df.MBase = deltas
-
-        return df.MBase
+        return pd.Series(deltas, index=mbase.index)
 
 
 class Apply(AtomBase):
