@@ -194,7 +194,14 @@ class Expirations(AtomBase):
 
 class FillAtom(AtomBase):
     def __init__(self):
-        AtomBase.__init__(self, 'FILL', ['series'])
+        AtomBase.__init__(self, 'FILL', ['series', 'fill_method'],
+                          '''fill nans according to fill_method. 
+Works for operands of arithmetic operations. For example: "OI(A) / FILL(MBase(), linear)"
+
+fill_method possible values:
+    "linear" -- linear interpolation
+    "forward" -- use PREVIOUS valid observation to fill gap
+    "backward" -- use NEXT valid obsrevation to fill gap''')
 
     def evaluate(self, evaluator, params):
         return FillSeries(params[0], params[1])
