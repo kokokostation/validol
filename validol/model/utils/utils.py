@@ -247,3 +247,26 @@ def map_version(s):
 @contextmanager
 def dummy_ctx_mgr():
     yield
+
+
+class FillSeries(pd.Series):
+    METHODS = {
+        'linear': lambda s: s.interpolate('index'),
+        'forward': lambda s: s.fillna(method='ffill'),
+        'backward': lambda s: s.fillna(method='bfill')
+    }
+
+    def __init__(self, series, fill_method):
+        if fill_method not in FillSeries.METHODS:
+            raise Exception("There is no fill method '{}' for FillSeries".format(fill_method))
+
+        pd.Series.__init__(self, series.copy())
+
+        self.fill_method = FillSeries.METHODS[fill_method]
+
+    def adjust(self, series):
+        result = self.align(series)[0]
+        notna = result.dropna()
+        result = result.loc[notna.index[0]:notna.index[-1]]
+
+        return self.fill_method(result)

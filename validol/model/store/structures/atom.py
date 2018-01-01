@@ -1,5 +1,3 @@
-import re
-
 from validol.model.store.structures.structure import NamedStructure
 from validol.model.resource_manager.atom_flavors import FormulaAtom
 from validol.model.resource_manager.evaluator import AtomGrammar

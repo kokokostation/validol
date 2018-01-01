@@ -101,15 +101,14 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
             textBox.setText(label)
             lastLabel.addWidget(textBox)
 
-            checkBoxes = [QtWidgets.QCheckBox(label)
-                          for label in ["left", "right", "line", "bar", "-bar", "ind"]]
+            groups = [["left", "right"], ["line", "bar", "-bar", "ind"], ["show"]]
 
-            buttonGroups = []
-            for t in [[0, 1], [2, 3, 4, 5]]:
-                buttonGroups.append(ButtonGroup())
-                for j in t:
-                    buttonGroups[-1].add_item(checkBoxes[j])
-                    lastLabel.addWidget(checkBoxes[j])
+
+            button_groups = [ButtonGroup([QtWidgets.QCheckBox(label) for label in group])
+                             for group in groups]
+            for bg in button_groups:
+                for item in bg.buttons:
+                    lastLabel.addWidget(item)
 
             comboBoxes = [QtWidgets.QComboBox() for _ in range(2)]
             for comboBox in comboBoxes:
@@ -125,7 +124,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
 
                 lastLabel.addWidget(comboBox)
 
-            self.labels.append((textBox, buttonGroups, checkBoxes, comboBoxes))
+            self.labels.append((textBox, button_groups, comboBoxes))
 
             self.labels_layout.insertLayout(i, lastLabel)
 
@@ -161,17 +160,18 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         graph = Graph()
 
         for i, label in enumerate(self.labels):
-            name, button_groups, check_boxes, combo_boxes = label
+            name, button_groups, combo_boxes = label
             lr, typ = button_groups[0].checked_button(), button_groups[1].checked_button()
+            show = button_groups[2].checked_button() is not None
 
             if typ:
                 color = GraphDialog.COLORS[combo_boxes[1].currentIndex()]
 
                 if typ[1] == "ind":
-                    graph.add_piece(0, Indicator(name.text(), color))
+                    graph.add_piece(0, Indicator(name.text(), color, show))
                 elif lr:
                     if typ[1] == "line":
-                        graph.add_piece(lr[0], Line(name.text(), color))
+                        graph.add_piece(lr[0], Line(name.text(), color, show))
                     else:
                         base_color = combo_boxes[0].currentIndex()
 
@@ -185,7 +185,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
                         if typ[1] == "-bar":
                             sign = -1
 
-                        graph.add_piece(lr[0], Bar(name.text(), color, base, sign))
+                        graph.add_piece(lr[0], Bar(name.text(), color, show, base, sign))
 
         self.currentPattern.add_graph(graph)
 
@@ -197,12 +197,12 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
         self.clear_checkboxes()
 
     def clear_checkboxes(self):
-        for _, _, checkBoxes, _ in self.labels:
-            for cb in checkBoxes:
-                cb.setChecked(False)
+        for _, button_groups, _ in self.labels:
+            for bg in button_groups:
+                bg.clear()
 
     def clear_comboboxes(self):
-        for _, _, _, comboBoxes in self.labels:
+        for _, _, comboBoxes in self.labels:
             for comboBox in comboBoxes:
                 comboBox.setCurrentIndex(0)
 

@@ -73,7 +73,7 @@ class Structure:
 
     @with_session
     def write(self, session, item):
-        session.add(item)
+        session.merge(item)
 
     @with_session
     def read(self, session, pred=None):

@@ -7,7 +7,7 @@ from validol.model.store.miners.prices import InvestingPrice
 from validol.model.store.resource import Resource
 from validol.model.resource_manager.atom_flavors import MonetaryAtom, MBDeltaAtom, \
     LazyAtom, FormulaAtom, AtomBase, Apply, Merge, Curr, \
-    MlCurve, ArgMin, Quantile, Min, Expirations
+    MlCurve, ArgMin, Quantile, Min, Expirations, FillAtom
 from validol.model.store.miners.report_flavors import REPORT_FLAVORS
 from validol.model.utils.utils import merge_dfs
 
@@ -62,7 +62,7 @@ class ResourceManager:
     @staticmethod
     def get_primary_atoms():
         result = [MonetaryAtom(), MBDeltaAtom(), Apply(), Merge(), Curr(),
-                  MlCurve(), ArgMin(), Quantile(), Min(), Expirations()]
+                  MlCurve(), ArgMin(), Quantile(), Min(), Expirations(), FillAtom()]
 
         flavor_atom_names = [name
                              for flavor in REPORT_FLAVORS

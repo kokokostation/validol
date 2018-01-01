@@ -5,9 +5,10 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 class Piece:
-    def __init__(self, atom_id, color):
+    def __init__(self, atom_id, color, show=False):
         self.atom_id = atom_id
         self.color = color
+        self.show = show
 
     def name(self):
         raise NotImplementedError
@@ -16,6 +17,7 @@ class Piece:
 class PieceSchema(Schema):
     atom_id = fields.String()
     color = fields.List(fields.Integer())
+    show = fields.Boolean()
 
     @post_load
     def make(self, data):
@@ -45,8 +47,8 @@ class IndicatorSchema(PieceSchema):
 
 
 class Bar(Piece):
-    def __init__(self, atom_id, color, base, sign):
-        Piece.__init__(self, atom_id, color)
+    def __init__(self, atom_id, color, show, base, sign):
+        Piece.__init__(self, atom_id, color, show)
         self.base = base
         self.sign = sign
 

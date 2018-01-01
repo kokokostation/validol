@@ -1,12 +1,12 @@
 from itertools import groupby
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, orm
 import pandas as pd
 import numpy as np
 
 from validol.model.store.miners.monetary import Monetary
 from validol.model.store.structures.structure import Base, JSONCodec
 from validol.model.resource_manager.atom_base import AtomBase, rangable
-from validol.model.utils.utils import to_timestamp, merge_dfs_list
+from validol.model.utils.utils import to_timestamp, merge_dfs_list, FillSeries
 
 
 class Currable:
@@ -58,7 +58,7 @@ class FormulaAtom(Base, AtomBase):
     LETTER = '@letter'
 
     def __init__(self, name, formula, params):
-        AtomBase.__init__(self, name, params)
+        AtomBase.__init__(self, name, params, formula)
 
         self.formula = formula
 
@@ -67,6 +67,10 @@ class FormulaAtom(Base, AtomBase):
         params_map = dict(zip(self.params, params))
 
         return evaluator.parser.evaluate(self.formula, params_map)
+
+    @orm.reconstructor
+    def init_on_load(self):
+        AtomBase.__init__(self, self.name, self.params, self.formula)
 
 
 class MBDeltaAtom(AtomBase):
@@ -186,3 +190,11 @@ class Expirations(AtomBase):
 
     def note(self):
         return {'fill_method': 'bfill'}
+
+
+class FillAtom(AtomBase):
+    def __init__(self):
+        AtomBase.__init__(self, 'FILL', ['series'])
+
+    def evaluate(self, evaluator, params):
+        return FillSeries(params[0], params[1])

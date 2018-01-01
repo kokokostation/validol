@@ -90,10 +90,10 @@ class Showable(GraphItem):
 
 
 class ScatteredPlot(GraphItem):
-    def __init__(self, plot_item, plot, scatter, flavor):
+    def __init__(self, plot_item, plot, scatter, showed, flavor):
         GraphItem.__init__(self, flavor)
 
-        self.plot = Showable(plot_item, [plot], True)
+        self.plot = Showable(plot_item, [plot], showed)
         self.scatter = Showable(plot_item, [scatter], False)
         self.scatter_state = False
 
@@ -269,7 +269,9 @@ class Graph(pg.GraphicsWindow):
                         plot_item,
                         pg.PlotDataItem(xs, ys, pen=pen),
                         pg.ScatterPlotItem(xs, ys, pen=pen, size=5,
-                                           brush=pg.mkBrush(color=negate(piece.color))), 'line')
+                                           brush=pg.mkBrush(color=negate(piece.color))),
+                        piece.show,
+                        'line')
                     legend_color = piece.color
                 elif isinstance(piece, Bar):
                     positive = list(map(lambda x: math.copysign(1, x), ys)).count(1) > len(ys) // 2
@@ -285,7 +287,7 @@ class Graph(pg.GraphicsWindow):
                             width=bar_width,
                             brush=pg.mkBrush(piece.color + [130]),
                             pen=pg.mkPen('k'))],
-                        True,
+                        piece.show,
                         'bar'
                     )
                     legend_color = piece.color + [200]
@@ -297,7 +299,7 @@ class Graph(pg.GraphicsWindow):
                                         self.data.df[piece.atom_id].dropna().iteritems()],
                                        [0, 0.1],
                                        pen=pen)],
-                        True,
+                        piece.show,
                         'indicator'
                     )
                     legend_color = piece.color

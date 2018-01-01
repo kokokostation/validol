@@ -18,7 +18,7 @@ class PatternTree(QtWidgets.QTreeWidget):
                 item = QtWidgets.QTreeWidgetItem([piece.atom_id])
 
                 if self.checkable:
-                    item.setCheckState(0, QtCore.Qt.Checked)
+                    item.setCheckState(0, QtCore.Qt.Checked if piece.show else QtCore.Qt.Unchecked)
                     item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
                     item.setData(0, 6, (self.topLevelItemCount(), piece.atom_id))
 

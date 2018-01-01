@@ -19,11 +19,7 @@ class TDTippedList(TextTippedList):
         return self.model_launcher.get_atoms()
 
     def set_view(self, atom):
-        formula = 'primary'
-        if isinstance(atom, FormulaAtom):
-            formula = atom.formula
-
-        self.view.setText("{}: {}".format(atom, formula))
+        self.view.setText("{}: {}".format(atom, atom.description))
 
 
 class TableDialog(ViewElement, QtWidgets.QWidget):

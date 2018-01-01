@@ -3,7 +3,7 @@ import operator
 import pandas as pd
 import pyparsing as pp
 
-from validol.model.utils.utils import merge_dfs
+from validol.model.utils.utils import merge_dfs, FillSeries
 from validol.model.store.structures.structure import PieceNameError
 from validol.model.resource_manager.data import Data
 
@@ -148,10 +148,13 @@ class NumericStringParser(FormulaGrammar):
         elif op == 'unary -':
             return -self.evaluate_stack(stack, params_map)
         elif op in "+-*/^":
-            op2 = self.evaluate_stack(stack, params_map)
-            op1 = self.evaluate_stack(stack, params_map)
+            operands = [self.evaluate_stack(stack, params_map) for _ in range(2)]
 
-            return self.opn[op](op1, op2)
+            for i, operand in enumerate(operands):
+                if isinstance(operand, FillSeries):
+                    operands[i] = operand.adjust(operands[1 - i])
+
+            return self.opn[op](*reversed(operands))
         elif op in self.fn:
             args_num = stack.pop()
 

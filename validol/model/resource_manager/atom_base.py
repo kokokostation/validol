@@ -2,10 +2,12 @@ from functools import wraps
 
 from validol.model.utils.utils import parse_isoformat_date
 
+
 class AtomBase:
-    def __init__(self, name, params):
+    def __init__(self, name, params, description='primary'):
         self.name = name
         self.params = params
+        self.description = description
 
     def cache_name(self, params):
         if all(any(isinstance(param, typ) for typ in (str, float)) for param in params):
