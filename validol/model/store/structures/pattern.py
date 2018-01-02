@@ -47,7 +47,7 @@ class IndicatorSchema(PieceSchema):
 
 
 class Bar(Piece):
-    def __init__(self, atom_id, color, show, base, sign):
+    def __init__(self, atom_id, color, base, sign, show=False):
         Piece.__init__(self, atom_id, color, show)
         self.base = base
         self.sign = sign

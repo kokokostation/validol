@@ -287,8 +287,8 @@ class Graph(pg.GraphicsWindow):
                             width=bar_width,
                             brush=pg.mkBrush(piece.color + [130]),
                             pen=pg.mkPen('k'))],
-                        piece.show,
-                        'bar'
+                        'bar',
+                        piece.show
                     )
                     legend_color = piece.color + [200]
                 elif isinstance(piece, Indicator):

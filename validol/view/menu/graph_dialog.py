@@ -185,7 +185,7 @@ class GraphDialog(ViewElement, QtWidgets.QWidget):
                         if typ[1] == "-bar":
                             sign = -1
 
-                        graph.add_piece(lr[0], Bar(name.text(), color, show, base, sign))
+                        graph.add_piece(lr[0], Bar(name.text(), color, base, sign, show))
 
         self.currentPattern.add_graph(graph)
 
