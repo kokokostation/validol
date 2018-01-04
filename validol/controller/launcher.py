@@ -113,3 +113,6 @@ class ControllerLauncher:
 
     def display_error(self, title, message):
         self.view_launcher.display_error(title, message)
+
+    def free_window(self, window):
+        self.view_launcher.free_window(window)

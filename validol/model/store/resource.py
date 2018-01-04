@@ -285,6 +285,7 @@ class Platforms(Table):
             WHERE 
                 PlatformCode = ?'''.format(table=self.table), (platform_code,)).fetchone()[0]
 
+
 class Actives(Table):
     def __init__(self, dbh, flavor, schema_add=None):
         schema = [

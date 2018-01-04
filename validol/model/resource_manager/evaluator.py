@@ -15,8 +15,10 @@ class AtomWrap:
     def __repr__(self):
         return self.name
 
+
 VAR = pp.Word('@', pp.alphas)
 STRING = pp.Word(pp.alphas + '%_' + pp.nums)
+
 
 class FormulaGrammar:
     def push_first(self, toks):

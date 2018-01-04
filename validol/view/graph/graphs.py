@@ -11,6 +11,7 @@ from validol.model.store.structures.pattern import Line, Bar, Indicator
 from validol.model.utils.utils import remove_duplications, to_timestamp, merge_dfs
 from validol.view.utils.utils import set_title, showable_df
 from validol.view.utils.pattern_tree import PatternTree
+from validol.view.view_element import ViewElement
 
 
 def negate(color):
@@ -365,9 +366,10 @@ class Graph(pg.GraphicsWindow):
         self.scene().sigMouseMoved.connect(self.legend_updater.mouse_moved)
 
 
-class CheckedGraph(QtWidgets.QWidget):
-    def __init__(self, flags, data, pattern, tableLabels, title):
+class CheckedGraph(ViewElement, QtWidgets.QWidget):
+    def __init__(self, flags, data, pattern, tableLabels, title, controller_launcher, model_launcher):
         QtWidgets.QWidget.__init__(self, flags=flags)
+        ViewElement.__init__(self, controller_launcher, model_launcher)
 
         self.setWindowTitle(title)
         self.graph = Graph(data, pattern, tableLabels)

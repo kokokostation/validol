@@ -38,7 +38,7 @@ class ViewLauncher(ViewElement):
 
         self.main_window = Window(self.app, self.controller_launcher, self.model_launcher)
 
-        self.windows = []
+        self.windows = set()
         self.qcron_manager = QCronManager(self.model_launcher, self)
 
         self.qcron_manager.refresh()
@@ -72,20 +72,23 @@ class ViewLauncher(ViewElement):
         self.main_window.set_cached_prices()
 
     def show_table(self, data, labels, title):
-        self.windows.append(Table(ViewLauncher.FLAGS, data, labels, title))
+        self.watch_window(Table(ViewLauncher.FLAGS, data, labels, title,
+                                self.controller_launcher, self.model_launcher))
 
     def show_graph_dialog(self, data, table_pattern, title):
-        self.windows.append(GraphDialog(ViewLauncher.FLAGS, data, table_pattern, title,
-                                        self.controller_launcher, self.model_launcher))
+        self.watch_window(GraphDialog(ViewLauncher.FLAGS, data, table_pattern, title,
+                                      self.controller_launcher, self.model_launcher))
 
     def show_graph(self, data, pattern, table_labels, title):
-        self.windows.append(CheckedGraph(ViewLauncher.FLAGS, data, pattern, table_labels, title))
+        self.watch_window(CheckedGraph(ViewLauncher.FLAGS, data, pattern, table_labels, title,
+                                       self.controller_launcher, self.model_launcher))
 
     def refresh_tables(self):
         self.main_window.tipped_list.refresh()
 
     def show_table_dialog(self):
-        self.windows.append(TableDialog(ViewLauncher.FLAGS, self.controller_launcher, self.model_launcher))
+        self.watch_window(TableDialog(ViewLauncher.FLAGS,
+                                      self.controller_launcher, self.model_launcher))
 
     def show_pdf_helper_dialog(self, processors, widgets):
         return PdfHelperDialog(processors, widgets).get_data()
@@ -103,10 +106,10 @@ class ViewLauncher(ViewElement):
         return PatternEditDialog(json_str).get_data()
 
     def on_main_window_close(self):
-        for window in self.windows:
+        for window in self.windows.copy():
             window.close()
 
-        self.windows = []
+        assert len(self.windows) == 0
 
     def quit(self):
         self.app.quit()
@@ -126,7 +129,7 @@ class ViewLauncher(ViewElement):
         self.system_tray_icon.showMessage('Message', message)
 
     def show_scheduler_dialog(self):
-        self.windows.append(SchedulerDialog(self.controller_launcher, self.model_launcher))
+        self.watch_window(SchedulerDialog(self.controller_launcher, self.model_launcher))
 
     def display_error(self, title, error):
         display_error(title, error)
@@ -142,3 +145,9 @@ class ViewLauncher(ViewElement):
 
     def refresh_schedulers(self):
         self.qcron_manager.refresh()
+
+    def free_window(self, window):
+        self.windows.remove(window)
+
+    def watch_window(self, window):
+        self.windows.add(window)

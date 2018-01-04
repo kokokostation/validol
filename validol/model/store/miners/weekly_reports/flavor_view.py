@@ -1,5 +1,6 @@
 from validol.model.store.view.view_flavor import ViewFlavor
-from validol.model.store.miners.weekly_reports.flavor import Platforms, WeeklyActives, Active
+from validol.model.store.miners.weekly_reports.active import WeeklyActives, Active
+from validol.model.store.resource import Platforms
 
 
 class WeeklyReportView(ViewFlavor):

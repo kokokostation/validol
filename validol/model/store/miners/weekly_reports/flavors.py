@@ -45,7 +45,9 @@ DISAGGREGATED_SCHEMA = [
     ("ORPSpr", "INTEGER")
 ]
 
+
 CFTC_DATE_FMT = "%Y-%m-%d"
+
 
 CFTC_FUTURES_ONLY = {
     "keys": ["CFTC Market Code in Initials", "Market and Exchange Names"],
@@ -81,6 +83,7 @@ CFTC_FUTURES_ONLY = {
     "disaggregated": False,
     "date_fmt": CFTC_DATE_FMT
 }
+
 
 def cftc_disaggregated(initial_prefix, year_prefix, name):
     return {
@@ -118,6 +121,7 @@ def cftc_disaggregated(initial_prefix, year_prefix, name):
         "disaggregated": True,
         "date_fmt": CFTC_DATE_FMT
     }
+
 
 CFTC_DISAGGREGATED_FUTURES_ONLY = cftc_disaggregated(
     initial_prefix="http://www.cftc.gov/files/dea/history/fut_disagg_txt_hist_2006_",
@@ -185,6 +189,7 @@ CFTC_FINANCIAL_FUTURES_FUTURES_ONLY = cftc_financial_futures(
     name='cftc_financial_futures_futures_only'
 )
 
+
 CFTC_FINANCIAL_FUTURES_COMBINED = cftc_financial_futures(
     initial_prefix="http://www.cftc.gov/files/dea/history/fin_com_txt_2006_",
     year_prefix="http://www.cftc.gov/files/dea/history/com_fin_txt_",
@@ -201,28 +206,42 @@ class Cftc(Flavor):
         CFTC_FINANCIAL_FUTURES_COMBINED
     ]
 
+    LAST_YEAR = 2016
+
     def __init__(self, model_launcher):
         Flavor.__init__(self, model_launcher, Cftc.FLAVORS)
 
     def load_csvs(self, flavor):
-        sources = [(
-            "{year_prefix}{curr_year}.zip"
-                .format(year_prefix=flavor["year_prefix"],
-                        curr_year=date.today().year),
-            False,
-            flavor['date_fmt']
-        )]
+        curr_year = date.today().year
 
         if self.if_initial(flavor):
-            sources.append((
+            sources = [(
                 "{initial_prefix}{prev_year}.zip"
                     .format(initial_prefix=flavor["initial_prefix"],
-                            prev_year=date.today().year - 1),
+                            prev_year=Cftc.LAST_YEAR),
                 True,
-                flavor.get("initial_date_fmt", flavor['date_fmt'])))
+                flavor.get("initial_date_fmt", flavor['date_fmt']))]
 
-        return [(read_url_one_filed_zip(source, cache_enabled), date_fmt)
-                for source, cache_enabled, date_fmt in sources]
+            begin = Cftc.LAST_YEAR + 1
+        else:
+            sources = []
+            begin = self.flavor_latest_year(flavor)
+
+        sources += [(
+            "{year_prefix}{year}.zip"
+                .format(year_prefix=flavor["year_prefix"],
+                        year=year),
+            year != curr_year,
+            flavor['date_fmt']
+        ) for year in range(begin, curr_year + 1)]
+
+        result = []
+        for source, cache_enabled, date_fmt in sources:
+            content = read_url_one_filed_zip(source, cache_enabled)
+            if content is not None:
+                result.append((content, date_fmt))
+
+        return result
 
     def update_flavor(self, flavor):
         df = self.get_df(flavor)
@@ -269,6 +288,7 @@ def ice(name, ice_flavor):
         "date_fmt": "%m/%d/%Y"
     }
 
+
 ICE_FUTURES_ONLY = ice("ice_futures_only", "FutOnly")
 ICE_COMBINED = ice("ice_combined", "Combined")
 
@@ -285,13 +305,19 @@ class Ice(Flavor):
 
     def load_csvs(self, flavor):
         if self.if_initial(flavor):
-            years = range(2011, date.today().year + 1)
+            begin = 2011
         else:
-            years = [date.today().year]
+            begin = self.flavor_latest_year(flavor)
 
-        return [(read_url_text("https://www.theice.com/publicdocs/futures/COTHist{year}.csv"
-                              .format(year=year), year != years[-1]), flavor['date_fmt'])
-                for year in years]
+        result = []
+        curr_year = date.today().year
+        for year in range(begin, curr_year + 1):
+            content = read_url_text("https://www.theice.com/publicdocs/futures/COTHist{year}.csv"
+                                    .format(year=year), year != curr_year)
+            if content is not None:
+                result.append((content, flavor['date_fmt']))
+
+        return result
 
     def prepare_update(self):
         df = self.get_df(Ice.FLAVORS[0])

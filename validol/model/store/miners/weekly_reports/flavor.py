@@ -2,14 +2,31 @@ import datetime as dt
 from io import StringIO
 import pandas as pd
 
-from validol.model.store.resource import Actives, ActiveResource, Platforms, FlavorUpdater, Updater
+from validol.model.store.resource import Platforms, FlavorUpdater, Updater
 from validol.model.utils.utils import group_by
+from validol.model.store.miners.weekly_reports.active import WeeklyActives, Active
+from validol.model.store.miners.weekly_reports.flavor_view import WeeklyReportView
 
 
 class Flavor(FlavorUpdater):
     @staticmethod
     def get_active_platform_name(market_and_exchange_names):
         return [name.strip() for name in market_and_exchange_names.rsplit("-", 1)]
+
+    def flavor_latest_year(self, flavor):
+        curr_year = dt.date.today().year
+        fly = -1
+        view_flavor = WeeklyReportView(flavor)
+
+        for i, platform in view_flavor.platforms(self.model_launcher).iterrows():
+            for j, active in view_flavor.actives(platform.PlatformCode, self.model_launcher).iterrows():
+                active = Active(self.model_launcher, flavor, platform.PlatformCode, active.ActiveName)
+                fly = max(fly, active.range()[1].year)
+
+                if fly == curr_year:
+                    return fly
+
+        return fly
 
     def if_initial(self, flavor):
         return Platforms(self.model_launcher, flavor['name']).read_df().empty
@@ -63,28 +80,3 @@ class Flavor(FlavorUpdater):
 
     def load_csvs(self, flavor):
         raise NotImplementedError
-
-
-class WeeklyActives(Actives):
-    def __init__(self, model_launcher, flavor):
-        Actives.__init__(self, model_launcher.main_dbh, flavor)
-
-
-class Active(ActiveResource):
-    def __init__(self, model_launcher, flavor, platform_code, active_name, update_info=pd.DataFrame()):
-        ActiveResource.__init__(self,
-                                flavor["schema"],
-                                model_launcher,
-                                platform_code,
-                                active_name,
-                                flavor["name"],
-                                actives_cls=WeeklyActives)
-
-        self.update_info = update_info
-
-    def initial_fill(self):
-        return self.update_info
-
-    def fill(self, first, last):
-        return self.update_info[(first <= self.update_info.Date) &
-                                (self.update_info.Date <= last)]

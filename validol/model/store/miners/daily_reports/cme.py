@@ -60,7 +60,8 @@ class Active(DailyResource):
         @property
         @lru_cache()
         def available_dates_cache(self):
-            return {self.handle(file): file for file in Active.Cache.get_files() if self.handle(file) is not None}
+            return {self.handle(file): file for file in Active.Cache.get_files()
+                    if self.handle(file) is not None}
 
         def handle(self, file):
             if not Active.Cache.if_valid_zip(file):

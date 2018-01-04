@@ -3,13 +3,15 @@ import pandas as pd
 import numpy as np
 
 from validol.view.utils.utils import set_title
+from validol.view.view_element import ViewElement
 
 import validol.pyqtgraph as pg
 
 
-class Table(QtWidgets.QWidget):
-    def __init__(self, flags, data, labels, title):
+class Table(ViewElement, QtWidgets.QWidget):
+    def __init__(self, flags, data, labels, title, controller_launcher, model_launcher):
         QtWidgets.QWidget.__init__(self, flags=flags)
+        ViewElement.__init__(self, controller_launcher, model_launcher)
 
         self.setWindowTitle(title)
 
