@@ -274,7 +274,8 @@ class Window(ViewElement, QtWidgets.QWidget):
 
             layout = QtWidgets.QVBoxLayout()
 
-            submit_cached.clicked.connect(partial(self.submit_cached, price_url, active))
+            price_url.textChanged.connect(partial(self.insert_url, active))
+            submit_cached.clicked.connect(partial(self.submit_cached, price_url))
             clear.clicked.connect(partial(self.clear_active, layout))
 
             self.actives_layout_widgets.append((active_name, price_url, submit_cached, clear))
@@ -286,12 +287,14 @@ class Window(ViewElement, QtWidgets.QWidget):
 
             self.actives_layout.insertLayout(len(self.actives_layout_lines), layout)
 
-    def submit_cached(self, price_url, active):
+    def insert_url(self, active, text):
+        active.price_url = text
+
+    def submit_cached(self, price_url):
         url = self.current_price()
 
         if url is not None:
             price_url.setText(url)
-            active.price_url = url
 
     def flavor_chosen(self):
         self.platforms.clear()
