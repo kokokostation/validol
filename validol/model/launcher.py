@@ -71,9 +71,13 @@ class ModelLauncher:
     def update(self, cls):
         try:
             return cls(self).update_entire()
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.ConnectionError as e:
+            print(e)
+
             return None
-        except socket.gaierror:
+        except socket.gaierror as e:
+            print(e)
+
             return None
 
     def update_daily(self):
