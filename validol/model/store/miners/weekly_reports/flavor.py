@@ -2,10 +2,11 @@ import datetime as dt
 from io import StringIO
 import pandas as pd
 
-from validol.model.store.resource import Platforms, FlavorUpdater, Updater
+from validol.model.store.resource import Platforms, FlavorUpdater
 from validol.model.utils.utils import group_by
 from validol.model.store.miners.weekly_reports.active import WeeklyActives, Active
-from validol.model.store.miners.weekly_reports.flavor_view import WeeklyReportView
+from validol.model.store.miners.weekly_reports.utils import active_iterator
+from validol.model.store.utils import reduce_ranges
 
 
 class Flavor(FlavorUpdater):
@@ -16,20 +17,17 @@ class Flavor(FlavorUpdater):
     def flavor_latest_year(self, flavor):
         curr_year = dt.date.today().year
         fly = -1
-        view_flavor = WeeklyReportView(flavor)
 
-        for i, platform in view_flavor.platforms(self.model_launcher).iterrows():
-            for j, active in view_flavor.actives(platform.PlatformCode, self.model_launcher).iterrows():
-                active = Active(self.model_launcher, flavor, platform.PlatformCode, active.ActiveName)
-                fly = max(fly, active.range()[1].year)
+        for active in active_iterator(flavor, self.model_launcher):
+            fly = max(fly, active.range()[1].year)
 
-                if fly == curr_year:
-                    return fly
+            if fly == curr_year:
+                return fly
 
         return fly
 
     def if_initial(self, flavor):
-        return Platforms(self.model_launcher, flavor['name']).read_df().empty
+        return Platforms(self.model_launcher, flavor['name']).is_initial()
 
     def get_df(self, flavor):
         cols = flavor["keys"] + \
@@ -74,9 +72,10 @@ class Flavor(FlavorUpdater):
 
         for code, name in info.groups.keys():
             active_name, _ = Flavor.get_active_platform_name(name)
-            ranges.append(Active(self.model_launcher, flavor, code, active_name, info.get_group((code, name))).update())
+            ranges.append(Active(self.model_launcher, flavor, code, active_name,
+                                 info.get_group((code, name))).update())
 
-        return Updater.reduce_ranges(ranges)
+        return reduce_ranges(ranges)
 
     def load_csvs(self, flavor):
         raise NotImplementedError

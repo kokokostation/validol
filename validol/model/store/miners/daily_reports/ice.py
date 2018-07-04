@@ -9,10 +9,10 @@ import os
 
 from validol.model.store.resource import Actives, Platforms
 from validol.model.store.view.active_info import ActiveInfo
-from validol.model.store.structures.pdf_helper import PdfHelpers
 from validol.model.store.miners.daily_reports.daily import DailyResource, NetCache
 from validol.model.utils.utils import get_filename, dummy_ctx_mgr
-from validol.model.store.resource import Updater
+from validol.model.store.utils import reduce_ranges
+from validol.model.mine.utils import remove_from_cache
 
 
 class IceDaily:
@@ -62,9 +62,7 @@ class IceDaily:
 
     def update(self):
         platforms_table = Platforms(self.model_launcher, self.flavor['name'])
-        platforms_table.write_df(
-            pd.DataFrame([['IFEU', 'ICE FUTURES EUROPE']],
-                         columns=("PlatformCode", "PlatformName")))
+        platforms_table.write_single('IFEU', 'ICE FUTURES EUROPE')
 
         from validol.model.store.miners.daily_reports.ice_view import IceView
 
@@ -77,7 +75,7 @@ class IceDaily:
             ranges.append(Active(self.model_launcher, active.PlatformCode, active.ActiveName,
                                  self.flavor, self, pdf_helper).update())
 
-        return Updater.reduce_ranges(ranges)
+        return reduce_ranges(ranges)
 
 
 class Active(DailyResource):
@@ -133,8 +131,7 @@ class Active(DailyResource):
                 return None, None
 
         def delete(self, date):
-            key = self.ice_active.updater.session.cache.create_key(self.make_request(date))
-            self.ice_active.updater.session.cache.delete(key)
+            remove_from_cache(self.ice_active.updater.session, self.make_request(date))
 
         def file(self, date):
             return '{}_{}.pdf'.format(self.ice_active.active_code, date.strftime('%Y_%m_%d'))

@@ -9,7 +9,7 @@ class WeeklyActives(Actives):
 
 
 class Active(ActiveResource):
-    def __init__(self, model_launcher, flavor, platform_code, active_name, update_info=pd.DataFrame()):
+    def __init__(self, model_launcher, flavor, platform_code, active_name, update_info=None):
         ActiveResource.__init__(self,
                                 flavor["schema"],
                                 model_launcher,
@@ -18,7 +18,7 @@ class Active(ActiveResource):
                                 flavor["name"],
                                 actives_cls=WeeklyActives)
 
-        self.update_info = update_info
+        self.update_info = pd.DataFrame() if update_info is None else update_info
 
     def initial_fill(self):
         return self.update_info

@@ -4,6 +4,7 @@ import numpy as np
 from functools import wraps
 
 from validol.model.utils.utils import date_to_timestamp, to_timestamp
+from validol.model.store.utils import range_from_timestamp
 
 
 class Table:
@@ -55,14 +56,6 @@ class Table:
 
 
 class Updater:
-    @staticmethod
-    def reduce_ranges(ranges):
-        if not ranges:
-            return [None, None]
-
-        return [f(l) if l else None for f, l in
-                zip((min, max), map(lambda x: list(filter(None.__ne__, x)), zip(*ranges)))]
-
     def __init__(self, model_launcher):
         self.model_launcher = model_launcher
 
@@ -158,7 +151,10 @@ class Updatable:
         raise NotImplementedError
 
     def get_range(self, info):
-        raise NotImplementedError
+        if info.empty:
+            return [None, None]
+        else:
+            return [min(info.Date), max(info.Date)]
 
 
 class Resource(Table, Updatable):
@@ -177,7 +173,7 @@ class Resource(Table, Updatable):
         FROM
             "{table}"'''.format(table=self.table))
 
-        return Updatable.range_from_timestamp(c.fetchone())
+        return range_from_timestamp(c.fetchone())
 
     def empty(self):
         return pd.DataFrame(columns=[name for name, _ in self.schema],
@@ -231,12 +227,6 @@ class Resource(Table, Updatable):
     def write_update(self, data):
         self.write_df(data)
 
-    def get_range(self, info):
-        if info.empty:
-            return [None, None]
-        else:
-            return [min(info.Date), max(info.Date)]
-
     @staticmethod
     def get_atoms(schema):
         return [atom[0] for atom in schema]
@@ -284,6 +274,12 @@ class Platforms(Table):
                 "{table}" 
             WHERE 
                 PlatformCode = ?'''.format(table=self.table), (platform_code,)).fetchone()[0]
+
+    def is_initial(self):
+        return self.read_df().empty
+
+    def write_single(self, code, name):
+        self.write_df(pd.DataFrame([[code, name]], columns=("PlatformCode", "PlatformName")))
 
 
 class Actives(Table):

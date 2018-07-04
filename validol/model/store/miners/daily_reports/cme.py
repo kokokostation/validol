@@ -9,11 +9,10 @@ import re
 
 from validol.model.store.resource import Actives, Platforms
 from validol.model.store.view.active_info import ActiveInfo
-from validol.model.store.structures.pdf_helper import PdfHelpers
 from validol.model.store.miners.daily_reports.daily import DailyResource, NetCache
 from validol.model.utils.utils import isfile
 from validol.model.store.structures.ftp_cache import FtpCache
-from validol.model.store.resource import Updater
+from validol.model.store.utils import reduce_ranges
 
 
 class CmeDaily:
@@ -38,7 +37,7 @@ class CmeDaily:
             ranges.append(Active(self.model_launcher, active.PlatformCode, active.ActiveName,
                                  self.flavor, pdf_helper).update())
 
-        return Updater.reduce_ranges(ranges)
+        return reduce_ranges(ranges)
 
 
 class Active(DailyResource):

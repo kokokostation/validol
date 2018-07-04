@@ -1,8 +1,9 @@
 import pandas as pd
 
 from validol.model.utils.utils import to_timestamp, group_by
-from validol.model.store.resource import ActiveResource, FlavorUpdater, check_empty, Updater, Updatable
+from validol.model.store.resource import ActiveResource, FlavorUpdater, check_empty
 from validol.model.store.miners.daily_reports.flavors import DAILY_REPORT_FLAVORS
+from validol.model.store.utils import reduce_ranges, range_from_timestamp
 
 
 @check_empty
@@ -36,7 +37,7 @@ class MlCurves(FlavorUpdater):
             for ai in flavor['view'](flavor).all_actives(self.model_launcher, with_flavors=False)
         ]
 
-        return Updater.reduce_ranges(ranges)
+        return reduce_ranges(ranges)
 
 
 class MlCurve(ActiveResource):
@@ -110,4 +111,4 @@ class MlCurve(ActiveResource):
             return self.read_df()
 
     def get_range(self, info):
-        return Updatable.range_from_timestamp(super().get_range(info))
+        return range_from_timestamp(super().get_range(info))

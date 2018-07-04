@@ -3,6 +3,7 @@ from datetime import date
 from validol.model.mine.downloader import read_url_one_filed_zip, read_url_text
 from validol.model.store.miners.weekly_reports.flavor import Flavor
 from validol.model.utils.utils import group_by, flatten
+from validol.model.store.miners.daily_reports.moex import MOEX
 
 
 def fix_atoms(df):
@@ -333,4 +334,4 @@ class Ice(Flavor):
         return self.process_flavor(self.grouped_df.get_group(flavor["ice_flavor"]), flavor)
 
 
-WEEKLY_REPORT_FLAVORS = flatten([exchange.FLAVORS for exchange in (Cftc, Ice)])
+WEEKLY_REPORT_FLAVORS = flatten([exchange.FLAVORS for exchange in (Cftc, Ice)]) + [MOEX]
