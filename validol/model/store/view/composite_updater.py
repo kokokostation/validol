@@ -1,3 +1,6 @@
+import requests
+import socket
+
 from validol.model.store.resource import Updater
 from validol.model.store.miners.daily_reports.updater import DailyReports
 from validol.model.store.miners.daily_reports.expirations import Expirations
@@ -17,7 +20,17 @@ class CompositeUpdater(Updater):
         return [{'name': self.name}]
 
     def update_source(self, source):
-        return sum([cls(self.model_launcher).update_entire() for cls in self.clss], [])
+        result = []
+
+        for cls in self.clss:
+            try:
+                result.extend(cls(self.model_launcher).update_entire())
+            except requests.exceptions.ConnectionError as e:
+                print(e)
+            except socket.gaierror as e:
+                print(e)
+
+        return result if result else None
 
 
 class DailyUpdater(CompositeUpdater):

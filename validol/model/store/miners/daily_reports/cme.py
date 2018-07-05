@@ -26,13 +26,14 @@ class CmeDaily:
         from validol.model.store.miners.daily_reports.cme_view import CmeView
 
         ranges = []
+        adc = Active.Cache.make_available_dates_cache()
 
         for index, active in CmeActives(self.model_launcher, self.flavor['name']).read_df().iterrows():
             pdf_helper = self.model_launcher.read_pdf_helper(
                 ActiveInfo(CmeView(self.flavor), active.PlatformCode, active.ActiveName))
 
             ranges.append(Active(self.model_launcher, active.PlatformCode, active.ActiveName,
-                                 self.flavor, pdf_helper).update())
+                                 self.flavor, pdf_helper, adc).update())
 
         return reduce_ranges(ranges)
 
@@ -41,13 +42,14 @@ class Active(DailyResource):
     FTP_SERVER = 'ftp.cmegroup.com'
     FTP_DIR = 'pub/bulletin/'
 
-    def __init__(self, model_launcher, platform_code, active_name, flavor, pdf_helper=None):
+    def __init__(self, model_launcher, platform_code, active_name, flavor, pdf_helper=None, adc=None):
         DailyResource.__init__(self, model_launcher, platform_code, active_name, CmeActives,
-                               flavor, pdf_helper, Active.Cache(self))
+                               flavor, pdf_helper, Active.Cache(self, adc))
 
     class Cache(NetCache):
-        def __init__(self, cme_active):
+        def __init__(self, cme_active, adc=None):
             self.cme_active = cme_active
+            self.adc = adc
 
         @staticmethod
         def if_valid_zip(file):
@@ -56,10 +58,17 @@ class Active(DailyResource):
         @property
         @lru_cache()
         def available_dates_cache(self):
-            return {self.handle(file): file for file in Active.Cache.get_files()
-                    if self.handle(file) is not None}
+            return Active.Cache.make_available_dates_cache() if self.adc is None else self.adc
 
-        def handle(self, file):
+        @staticmethod
+        def make_available_dates_cache():
+            files = Active.Cache.get_files()
+
+            return {handle: file for handle, file in
+                    zip(map(Active.Cache.handle_helper, files), files) if handle is not None}
+
+        @staticmethod
+        def handle_helper(file):
             if not Active.Cache.if_valid_zip(file):
                 return None
 
@@ -69,14 +78,22 @@ class Active(DailyResource):
             except:
                 return None
 
+        def handle(self, file):
+            return Active.Cache.handle_helper(file)
+
         @staticmethod
         def get_files():
-            with FTP(Active.FTP_SERVER) as ftp:
-                ftp.login()
-                ftp.cwd(Active.FTP_DIR)
-                files = [file for file in ftp.nlst() if isfile(ftp, file)]
+            try:
+                with FTP(Active.FTP_SERVER) as ftp:
+                    ftp.login()
+                    ftp.cwd(Active.FTP_DIR)
+                    files = [file for file in ftp.nlst() if isfile(ftp, file)]
 
-            return files
+                return files
+            except Exception as e:
+                print(e)
+
+                return []
 
         @staticmethod
         def read_file(model_launcher, filename, with_cache=True):
@@ -88,7 +105,15 @@ class Active(DailyResource):
 
         def get(self, handle, with_cache):
             filename = self.file(handle)
-            return filename, Active.Cache.read_file(self.cme_active.model_launcher, filename, with_cache)
+            if filename is None:
+                return None, None
+
+            try:
+                return filename, Active.Cache.read_file(self.cme_active.model_launcher, filename, with_cache)
+            except Exception as e:
+                print(e)
+
+                return None, None
 
         def available_handles(self):
             return self.available_dates_cache.keys()
