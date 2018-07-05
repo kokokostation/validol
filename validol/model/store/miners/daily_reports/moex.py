@@ -33,8 +33,6 @@ class MoexUpdatable(Updatable):
         df = pd.read_csv(StringIO(response.text), parse_dates=['moment'])
 
         if df.empty:
-            print(date)
-
             remove_from_cache(self.session, request)
 
             return pd.DataFrame()

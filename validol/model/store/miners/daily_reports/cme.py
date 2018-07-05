@@ -1,5 +1,4 @@
 import datetime as dt
-import pandas as pd
 from ftplib import FTP
 import os
 from zipfile import ZipFile
@@ -22,9 +21,7 @@ class CmeDaily:
 
     def update(self):
         platforms_table = Platforms(self.model_launcher, self.flavor['name'])
-        platforms_table.write_df(
-            pd.DataFrame([['CME', 'CHICAGO MERCANTILE EXCHANGE']],
-                         columns=("PlatformCode", "PlatformName")))
+        platforms_table.write_single('CME', 'CHICAGO MERCANTILE EXCHANGE')
 
         from validol.model.store.miners.daily_reports.cme_view import CmeView
 
