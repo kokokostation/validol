@@ -66,23 +66,21 @@ class MoexUpdatable(Updatable):
                               active_iterator(MOEX, self.model_launcher)])
 
     def write_update(self, data):
-        Platforms(self.model_launcher, MOEX['name']).write_single(MOEX['platform_code'],
-                                                                  'Moscow exchange')
+        if not data.empty:
+            Platforms(self.model_launcher, MOEX['name']).write_single(MOEX['platform_code'],
+                                                                      'Moscow exchange')
 
-        actives_table = WeeklyActives(self.model_launcher, MOEX['name'])
+            actives_table = WeeklyActives(self.model_launcher, MOEX['name'])
 
-        groups = data.groupby('name')
+            groups = data.groupby('name')
 
-        actives_table.write_df(pd.DataFrame([(MOEX['platform_code'], active)
-                                             for active in groups.groups.keys()],
-                                            columns=("PlatformCode", "ActiveName")))
+            actives_table.write_df(pd.DataFrame([(MOEX['platform_code'], active)
+                                                 for active in groups.groups.keys()],
+                                                columns=("PlatformCode", "ActiveName")))
 
-        ranges = []
-        for group, content in groups:
-            ranges.append(Active(self.model_launcher, MOEX, MOEX['platform_code'],
-                                 group, content.drop('name', axis=1)).update())
-
-        return reduce_ranges(ranges)
+            for group, content in groups:
+                Active(self.model_launcher, MOEX, MOEX['platform_code'],
+                       group, content.drop('name', axis=1)).update()
 
 
 MOEX = {
