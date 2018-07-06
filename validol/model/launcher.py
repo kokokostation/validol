@@ -1,6 +1,9 @@
 import os
 import sqlite3
 from sqlalchemy import create_engine
+import socket
+import socks
+import json
 
 from validol.model.store.view.composite_updater import DailyUpdater, EntireUpdater, UpdateManager
 from validol.model.store.view.view_flavors import ALL_VIEW_FLAVORS
@@ -21,7 +24,7 @@ class ModelLauncher:
     def __init__(self, controller_launcher):
         self.controller_launcher = controller_launcher
 
-    def init_user(self, user_db='user.db'):
+    def init_user(self, user_db):
         self.user_engine = create_engine('sqlite:///{}'.format(user_db))
         self.user_dbh = sqlite3.connect(user_db)
 
@@ -29,7 +32,7 @@ class ModelLauncher:
 
         return self
 
-    def init_data(self, main_dbh="main.db"):
+    def init_data(self, main_dbh="main.db", user_db='user.db', proxy_cfg='proxy.cfg'):
         data_exists = os.path.exists("data")
 
         if not data_exists:
@@ -39,7 +42,7 @@ class ModelLauncher:
 
         main_dbh_exists = os.path.isfile(main_dbh)
 
-        self.init_user()
+        self.init_user(user_db)
 
         self.main_dbh = sqlite3.connect(main_dbh)
 
@@ -53,7 +56,20 @@ class ModelLauncher:
         if not main_dbh_exists:
             self.init_main_dbh()
 
+        self.configure_proxy(proxy_cfg)
+
         return self
+
+    def configure_proxy(self, proxy_cfg):
+        if os.path.exists(proxy_cfg):
+            with open(proxy_cfg, 'r') as infile:
+                config = json.load(infile)
+
+            socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, addr=config['ip'], port=config['port'],
+                                  username=config['username'], password=config['password'])
+            socket.socket = socks.socksocket
+
+            print('Proxy configured')
 
     def init_main_dbh(self):
         real_conn = self.main_dbh
