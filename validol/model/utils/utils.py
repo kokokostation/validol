@@ -114,13 +114,18 @@ def date_from_timestamp(df):
     return map_attr(df, 'index', dt.date.fromtimestamp)
 
 
+def date_to_timestamp_helper(df, attr):
+    df = df[getattr(df, attr) >= dt.date(1970, 1, 2)]
+
+    return map_attr(df, attr, to_timestamp)
+
+
 def date_field_to_timestamp(df):
-    return map_attr(df, 'Date', to_timestamp)
+    return date_to_timestamp_helper(df, 'Date')
 
 
 def date_to_timestamp(df):
-    return map_attr(df, 'index', to_timestamp)
-
+    return date_to_timestamp_helper(df, 'index')
 
 def remove_duplications(arr):
     s = set()
