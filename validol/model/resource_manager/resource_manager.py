@@ -32,7 +32,7 @@ class ResourceManager:
 
             df = merge_dfs(df, active_df)
 
-        begin, end = dt.date(2000, 1, 1), dt.date.today()
+        begin, end = dt.date(1970, 1, 2), dt.date.today()
 
         if not df.empty:
             l, r = [dt.date.fromtimestamp(df.index[i]) for i in (0, -1)]
