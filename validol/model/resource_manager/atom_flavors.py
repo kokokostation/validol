@@ -257,12 +257,14 @@ class QuarterMeanAtom(AtomBase):
         current_quarter = dt.date(first_date.year, first_quarter_month, 1)
 
         while current_quarter <= series.index[-1]:
-            current_quarter_end = current_quarter + relativedelta(months=3)
+            next_quarter = current_quarter + relativedelta(months=3)
+            current_quarter_end = next_quarter - relativedelta(days=1)
+
             segment = series.loc[current_quarter:current_quarter_end]
 
             data.extend([segment.mean()] * 2)
-            index.extend([current_quarter, current_quarter_end - relativedelta(days=1)])
+            index.extend([current_quarter, current_quarter_end])
 
-            current_quarter = current_quarter_end
+            current_quarter = next_quarter
 
         return pd.Series(data, index=index)
