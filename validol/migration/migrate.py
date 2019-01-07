@@ -20,7 +20,7 @@ MIGRATION_MAP = [
     ('0.0.30', zzt_main),
     ('0.0.34', zztf_main),
     ('0.0.40', fty_main),
-    ('0.0.49', fn_main)
+    ('0.0.50', fn_main)
 ]
 
 
