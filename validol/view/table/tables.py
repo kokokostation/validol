@@ -19,7 +19,7 @@ class Table(ViewElement, QtWidgets.QWidget):
 
         df = data.df[labels]
 
-        table.setData(data.show_df[['Date'] + labels].to_records(index=False))
+        table.setData(data.show_df[[data.show_df.index.name] + labels].to_records(index=False))
 
         for i, col in enumerate(df):
             if not np.issubdtype(df[col].dtype, np.number):

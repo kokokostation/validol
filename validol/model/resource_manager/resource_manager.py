@@ -3,11 +3,12 @@ import datetime as dt
 import pandas as pd
 
 from validol.model.resource_manager import evaluator
+from validol.model.store.miners.monetary import Monetary
 from validol.model.store.miners.prices import InvestingPrice
 from validol.model.store.resource import Resource
 from validol.model.resource_manager.atom_flavors import MonetaryAtom, MBDeltaAtom, \
     LazyAtom, FormulaAtom, AtomBase, Apply, Merge, Curr, \
-    MlCurve, ArgMin, Quantile, Min, Expirations, FillAtom
+    MlCurve, ArgMin, Quantile, Min, Expirations, FillAtom, CFYAAtom, QuarterMeanAtom
 from validol.model.store.miners.report_flavors import REPORT_FLAVORS
 from validol.model.utils.utils import merge_dfs
 
@@ -61,8 +62,10 @@ class ResourceManager:
 
     @staticmethod
     def get_primary_atoms():
-        result = [MonetaryAtom(), MBDeltaAtom(), Apply(), Merge(), Curr(),
-                  MlCurve(), ArgMin(), Quantile(), Min(), Expirations(), FillAtom()]
+        monetary_atoms = [MonetaryAtom(key) for key in Monetary.CONFIG]
+
+        unique_atoms = [MBDeltaAtom(), Apply(), Merge(), Curr(), MlCurve(), ArgMin(), Quantile(),
+                        Min(), Expirations(), FillAtom(), QuarterMeanAtom(), CFYAAtom()]
 
         flavor_atom_names = [name
                              for flavor in REPORT_FLAVORS
@@ -71,6 +74,6 @@ class ResourceManager:
         names = sorted(set(flavor_atom_names +
                            Resource.get_atoms(InvestingPrice.SCHEMA)))
 
-        result.extend([LazyAtom(name, [FormulaAtom.LETTER]) for name in names])
+        lazy_atoms = [LazyAtom(name, [FormulaAtom.LETTER]) for name in names]
 
-        return result
+        return monetary_atoms + unique_atoms + lazy_atoms

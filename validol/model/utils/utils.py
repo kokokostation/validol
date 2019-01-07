@@ -103,16 +103,23 @@ def group_by(df, columns):
     return df.groupby(columns, sort=False)[[col for col in df.columns if col not in columns]]
 
 
-def date_from_timestamp(df):
+def map_attr(df, attr, func):
     result = df.copy()
-    result.index = result.index.map(dt.date.fromtimestamp)
+    setattr(result, attr, getattr(result, attr).map(func))
+
     return result
+
+
+def date_from_timestamp(df):
+    return map_attr(df, 'index', dt.date.fromtimestamp)
+
+
+def date_field_to_timestamp(df):
+    return map_attr(df, 'Date', to_timestamp)
 
 
 def date_to_timestamp(df):
-    result = df.copy()
-    result.Date = result.Date.map(to_timestamp)
-    return result
+    return map_attr(df, 'index', to_timestamp)
 
 
 def remove_duplications(arr):

@@ -1,6 +1,6 @@
 from functools import wraps
 
-from validol.model.utils.utils import parse_isoformat_date
+from validol.model.utils.utils import parse_isoformat_date, date_from_timestamp, date_to_timestamp
 
 
 class AtomBase:
@@ -50,3 +50,24 @@ def rangable(f):
         return result
 
     return wrapped
+
+
+def series_map(dates_needed=True):
+    def decorator(f):
+        @wraps(f)
+        def wrapped(self, evaluator, params):
+            series = params[0]
+
+            if dates_needed:
+                series = date_from_timestamp(series)
+
+            series = f(self, evaluator, series)
+
+            if dates_needed:
+                series = date_to_timestamp(series)
+
+            return series
+
+        return wrapped
+
+    return decorator

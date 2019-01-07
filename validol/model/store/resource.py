@@ -2,8 +2,10 @@ import datetime as dt
 import pandas as pd
 import numpy as np
 from functools import wraps
+import requests
+import socket
 
-from validol.model.utils.utils import date_to_timestamp, to_timestamp
+from validol.model.utils.utils import date_field_to_timestamp, to_timestamp
 from validol.model.store.utils import range_from_timestamp
 
 
@@ -118,6 +120,28 @@ class FlavorUpdater(Updater):
         return self.flavor_dependencies(self.flavors_map[source])
 
 
+class CompositeUpdater(Updater):
+    def __init__(self, model_launcher, name, clss):
+        Updater.__init__(self, model_launcher)
+
+        self.name = name
+        self.clss = clss
+
+    def get_sources(self):
+        return [{'name': self.name}]
+
+    def update_source(self, source):
+        result = []
+
+        for cls in self.clss:
+            try:
+                result.extend(cls(self.model_launcher).update_entire())
+            except (requests.exceptions.ConnectionError, socket.gaierror) as e:
+                print(e)
+
+        return result if result else None
+
+
 class Updatable:
     @staticmethod
     def range_from_timestamp(range):
@@ -220,7 +244,7 @@ class Resource(Table, Updatable):
 
     def write_df(self, df):
         if not df.empty and df.Date.dtype != np.int64:
-            df = date_to_timestamp(df)
+            df = date_field_to_timestamp(df)
 
         super().write_df(df)
 

@@ -1,6 +1,7 @@
 import requests
 from PyQt5.QtCore import QTimer
 import datetime as dt
+import socket
 
 from validol.view.utils.qcron import QCron
 
@@ -84,7 +85,7 @@ class QCronManager:
 
             try:
                 results = update_manager.update_source(source)
-            except requests.exceptions.ConnectionError:
+            except (requests.exceptions.ConnectionError, socket.gaierror):
                 if update_manager.config(source)['verbose']:
                     self.view_launcher.notify('Update of {} failed due to network error'.format(source))
                 return

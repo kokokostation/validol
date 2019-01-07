@@ -1,36 +1,10 @@
-import requests
-import socket
-
 from validol.model.store.resource import Updater
 from validol.model.store.miners.daily_reports.updater import DailyReports
 from validol.model.store.miners.daily_reports.expirations import Expirations
 from validol.model.store.miners.weekly_reports.flavors import Cftc, Ice
 from validol.model.store.miners.monetary import Monetary
 from validol.model.store.view.pip_checker import PipChecker
-
-
-class CompositeUpdater(Updater):
-    def __init__(self, model_launcher, name, clss):
-        Updater.__init__(self, model_launcher)
-
-        self.name = name
-        self.clss = clss
-
-    def get_sources(self):
-        return [{'name': self.name}]
-
-    def update_source(self, source):
-        result = []
-
-        for cls in self.clss:
-            try:
-                result.extend(cls(self.model_launcher).update_entire())
-            except requests.exceptions.ConnectionError as e:
-                print(e)
-            except socket.gaierror as e:
-                print(e)
-
-        return result if result else None
+from validol.model.store.resource import CompositeUpdater
 
 
 class DailyUpdater(CompositeUpdater):

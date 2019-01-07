@@ -2,10 +2,12 @@ from itertools import groupby
 from sqlalchemy import Column, String, orm
 import pandas as pd
 import numpy as np
+from dateutil.relativedelta import relativedelta
+import datetime as dt
 
-from validol.model.store.miners.monetary import Monetary
+from validol.model.store.miners.monetary import MonetaryType
 from validol.model.store.structures.structure import Base, JSONCodec
-from validol.model.resource_manager.atom_base import AtomBase, rangable
+from validol.model.resource_manager.atom_base import AtomBase, rangable, series_map
 from validol.model.utils.utils import to_timestamp, merge_dfs_list, FillSeries
 
 
@@ -39,14 +41,16 @@ class LazyAtom(AtomBase, Currable):
 
 
 class MonetaryAtom(AtomBase):
-    def __init__(self):
-        AtomBase.__init__(self, "MBase", [])
+    def __init__(self, config_key):
+        self._config_key = config_key
+
+        AtomBase.__init__(self, self._config_key, [])
 
     @rangable
     def evaluate(self, evaluator, params):
-        df = Monetary(evaluator.model_launcher).read_dates_dt(*evaluator.range)
+        df = MonetaryType(evaluator.model_launcher, self._config_key).read_dates_dt(*evaluator.range)
 
-        return df.MBase
+        return df[self._config_key]
 
 
 class FormulaAtom(Base, AtomBase):
@@ -79,7 +83,7 @@ class MBDeltaAtom(AtomBase):
 
     @rangable
     def evaluate(self, evaluator, params):
-        mbase = MonetaryAtom().evaluate(evaluator, params)
+        mbase = MonetaryAtom('MBase').evaluate(evaluator, params)
 
         grouped_mbase = [(mbase.iloc[0], 1)] + [(k, len(list(g))) for k, g in groupby(mbase)]
         deltas = []
@@ -91,6 +95,8 @@ class MBDeltaAtom(AtomBase):
                 deltas.append(delta / n)
 
         return pd.Series(deltas, index=mbase.index)
+
+
 
 
 class Apply(AtomBase):
@@ -205,3 +211,58 @@ fill_method possible values:
 
     def evaluate(self, evaluator, params):
         return FillSeries(params[0], params[1])
+
+
+class CFYAAtom(AtomBase):
+    def __init__(self):
+        AtomBase.__init__(self, 'CFYA', ['series'],
+                          'Change from year ago. This function takes time series. '
+                          'For every point A of the series CFYA(date(A)) = value(A) - value(B), '
+                          'where date(B) is the closest point to (date(A) - year)')
+
+    @staticmethod
+    def _absolute_delta(first_date, second_date):
+        return abs((first_date - second_date).total_seconds())
+
+    @series_map()
+    def evaluate(self, evaluator, series):
+        back_index = 0
+        result = series[series.index >= (series.index[0] + relativedelta(years=1))].copy()
+
+        for i, (date, value) in enumerate(result.iteritems()):
+            year_ago = date - relativedelta(years=1)
+
+            for next_date in series.index[back_index + 1:]:
+                if self._absolute_delta(year_ago, next_date) < \
+                   self._absolute_delta(year_ago, series.index[back_index]):
+                    back_index += 1
+                else:
+                    break
+
+            result.iloc[i] = value - series.iloc[back_index]
+
+        return result
+
+
+class QuarterMeanAtom(AtomBase):
+    def __init__(self):
+        AtomBase.__init__(self, 'QMEAN', ['series'], 'Calculates average for every series quarter, '
+                                                     'even if a quarter contains only one value')
+
+    @series_map()
+    def evaluate(self, evaluator, series):
+        index, data = [], []
+        first_date = series.index[0]
+        first_quarter_month = [b for b in range(1, 13, 3) if b <= first_date.month][-1]
+        current_quarter = dt.date(first_date.year, first_quarter_month, 1)
+
+        while current_quarter <= series.index[-1]:
+            current_quarter_end = current_quarter + relativedelta(months=3)
+            segment = series.loc[current_quarter:current_quarter_end]
+
+            data.extend([segment.mean()] * 2)
+            index.extend([current_quarter, current_quarter_end - relativedelta(days=1)])
+
+            current_quarter = current_quarter_end
+
+        return pd.Series(data, index=index)
