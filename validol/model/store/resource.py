@@ -139,7 +139,7 @@ class CompositeUpdater(Updater):
             except (requests.exceptions.ConnectionError, socket.gaierror) as e:
                 print(e)
 
-        return result if result else None
+        return result
 
 
 class Updatable:
