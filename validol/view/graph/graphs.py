@@ -188,6 +188,9 @@ class LegendUpdater:
                 self.qtimer.start()
 
     def set_legend(self, days_passed):
+        if days_passed is None:
+            days_passed = self.curr_days_passed
+
         for i in range(len(self.plots)):
             while self.legends[i].layout.count() > 0:
                 self.legends[i].removeItem(self.legends[i].items[0][1].text)
@@ -196,7 +199,7 @@ class LegendUpdater:
             for section in self.legend_data[i]:
                 self.legends[i].addItem(*section[0])
                 for style, key in section[1:]:
-                    value = self.days_map.get_value(days_passed or self.curr_days_passed, key)
+                    value = self.days_map.get_value(days_passed, key)
                     self.legends[i].addItem(
                         style,
                         "{} {}".format(key, value))

@@ -90,7 +90,7 @@ MOEX = {
                ['FL', 'FS', 'UL', 'US', 'FLQ', 'FSQ', 'ULQ', 'USQ']],
     'csv_mapping': {
         'clients_in_long': 'LQ',
-        'clients_in_lshort': 'SQ',
+        'clients_in_short': 'SQ',
         'short_position': 'S',
         'long_position': 'L'
     },

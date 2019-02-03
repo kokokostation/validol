@@ -19,10 +19,13 @@ class Flavor(FlavorUpdater):
         fly = -1
 
         for active in active_iterator(flavor, self.model_launcher):
-            fly = max(fly, active.range()[1].year)
+            last_date = active.range()[1]
 
-            if fly == curr_year:
-                return fly
+            if last_date is not None:
+                fly = max(fly, last_date.year)
+
+                if fly == curr_year:
+                    return fly
 
         return fly
 
