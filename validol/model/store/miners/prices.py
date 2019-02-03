@@ -42,6 +42,9 @@ class InvestingPrices(NamedStructure):
         else:
             try:
                 content = read_url_text(url)
+
+                if content is None:
+                    return {}
             except requests.exceptions.ConnectionError:
                 return {}
 
