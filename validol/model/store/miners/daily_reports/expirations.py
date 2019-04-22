@@ -1,4 +1,6 @@
 import datetime as dt
+import locale
+
 from requests_cache import enabled
 import pandas as pd
 import re
@@ -8,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 
 from validol.model.store.resource import ResourceUpdater
 from validol.model.utils.utils import concat, date_from_timestamp, to_timestamp, merge_dfs
+from validol.model.utils.utils import setlocale
 
 
 class Expirations(ResourceUpdater):
@@ -107,7 +110,7 @@ class Expirations(ResourceUpdater):
 
         dfs = []
 
-        with enabled():
+        with enabled(), setlocale(locale.LC_TIME, 'C'):
             while first <= last:
                 response = requests.get(
                     url='https://www.theice.com/marketdata/ExpiryCalendar.shtml',

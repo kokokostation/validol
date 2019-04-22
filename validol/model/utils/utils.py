@@ -13,6 +13,7 @@ from itertools import groupby
 from operator import itemgetter
 import re
 from contextlib import contextmanager
+import locale
 
 
 def to_timestamp(date):
@@ -282,3 +283,12 @@ class FillSeries(pd.Series):
         result = result.loc[notna.index[0]:notna.index[-1]]
 
         return self.fill_method(result)
+
+
+@contextmanager
+def setlocale(*args, **kw):
+    saved = locale.setlocale(locale.LC_ALL)
+
+    yield locale.setlocale(*args, **kw)
+
+    locale.setlocale(locale.LC_ALL, saved)

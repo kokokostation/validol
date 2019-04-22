@@ -69,7 +69,7 @@ class ModelLauncher:
                                   username=config['username'], password=config['password'])
             socket.socket = socks.socksocket
 
-            print('Proxy configured')
+            print('Proxy configured: ip={}, port={}'.format(config['ip'], config['port']))
 
     def init_main_dbh(self):
         real_conn = self.main_dbh
