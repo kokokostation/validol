@@ -33,6 +33,8 @@ class ModelLauncher:
         return self
 
     def init_data(self, main_dbh="main.db", user_db='user.db', proxy_cfg='proxy.cfg'):
+        self.configure_proxy(proxy_cfg)
+
         data_exists = os.path.exists("data")
 
         if not data_exists:
@@ -55,8 +57,6 @@ class ModelLauncher:
 
         if not main_dbh_exists:
             self.init_main_dbh()
-
-        self.configure_proxy(proxy_cfg)
 
         return self
 
