@@ -9,10 +9,12 @@ from validol.view.launcher import ViewLauncher
 
 
 class ControllerLauncher:
-    def __init__(self):
+    def __init__(self, for_app=True):
+        self.for_app = for_app
         self.model_launcher = ModelLauncher(self).init_data()
 
-        self.view_launcher = ViewLauncher(self, self.model_launcher)
+        if for_app:
+            self.view_launcher = ViewLauncher(self, self.model_launcher)
 
     def event_loop(self):
         self.view_launcher.event_loop()

@@ -1,6 +1,10 @@
 from functools import wraps
+from collections import namedtuple
 
 from validol.model.utils.utils import parse_isoformat_date, date_from_timestamp, date_to_timestamp
+
+
+Timeseries = namedtuple('Timeseries', 'name letter')
 
 
 class AtomBase:
@@ -20,6 +24,9 @@ class AtomBase:
 
     def evaluate(self, evaluator, params):
         raise NotImplementedError
+
+    def list_dependencies(self, evaluator, params):
+        raise NotImplementedError()
 
     def note(self):
         return None
