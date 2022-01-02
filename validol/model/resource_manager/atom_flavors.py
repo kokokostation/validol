@@ -214,7 +214,7 @@ class Quantile(AtomBase):
         return params[0].apply(lambda curve: Quantile.get_quantile(curve, params[1], params[2]))
 
     def list_dependencies(self, evaluator, params):
-        assert len(params) == 1
+        assert len(params) == 3
 
         return params[0]
 
