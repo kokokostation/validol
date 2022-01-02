@@ -279,5 +279,5 @@ class DependenciesEvaluator(BaseEvaluator):
     def evaluate_other(self, data):
         return data
 
-    def evaluate(self, formulas):
-        return [self.parser.evaluate(formula) for formula in formulas]
+    def evaluate(self, formulas, params_map=None):
+        return [self.parser.evaluate(formula, params_map) for formula in formulas]
