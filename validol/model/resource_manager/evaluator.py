@@ -280,4 +280,14 @@ class DependenciesEvaluator(BaseEvaluator):
         return data
 
     def evaluate(self, formulas, params_map=None):
-        return [self.parser.evaluate(formula, params_map) for formula in formulas]
+        deps_list = []
+        for formula in formulas:
+            result = self.parser.evaluate(formula, params_map)
+            if isinstance(result, tuple):
+                deps = result[0]
+            else:
+                deps = result
+
+            deps_list.append(deps)
+
+        return deps_list
