@@ -291,3 +291,42 @@ class DependenciesEvaluator(BaseEvaluator):
             deps_list.append(deps)
 
         return deps_list
+
+
+class SerializingEvaluator(BaseEvaluator):
+    def __init__(self, model_launcher):
+        super().__init__(model_launcher)
+
+    def evaluate_numeric(self, data):
+        return str(data)
+
+    def evaluate_atom(self, atom, params):
+        return atom.serialize(self, params)
+
+    def evaluate_var(self, data, params_map):
+        return str(params_map[data])
+
+    def evaluate_unary_minus(self, data):
+        return f'-{data}'
+
+    def evaluate_arithmetic(self, op, operands):
+        return f'({operands[0]} {op} {operands[1]})'
+
+    def evaluate_math_function(self, op, operand):
+        return f'{op}({operand})'
+
+    def evaluate_other(self, data):
+        return str(data)
+
+    def evaluate(self, formulas, params_map=None):
+        deps_list = []
+        for formula in formulas:
+            result = self.parser.evaluate(formula, params_map)
+            if isinstance(result, tuple):
+                deps = result[0]
+            else:
+                deps = result
+
+            deps_list.append(deps)
+
+        return deps_list

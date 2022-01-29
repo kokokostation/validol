@@ -3,6 +3,9 @@ from collections import namedtuple
 
 from validol.model.utils.utils import parse_isoformat_date, date_from_timestamp, date_to_timestamp
 
+class NotSerializable(Exception):
+    pass
+
 
 Timeseries = namedtuple('Timeseries', 'name letter')
 
@@ -27,6 +30,9 @@ class AtomBase:
 
     def list_dependencies(self, evaluator, params):
         raise NotImplementedError()
+
+    def serialize(self, evaluator, params):
+        raise NotSerializable()
 
     def note(self):
         return None

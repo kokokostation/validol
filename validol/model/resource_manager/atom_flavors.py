@@ -7,7 +7,7 @@ import datetime as dt
 
 from validol.model.store.miners.monetary import MonetaryType
 from validol.model.store.structures.structure import Base, JSONCodec
-from validol.model.resource_manager.atom_base import AtomBase, Timeseries, rangable, series_map
+from validol.model.resource_manager.atom_base import AtomBase, Timeseries, rangable, series_map, NotSerializable
 from validol.model.utils.utils import to_timestamp, merge_dfs_list, FillSeries
 
 
@@ -44,6 +44,17 @@ class LazyAtom(AtomBase, Currable):
 
         return {Timeseries(name=self.name, letter=params[0])}
 
+    def serialize(self, evaluator, params):
+        name = self.name.lower()
+
+        if name[0].isdigit():
+            name = f'x_{name}'
+
+        if name[-1] == '%':
+            name = f'{name[:-1]}_percent'
+
+        return name
+
 
 class MonetaryAtom(AtomBase):
     def __init__(self, config_key):
@@ -59,6 +70,9 @@ class MonetaryAtom(AtomBase):
 
     def list_dependencies(self, evaluator, params):
         return {Timeseries(name=self._config_key, letter=None)}
+
+    def serialize(self, evaluator, params):
+        return self._config_key.lower()
 
 
 class FormulaAtom(Base, AtomBase):
@@ -89,6 +103,11 @@ class FormulaAtom(Base, AtomBase):
 
         return evaluator.parser.evaluate(self.formula, params_map)
 
+    def serialize(self, evaluator, params):
+        params_map = dict(zip(self.params, params))
+
+        return '(' + evaluator.parser.evaluate(self.formula, params_map) + ')'
+
 
 class MBDeltaAtom(AtomBase):
     def __init__(self):
@@ -111,6 +130,9 @@ class MBDeltaAtom(AtomBase):
 
     def list_dependencies(self, evaluator, params):
         return {Timeseries(name='MBase', letter=None)}
+
+    def serialize(self, evaluator, params):
+        return self.name.lower()
 
 
 class Apply(AtomBase):
