@@ -54,9 +54,9 @@ class ResourceManager:
     def prepare_tables(self, table_pattern, actives_info):
         letter_map = dict(zip(alphas, actives_info))
 
-        df, range = self.prepare_actives(actives_info)
+        df, range_ = self.prepare_actives(actives_info)
 
-        evaluator_ = evaluator.Evaluator(self.model_launcher, df, letter_map, range)
+        evaluator_ = evaluator.Evaluator(self.model_launcher, df, letter_map, range_)
 
         return evaluator_.evaluate(table_pattern.all_formulas())
 

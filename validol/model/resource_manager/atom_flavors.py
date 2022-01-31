@@ -7,7 +7,7 @@ import datetime as dt
 
 from validol.model.store.miners.monetary import MonetaryType
 from validol.model.store.structures.structure import Base, JSONCodec
-from validol.model.resource_manager.atom_base import AtomBase, rangable, series_map
+from validol.model.resource_manager.atom_base import AtomBase, Timeseries, rangable, series_map, NotSerializable
 from validol.model.utils.utils import to_timestamp, merge_dfs_list, FillSeries
 
 
@@ -39,6 +39,22 @@ class LazyAtom(AtomBase, Currable):
     def extract_info(self, df):
         return df[self.name]
 
+    def list_dependencies(self, evaluator, params):
+        assert len(params) == 1
+
+        return {Timeseries(name=self.name, letter=params[0])}
+
+    def serialize(self, evaluator, params):
+        name = self.name.lower()
+
+        if name[0].isdigit():
+            name = f'x_{name}'
+
+        if name[-1] == '%':
+            name = f'{name[:-1]}_percent'
+
+        return name
+
 
 class MonetaryAtom(AtomBase):
     def __init__(self, config_key):
@@ -51,6 +67,12 @@ class MonetaryAtom(AtomBase):
         df = MonetaryType(evaluator.model_launcher, self._config_key).read_dates_dt(*evaluator.range)
 
         return df[self._config_key]
+
+    def list_dependencies(self, evaluator, params):
+        return {Timeseries(name=self._config_key, letter=None)}
+
+    def serialize(self, evaluator, params):
+        return self._config_key.lower()
 
 
 class FormulaAtom(Base, AtomBase):
@@ -76,6 +98,16 @@ class FormulaAtom(Base, AtomBase):
     def init_on_load(self):
         AtomBase.__init__(self, self.name, self.params, self.formula)
 
+    def list_dependencies(self, evaluator, params):
+        params_map = dict(zip(self.params, params))
+
+        return evaluator.parser.evaluate(self.formula, params_map)
+
+    def serialize(self, evaluator, params):
+        params_map = dict(zip(self.params, params))
+
+        return '(' + evaluator.parser.evaluate(self.formula, params_map) + ')'
+
 
 class MBDeltaAtom(AtomBase):
     def __init__(self):
@@ -96,7 +128,11 @@ class MBDeltaAtom(AtomBase):
 
         return pd.Series(deltas, index=mbase.index)
 
+    def list_dependencies(self, evaluator, params):
+        return {Timeseries(name='MBase', letter=None)}
 
+    def serialize(self, evaluator, params):
+        return self.name.lower()
 
 
 class Apply(AtomBase):
@@ -106,6 +142,9 @@ class Apply(AtomBase):
     def evaluate(self, evaluator, params):
         return evaluator.atoms_map[params[0]].evaluate(evaluator, params[1:])
 
+    def list_dependencies(self, evaluator, params):
+        return evaluator.atoms_map[params[0]].list_dependencies(evaluator, params[1:])
+
 
 class Merge(AtomBase):
     def __init__(self):
@@ -113,6 +152,9 @@ class Merge(AtomBase):
 
     def evaluate(self, evaluator, params):
         return merge_dfs_list([param.to_frame('i') for param in params])['i']
+
+    def list_dependencies(self, evaluator, params):
+        return set().union(*params)
 
 
 class Curr(AtomBase):
@@ -130,6 +172,11 @@ class Curr(AtomBase):
         else:
             return pd.Series()
 
+    def list_dependencies(self, evaluator, params):
+        assert len(params) == 3
+
+        return {Timeseries(name='CURR', letter=params[1])}
+
 
 class MlCurve(AtomBase, Currable):
     def __init__(self):
@@ -139,6 +186,11 @@ class MlCurve(AtomBase, Currable):
         ai = evaluator.letter_map[params[0]]
 
         return evaluator.model_launcher.get_ml_curves(ai)
+
+    def list_dependencies(self, evaluator, params):
+        assert len(params) == 1
+
+        return {Timeseries(name=self.name, letter=params[0])}
 
     def get_full(self, ai, model_launcher):
         return model_launcher.get_ml_curves(ai, False)
@@ -153,6 +205,11 @@ class ArgMin(AtomBase):
 
     def evaluate(self, evaluator, params):
         return params[0].apply(lambda curve: curve.argmin())
+
+    def list_dependencies(self, evaluator, params):
+        assert len(params) == 1
+
+        return params[0]
 
 
 class Quantile(AtomBase):
@@ -178,6 +235,11 @@ class Quantile(AtomBase):
     def evaluate(self, evaluator, params):
         return params[0].apply(lambda curve: Quantile.get_quantile(curve, params[1], params[2]))
 
+    def list_dependencies(self, evaluator, params):
+        assert len(params) == 3
+
+        return params[0]
+
 
 class Min(AtomBase):
     def __init__(self):
@@ -185,6 +247,11 @@ class Min(AtomBase):
 
     def evaluate(self, evaluator, params):
         return params[0].apply(lambda curve: curve.min())
+
+    def list_dependencies(self, evaluator, params):
+        assert len(params) == 1
+
+        return params[0]
 
 
 class Expirations(AtomBase):
@@ -196,6 +263,11 @@ class Expirations(AtomBase):
 
     def note(self):
         return {'fill_method': 'bfill'}
+
+    def list_dependencies(self, evaluator, params):
+        assert len(params) == 1
+
+        return {Timeseries(name='EXPS', letter=params[0])}
 
 
 class FillAtom(AtomBase):
@@ -211,6 +283,11 @@ fill_method possible values:
 
     def evaluate(self, evaluator, params):
         return FillSeries(params[0], params[1])
+
+    def list_dependencies(self, evaluator, params):
+        assert len(params) == 2
+
+        return params[0]
 
 
 class CFYAAtom(AtomBase):
@@ -243,6 +320,11 @@ class CFYAAtom(AtomBase):
 
         return result
 
+    def list_dependencies(self, evaluator, params):
+        assert len(params) == 1
+
+        return params[0]
+
 
 class QuarterMeanAtom(AtomBase):
     def __init__(self):
@@ -268,3 +350,8 @@ class QuarterMeanAtom(AtomBase):
             current_quarter = next_quarter
 
         return pd.Series(data, index=index)
+
+    def list_dependencies(self, evaluator, params):
+        assert len(params) == 1
+
+        return params[0]

@@ -55,7 +55,7 @@ class ModelLauncher:
         else:
             self.write_db_version(init_version(self))
 
-        if not main_dbh_exists:
+        if not main_dbh_exists and self.controller_launcher.for_app:
             self.init_main_dbh()
 
         return self

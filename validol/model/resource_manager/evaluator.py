@@ -18,6 +18,21 @@ class AtomWrap:
 
 VAR = pp.Word('@', pp.alphas)
 STRING = pp.Word(pp.alphas + '%_' + pp.nums)
+MATH_FUNCTIONS = {
+    "sin": np.sin,
+    "cos": np.cos,
+    "tan": np.tan,
+    "exp": np.exp,
+    "abs": np.abs,
+    "round": np.round
+}
+ARITHMETIC_OPERATIONS = {
+    "+": operator.add,
+    "-": operator.sub,
+    "*": operator.mul,
+    "/": operator.truediv,
+    "^": operator.pow
+}
 
 
 class FormulaGrammar:
@@ -78,18 +93,6 @@ class FormulaGrammar:
 
         self.bnf = expr
 
-        self.opn = {"+": operator.add,
-                    "-": operator.sub,
-                    "*": operator.mul,
-                    "/": operator.truediv,
-                    "^": operator.pow}
-        self.fn = {"sin": np.sin,
-                   "cos": np.cos,
-                   "tan": np.tan,
-                   "exp": np.exp,
-                   "abs": np.abs,
-                   "round": np.round}
-
 
 class AtomGrammar:
     def __init__(self, all_atoms):
@@ -125,7 +128,7 @@ class NumericStringParser(FormulaGrammar):
         op = stack.pop()
 
         if isinstance(op, float) or op is None:
-            return op
+            return self.evaluator.evaluate_numeric(op)
         elif isinstance(op, AtomWrap):
             atom = self.evaluator.atoms_map[op.name]
             args_num = stack.pop()
@@ -134,7 +137,7 @@ class NumericStringParser(FormulaGrammar):
             name = atom.cache_name(params)
 
             if name not in self.cache:
-                result = atom.evaluate(self.evaluator, params)
+                result = self.evaluator.evaluate_atom(atom, params)
 
                 if name is not None:
                     self.cache[name] = result
@@ -146,23 +149,19 @@ class NumericStringParser(FormulaGrammar):
             else:
                 return result
         elif op[0] == '@':
-            return params_map[op]
+            return self.evaluator.evaluate_var(op, params_map)
         elif op == 'unary -':
-            return -self.evaluate_stack(stack, params_map)
-        elif op in "+-*/^":
+            return self.evaluator.evaluate_unary_minus(self.evaluate_stack(stack, params_map))
+        elif op in ARITHMETIC_OPERATIONS:
             operands = [self.evaluate_stack(stack, params_map) for _ in range(2)]
 
-            for i, operand in enumerate(operands):
-                if isinstance(operand, FillSeries):
-                    operands[i] = operand.adjust(operands[1 - i])
+            return self.evaluator.evaluate_arithmetic(op, operands)
+        elif op in MATH_FUNCTIONS:
+            stack.pop()
 
-            return self.opn[op](*reversed(operands))
-        elif op in self.fn:
-            args_num = stack.pop()
-
-            return self.fn[op](self.evaluate_stack(stack, params_map))
+            return self.evaluator.evaluate_math_function(op, self.evaluate_stack(stack, params_map))
         else:
-            return op
+            return self.evaluator.evaluate_other(op)
 
     def evaluate(self, formula, params_map=None):
         self.bnf.parseString(formula, True)
@@ -170,14 +169,69 @@ class NumericStringParser(FormulaGrammar):
         return self.evaluate_stack(self.expr_stack, params_map)
 
 
-class Evaluator:
-    def __init__(self, model_launcher, df, letter_map, range):
+class BaseEvaluator:
+    def __init__(self, model_launcher):
         self.model_launcher = model_launcher
+        self.atoms_map = {atom.name: atom for atom in model_launcher.get_atoms()}
+        self.parser = NumericStringParser(self)
+
+    def evaluate_numeric(self, data):
+        raise NotImplementedError()
+
+    def evaluate_atom(self, atom, params):
+        raise NotImplementedError()
+
+    def evaluate_var(self, data, params_map):
+        raise NotImplementedError()
+
+    def evaluate_unary_minus(self, data):
+        raise NotImplementedError()
+
+    def evaluate_arithmetic(self, op, operands):
+        raise NotImplementedError()
+
+    def evaluate_math_function(self, op, operand):
+        raise NotImplementedError()
+
+    def evaluate_other(self, data):
+        raise NotImplementedError()
+
+    def evaluate(self, formulas):
+        raise NotImplementedError()
+
+
+class Evaluator(BaseEvaluator):
+    def __init__(self, model_launcher, df, letter_map, range_):
+        super(Evaluator, self).__init__(model_launcher)
+
         self.df = df
         self.letter_map = letter_map
-        self.atoms_map = {atom.name: atom for atom in self.model_launcher.get_atoms()}
-        self.parser = NumericStringParser(self)
-        self.range = range
+        self.range = range_
+
+    def evaluate_numeric(self, data):
+        return data
+
+    def evaluate_atom(self, atom, params):
+        return atom.evaluate(self, params)
+
+    def evaluate_var(self, data, params_map):
+        return params_map[data]
+
+    def evaluate_unary_minus(self, data):
+        return -data
+
+    def evaluate_arithmetic(self, op, operands):
+        for i, operand in enumerate(operands):
+            if isinstance(operand, FillSeries):
+                operands[i] = operand.adjust(operands[1 - i])
+
+        return ARITHMETIC_OPERATIONS[op](*reversed(operands))
+
+    def evaluate_math_function(self, op, operand):
+        return MATH_FUNCTIONS[op](operand)
+
+    def evaluate_other(self, data):
+        return data
 
     def evaluate(self, formulas):
         df = pd.DataFrame()
@@ -198,3 +252,81 @@ class Evaluator:
         df.dropna(axis=0, how='all', inplace=True)
 
         return Data(df, info)
+
+
+class DependenciesEvaluator(BaseEvaluator):
+    def __init__(self, model_launcher):
+        super().__init__(model_launcher)
+
+    def evaluate_numeric(self, data):
+        return set()
+
+    def evaluate_atom(self, atom, params):
+        return atom.list_dependencies(self, params)
+
+    def evaluate_var(self, data, params_map):
+        return params_map[data]
+
+    def evaluate_unary_minus(self, data):
+        return data
+
+    def evaluate_arithmetic(self, op, operands):
+        return set().union(*operands)
+
+    def evaluate_math_function(self, op, operand):
+        return operand
+
+    def evaluate_other(self, data):
+        return data
+
+    def evaluate(self, formulas, params_map=None):
+        deps_list = []
+        for formula in formulas:
+            result = self.parser.evaluate(formula, params_map)
+            if isinstance(result, tuple):
+                deps = result[0]
+            else:
+                deps = result
+
+            deps_list.append(deps)
+
+        return deps_list
+
+
+class SerializingEvaluator(BaseEvaluator):
+    def __init__(self, model_launcher):
+        super().__init__(model_launcher)
+
+    def evaluate_numeric(self, data):
+        return str(data)
+
+    def evaluate_atom(self, atom, params):
+        return atom.serialize(self, params)
+
+    def evaluate_var(self, data, params_map):
+        return str(params_map[data])
+
+    def evaluate_unary_minus(self, data):
+        return f'-{data}'
+
+    def evaluate_arithmetic(self, op, operands):
+        return f'({operands[0]} {op} {operands[1]})'
+
+    def evaluate_math_function(self, op, operand):
+        return f'{op}({operand})'
+
+    def evaluate_other(self, data):
+        return str(data)
+
+    def evaluate(self, formulas, params_map=None):
+        deps_list = []
+        for formula in formulas:
+            result = self.parser.evaluate(formula, params_map)
+            if isinstance(result, tuple):
+                deps = result[0]
+            else:
+                deps = result
+
+            deps_list.append(deps)
+
+        return deps_list
